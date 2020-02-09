@@ -3,13 +3,14 @@ package com.backGroundLocate.entity;
 public class BackgroundLocate {
 
     private int id;
-    private int userId;
+    private int user_id;
     private String address;
     private String longitude;
     private String latitude;
     private String longitude_latitude;
     private String upload_time;
     private String times_tamp;
+
 
     public int getId() {
         return id;
@@ -19,12 +20,12 @@ public class BackgroundLocate {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 
     public String getAddress() {

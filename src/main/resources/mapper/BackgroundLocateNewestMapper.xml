@@ -3,7 +3,7 @@
 <mapper namespace="com.backGroundLocate.mapper.BackgroundLocateNewestMapper">
     <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BackgroundLocateNewest">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="user_id" jdbcType="INTEGER" property="user_id" />
         <result column="address" jdbcType="VARCHAR" property="address" />
         <result column="longitude" jdbcType="VARCHAR" property="longitude" />
         <result column="latitude" jdbcType="VARCHAR" property="latitude" />
@@ -20,7 +20,7 @@
                 longitude_latitude,
                 upload_time,
                 times_tamp)
-    values(#{userId,jdbcType=INTEGER},
+    values(#{user_id,jdbcType=INTEGER},
            #{address,jdbcType=VARCHAR},
            #{longitude,jdbcType=VARCHAR},
            #{latitude,jdbcType=VARCHAR},
@@ -36,6 +36,6 @@
     </select>
 
     <delete id="deleteLocationOfNewest" parameterType="com.backGroundLocate.entity.BackgroundLocateNewest" >
-    delete from t_background_locate_newest where user_id = #{userId,jdbcType=INTEGER}
+    delete from t_background_locate_newest where user_id = #{user_id,jdbcType=INTEGER}
   </delete>
 </mapper>

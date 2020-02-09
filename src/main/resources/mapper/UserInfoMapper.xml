@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.backGroundLocate.mapper.UserInfoMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.UserInfo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="level" jdbcType="INTEGER" property="level" />
+        <result column="dept" jdbcType="INTEGER" property="dept" />
+        <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="internal_id" jdbcType="INTEGER" property="internalId" />
+        <result column="internal_name" jdbcType="VARCHAR" property="internalName" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id,user_name,password,name,level,dept,dept_name,internal_id,internal_name
+    </sql>
+
+    <select id="selectUserById" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.UserInfo">
+        select <include refid="Base_Column_List" /> from t_user_info where id = {id,jdbcType=INTEGER}
+
+    </select>
+
+    <select id="selectUser" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.UserInfo">
+        select <include refid="Base_Column_List" /> from t_user_info where 1=1
+
+        <if test="userName!=null and userName!=''">
+            and user_name = #{userName,jdbcType=VARCHAR}
+        </if >
+    </select>
+
+    <select id="selectUserListByInternalId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" /> from t_user_info where internal_id = #{internalId,jdbcType=INTEGER}
+    </select>
+</mapper>

@@ -1,9 +1,10 @@
 package com.backGroundLocate.entity;
 
-public class BackgroundLocate {
+public class BackgroundLocateCar {
 
     private int id;
-    private int user_id;
+    private int carId;
+    private String carName;
     private String address;
     private String longitude;
     private String latitude;
@@ -20,12 +21,20 @@ public class BackgroundLocate {
         this.id = id;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getCarId() {
+        return carId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setCarId(int carId) {
+        this.carId = carId;
+    }
+
+    public String getCarName() {
+        return carName;
+    }
+
+    public void setCarName(String carName) {
+        this.carName = carName;
     }
 
     public String getAddress() {

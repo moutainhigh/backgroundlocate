@@ -7,16 +7,14 @@ public class UserInfo {
     private int id;
     private String userName;
     private String password;
-
-
     private String name;
     private int level;
     private int dept;
     private String deptName;
     private int internalId;
     private String internalName;
-    private List empList;
-    private List carList;
+//    private List empList;
+//    private List carList;
 
     public int getId() {
         return id;
@@ -90,19 +88,19 @@ public class UserInfo {
         this.internalName = internalName;
     }
 
-    public List getEmpList() {
-        return empList;
-    }
-
-    public void setEmpList(List empList) {
-        this.empList = empList;
-    }
-
-    public List getCarList() {
-        return carList;
-    }
-
-    public void setCarList(List carList) {
-        this.carList = carList;
-    }
+//    public List getEmpList() {
+//        return empList;
+//    }
+//
+//    public void setEmpList(List empList) {
+//        this.empList = empList;
+//    }
+//
+//    public List getCarList() {
+//        return carList;
+//    }
+//
+//    public void setCarList(List carList) {
+//        this.carList = carList;
+//    }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.backGroundLocate.mapper.BackgroundLocateMapper">
-    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BackgroundLocate">
+<mapper namespace="com.backGroundLocate.mapper.BackgroundLocateUserNewestMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BackgroundLocateUserNewest">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="user_id" jdbcType="INTEGER" property="user_id" />
         <result column="address" jdbcType="VARCHAR" property="address" />
@@ -11,8 +11,9 @@
         <result column="upload_time" jdbcType="VARCHAR" property="upload_time" />
         <result column="times_tamp" jdbcType="INTEGER" property="times_tamp" />
     </resultMap>
-    <insert id="saveLocation" parameterType="com.backGroundLocate.entity.BackgroundLocate" >
-    insert into t_background_locate(user_id,
+
+    <insert id="saveLocationOfNewest" parameterType="com.backGroundLocate.entity.BackgroundLocateUserNewest" >
+    insert into t_background_locate_user_newest(user_id,
                 address,
                 longitude,
                 latitude,
@@ -30,7 +31,11 @@
 
   </insert>
 
-    <delete id="deleteLocation" parameterType="java.lang.Integer" >
-    delete from t_background_locate where id = #{id,jdbcType=INTEGER}
+    <select id="selectUserLocationForNewest" resultType="java.util.Map" parameterType="int">
+        select b.id,b.name,a.longitude_latitude as lon_lat from t_background_locate_user_newest a,t_user_info b where a.user_id = b.id and a.user_id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteLocationOfNewest" parameterType="com.backGroundLocate.entity.BackgroundLocateUserNewest" >
+    delete from t_background_locate_user_newest where user_id = #{user_id,jdbcType=INTEGER}
   </delete>
 </mapper>

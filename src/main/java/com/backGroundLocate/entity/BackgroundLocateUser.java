@@ -1,8 +1,6 @@
 package com.backGroundLocate.entity;
 
-import java.util.List;
-
-public class BackgroundLocateNewest {
+public class BackgroundLocateUser {
 
     private int id;
     private int user_id;
@@ -12,7 +10,7 @@ public class BackgroundLocateNewest {
     private String longitude_latitude;
     private String upload_time;
     private String times_tamp;
-    private List empIds;
+
 
     public int getId() {
         return id;
@@ -76,13 +74,5 @@ public class BackgroundLocateNewest {
 
     public void setTimes_tamp(String times_tamp) {
         this.times_tamp = times_tamp;
-    }
-
-    public List getEmpIds() {
-        return empIds;
-    }
-
-    public void setEmpIds(List empIds) {
-        this.empIds = empIds;
     }
 }

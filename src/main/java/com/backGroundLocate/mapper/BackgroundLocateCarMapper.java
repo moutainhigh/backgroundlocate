@@ -1,15 +1,15 @@
 package com.backGroundLocate.mapper;
 
-import com.backGroundLocate.entity.BackgroundLocate;
+import com.backGroundLocate.entity.BackgroundLocateCar;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 @Mapper
 @Component
-public interface BackgroundLocateMapper {
+public interface BackgroundLocateCarMapper {
 
-    void saveLocation(BackgroundLocate backgroundLocate);
+    void saveLocation(BackgroundLocateCar backgroundLocateCar);
 
     void deleteLocation(@Param("id") int id);
 }

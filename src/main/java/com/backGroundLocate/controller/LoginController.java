@@ -11,6 +11,7 @@ import com.backGroundLocate.service.UserInfoService;
 import com.backGroundLocate.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -29,18 +30,18 @@ public class LoginController {
     private CarInfoService carInfoService;
 
     @RequestMapping(value = {"/login"})
-    public JSONObject loginCheck(UserInfo paramInfo) {
+    public JSONObject loginCheck(@RequestParam(value = "userName") String userName,@RequestParam(value = "password") String password) {
         System.out.println("======into login======");
-        System.out.println(paramInfo.getUserName());
-        System.out.println(paramInfo.getPassword());
-        String md5pwd = MD5Util.MD5Encode(paramInfo.getPassword());
+        String md5pwd = MD5Util.MD5Encode(password);
         JSONObject resultJson = new JSONObject();
         JSONObject resultData = new JSONObject();
         try {
-            UserInfo itemUser = userInfoService.selectUser(paramInfo);
+            UserInfo paramUser = new UserInfo();
+            paramUser.setUserName(userName);
+            UserInfo itemUser = userInfoService.selectUser(paramUser);
             if (itemUser != null) {
                 if (md5pwd.equals(itemUser.getPassword())) {
-                    int userLevel = itemUser.getLevel();
+                    /*int userLevel = itemUser.getLevel();
                     UserInfo userInfo = new UserInfo();
                     userInfo.setId(itemUser.getId());
                     userInfo.setUserName(paramInfo.getUserName());
@@ -86,8 +87,14 @@ public class LoginController {
                         }
                         userInfo.setEmpList(empList);
                         userInfo.setCarList(carList);
-                    }
-                    resultData.put("userInfo",userInfo);
+                    }*/
+                    JSONObject userInfoJson = new JSONObject();
+                    userInfoJson.put("level",itemUser.getLevel());
+                    userInfoJson.put("dept",itemUser.getDept());
+                    userInfoJson.put("deptName",itemUser.getDeptName());
+                    userInfoJson.put("name",itemUser.getName());
+                    userInfoJson.put("id",itemUser.getId());
+                    resultData.put("userInfo",userInfoJson);
                     resultJson.put("resultCode",0);
                     resultJson.put("resultData",resultData);
                 } else {

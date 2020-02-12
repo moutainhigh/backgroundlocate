@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.backGroundLocate.mapper.BackgroundLocateNewestMapper">
-    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BackgroundLocateNewest">
+<mapper namespace="com.backGroundLocate.mapper.BackgroundLocateCarMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BackgroundLocateCar">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="user_id" jdbcType="INTEGER" property="user_id" />
+        <result column="car_id" jdbcType="INTEGER" property="carId" />
+        <result column="car_name" jdbcType="VARCHAR" property="carName" />
         <result column="address" jdbcType="VARCHAR" property="address" />
         <result column="longitude" jdbcType="VARCHAR" property="longitude" />
         <result column="latitude" jdbcType="VARCHAR" property="latitude" />
@@ -11,16 +12,18 @@
         <result column="upload_time" jdbcType="VARCHAR" property="upload_time" />
         <result column="times_tamp" jdbcType="INTEGER" property="times_tamp" />
     </resultMap>
-
-    <insert id="saveLocationOfNewest" parameterType="com.backGroundLocate.entity.BackgroundLocateNewest" >
-    insert into t_background_locate_newest(user_id,
+    <insert id="saveLocation" parameterType="com.backGroundLocate.entity.BackgroundLocateCar" >
+    insert into t_background_locate_car(
+                car_id,
+                car_name,
                 address,
                 longitude,
                 latitude,
                 longitude_latitude,
                 upload_time,
                 times_tamp)
-    values(#{user_id,jdbcType=INTEGER},
+    values(#{car_id,jdbcType=INTEGER},
+           #{car_name,jdbcType=VARCHAR},
            #{address,jdbcType=VARCHAR},
            #{longitude,jdbcType=VARCHAR},
            #{latitude,jdbcType=VARCHAR},
@@ -31,11 +34,7 @@
 
   </insert>
 
-    <select id="selectUserLocationForNewest" resultType="java.util.Map" parameterType="int">
-        select b.id,b.name,a.longitude_latitude as lon_lat from t_background_locate_newest a,t_user_info b where a.user_id = b.id and a.user_id = #{id,jdbcType=INTEGER}
-    </select>
-
-    <delete id="deleteLocationOfNewest" parameterType="com.backGroundLocate.entity.BackgroundLocateNewest" >
-    delete from t_background_locate_newest where user_id = #{user_id,jdbcType=INTEGER}
+    <delete id="deleteLocation" parameterType="java.lang.Integer" >
+    delete from t_background_locate_car where id = #{id,jdbcType=INTEGER}
   </delete>
 </mapper>

@@ -12,4 +12,6 @@ import java.util.List;
 public interface CarInfoMapper {
 
     List<CarInfo> selectCarListByInternalId(@Param("internalId") int internalId);
+
+    List<CarInfo> selectCarListByDept(@Param("dept") int dept);
 }

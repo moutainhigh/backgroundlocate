@@ -6,6 +6,7 @@ public class InternalInfo {
     private String internalName;
     private int deptId;
     private String deptName;
+    private String internalType;
 
     public int getId() {
         return id;
@@ -37,5 +38,13 @@ public class InternalInfo {
 
     public void setDeptName(String deptName) {
         this.deptName = deptName;
+    }
+
+    public String getInternalType() {
+        return internalType;
+    }
+
+    public void setInternalType(String internalType) {
+        this.internalType = internalType;
     }
 }

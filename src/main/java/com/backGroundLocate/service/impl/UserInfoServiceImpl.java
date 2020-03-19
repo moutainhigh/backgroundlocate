@@ -20,7 +20,17 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
+    public UserInfo selectUserById(int id) {
+        return userInfoMapper.selectUserById(id);
+    }
+
+    @Override
     public List<UserInfo> selectUserListByInternalId(int internalId) {
         return userInfoMapper.selectUserListByInternalId(internalId);
+    }
+
+    @Override
+    public List<UserInfo> selectUserListByDept(int dept) {
+        return userInfoMapper.selectUserListByDept(dept);
     }
 }

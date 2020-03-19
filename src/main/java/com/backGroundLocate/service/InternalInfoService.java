@@ -1,8 +1,6 @@
 package com.backGroundLocate.service;
 
 import com.backGroundLocate.entity.InternalInfo;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 

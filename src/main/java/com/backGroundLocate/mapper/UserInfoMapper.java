@@ -13,5 +13,10 @@ public interface UserInfoMapper {
 
     UserInfo selectUser(UserInfo userInfo);
 
+    UserInfo selectUserById(@Param("id") int id);
+
+
     List<UserInfo> selectUserListByInternalId(@Param("internalId") int internalId);
+
+    List<UserInfo> selectUserListByDept(@Param("dept") int dept);
 }

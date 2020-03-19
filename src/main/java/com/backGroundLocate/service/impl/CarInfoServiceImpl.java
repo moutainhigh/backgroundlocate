@@ -19,4 +19,9 @@ public class CarInfoServiceImpl implements CarInfoService {
     public List<CarInfo> selectCarListByInternalId(int internalId) {
         return carInfoMapper.selectCarListByInternalId(internalId);
     }
+
+    @Override
+    public List<CarInfo> selectCarListByDept(int dept) {
+        return carInfoMapper.selectCarListByDept(dept);
+    }
 }

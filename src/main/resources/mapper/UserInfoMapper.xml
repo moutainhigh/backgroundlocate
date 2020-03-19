@@ -18,7 +18,7 @@
     </sql>
 
     <select id="selectUserById" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.UserInfo">
-        select <include refid="Base_Column_List" /> from t_user_info where id = {id,jdbcType=INTEGER}
+        select <include refid="Base_Column_List" /> from t_user_info where id = #{id,jdbcType=INTEGER}
 
     </select>
 
@@ -31,6 +31,10 @@
     </select>
 
     <select id="selectUserListByInternalId" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List" /> from t_user_info where internal_id = #{internalId,jdbcType=INTEGER}
+        select <include refid="Base_Column_List" /> from t_user_info where internal_id = #{internalId,jdbcType=INTEGER} and level &lt;=2
+    </select>
+
+    <select id="selectUserListByDept" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" /> from t_user_info where dept = #{dept,jdbcType=INTEGER}
     </select>
 </mapper>

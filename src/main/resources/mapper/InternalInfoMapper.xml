@@ -6,6 +6,7 @@
         <result column="internal_name" jdbcType="VARCHAR" property="internalName" />
         <result column="dept_id" jdbcType="INTEGER" property="deptId" />
         <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="internal_type" jdbcType="VARCHAR" property="internalType" />
     </resultMap>
 
     <sql id="Base_Column_List">

@@ -1,4 +1,4 @@
 package com.backGroundLocate.service;
 
-public interface GroupInfoService {
+public interface DepartmentService {
 }

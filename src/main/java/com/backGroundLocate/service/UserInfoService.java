@@ -11,8 +11,6 @@ public interface UserInfoService {
 
     UserInfo selectUserById(int id);
 
-    List<UserInfo> selectUserListByInternalId(int internalId);
-
-    List<UserInfo> selectUserListByDept(int dept);
+    List<UserInfo> selectUserListByDept(int deptId);
 }
 

@@ -11,7 +11,5 @@ import java.util.List;
 @Component
 public interface CarInfoMapper {
 
-    List<CarInfo> selectCarListByInternalId(@Param("internalId") int internalId);
-
-    List<CarInfo> selectCarListByDept(@Param("dept") int dept);
+    List<CarInfo> selectCarListByDept(@Param("deptId") int deptId);
 }

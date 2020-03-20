@@ -7,10 +7,9 @@
         <result column="password" jdbcType="VARCHAR" property="password" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="level" jdbcType="INTEGER" property="level" />
-        <result column="dept" jdbcType="INTEGER" property="dept" />
+        <result column="dept_id" jdbcType="INTEGER" property="deptId" />
         <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
-        <result column="internal_id" jdbcType="INTEGER" property="internalId" />
-        <result column="internal_name" jdbcType="VARCHAR" property="internalName" />
+        <result column="leader_id" jdbcType="INTEGER" property="leaderId" />
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -30,11 +29,7 @@
         </if >
     </select>
 
-    <select id="selectUserListByInternalId" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List" /> from t_user_info where internal_id = #{internalId,jdbcType=INTEGER} and level &lt;=2
-    </select>
-
     <select id="selectUserListByDept" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List" /> from t_user_info where dept = #{dept,jdbcType=INTEGER}
+        select <include refid="Base_Column_List" /> from t_user_info where dept_id = #{deptId,jdbcType=INTEGER}
     </select>
 </mapper>

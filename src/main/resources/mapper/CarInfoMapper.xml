@@ -6,21 +6,15 @@
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="type_id" jdbcType="INTEGER" property="typeId" />
         <result column="type_name" jdbcType="VARCHAR" property="typeName" />
-        <result column="dept" jdbcType="INTEGER" property="dept" />
+        <result column="dept_id" jdbcType="INTEGER" property="deptId" />
         <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
-        <result column="internal_id" jdbcType="INTEGER" property="internalId" />
-        <result column="internal_name" jdbcType="VARCHAR" property="internalName" />
     </resultMap>
 
     <sql id="Base_Column_List">
         id,name,type_id,type_name,dept,dept_name,internal_id,internal_name
     </sql>
 
-    <select id="selectCarListByInternalId" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List" /> from t_car_info where internal_id = #{internalId,jdbcType=INTEGER}
-    </select>
-
     <select id="selectCarListByDept" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List" /> from t_car_info where dept = #{dept,jdbcType=INTEGER}
+        select <include refid="Base_Column_List" /> from t_car_info where dept_id = #{deptId,jdbcType=INTEGER}
     </select>
 </mapper>

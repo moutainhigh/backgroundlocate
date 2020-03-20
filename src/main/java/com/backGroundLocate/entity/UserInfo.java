@@ -9,12 +9,9 @@ public class UserInfo {
     private String password;
     private String name;
     private int level;
-    private int dept;
+    private int deptId;
     private String deptName;
-    private int internalId;
-    private String internalName;
-//    private List empList;
-//    private List carList;
+    private int leaderId;
 
     public int getId() {
         return id;
@@ -56,12 +53,12 @@ public class UserInfo {
         this.level = level;
     }
 
-    public int getDept() {
-        return dept;
+    public int getDeptId() {
+        return deptId;
     }
 
-    public void setDept(int dept) {
-        this.dept = dept;
+    public void setDeptId(int deptId) {
+        this.deptId = deptId;
     }
 
     public String getDeptName() {
@@ -72,35 +69,11 @@ public class UserInfo {
         this.deptName = deptName;
     }
 
-    public int getInternalId() {
-        return internalId;
+    public int getLeaderId() {
+        return leaderId;
     }
 
-    public void setInternalId(int internalId) {
-        this.internalId = internalId;
+    public void setLeaderId(int leaderId) {
+        this.leaderId = leaderId;
     }
-
-    public String getInternalName() {
-        return internalName;
-    }
-
-    public void setInternalName(String internalName) {
-        this.internalName = internalName;
-    }
-
-//    public List getEmpList() {
-//        return empList;
-//    }
-//
-//    public void setEmpList(List empList) {
-//        this.empList = empList;
-//    }
-//
-//    public List getCarList() {
-//        return carList;
-//    }
-//
-//    public void setCarList(List carList) {
-//        this.carList = carList;
-//    }
 }

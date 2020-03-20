@@ -7,7 +7,5 @@ import java.util.List;
 
 public interface CarInfoService {
 
-    List<CarInfo> selectCarListByInternalId(int internalId);
-
-    List<CarInfo> selectCarListByDept(int dept);
+    List<CarInfo> selectCarListByDept(int deptId);
 }

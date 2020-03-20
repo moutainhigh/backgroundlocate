@@ -1,6 +1,6 @@
 package com.backGroundLocate.mapper;
 
-public interface GroupInfoMapper {
+public interface DepartmentMapper {
 
 
 }

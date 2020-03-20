@@ -6,27 +6,8 @@ public class CarInfo {
     private String name;
     private int typeId;
     private String typeName;
-    private int dept;
+    private int deptId;
     private String deptName;
-    private int internalId;
-
-    public int getInternalId() {
-        return internalId;
-    }
-
-    public void setInternalId(int internalId) {
-        this.internalId = internalId;
-    }
-
-    public String getInternalName() {
-        return internalName;
-    }
-
-    public void setInternalName(String internalName) {
-        this.internalName = internalName;
-    }
-
-    private String internalName;
 
     public int getId() {
         return id;
@@ -60,12 +41,12 @@ public class CarInfo {
         this.typeName = typeName;
     }
 
-    public int getDept() {
-        return dept;
+    public int getDeptId() {
+        return deptId;
     }
 
-    public void setDept(int dept) {
-        this.dept = dept;
+    public void setDeptId(int deptId) {
+        this.deptId = deptId;
     }
 
     public String getDeptName() {

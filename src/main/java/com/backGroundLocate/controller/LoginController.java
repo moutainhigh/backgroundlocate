@@ -1,21 +1,14 @@
 package com.backGroundLocate.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.backGroundLocate.entity.CarInfo;
-import com.backGroundLocate.entity.InternalInfo;
 import com.backGroundLocate.entity.UserInfo;
 import com.backGroundLocate.service.CarInfoService;
-import com.backGroundLocate.service.InternalInfoService;
 import com.backGroundLocate.service.UserInfoService;
 import com.backGroundLocate.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 public class LoginController {

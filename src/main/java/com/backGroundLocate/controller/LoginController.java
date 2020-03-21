@@ -17,9 +17,6 @@ public class LoginController {
     private UserInfoService userInfoService;
 
     @Autowired
-    private InternalInfoService internalInfoService;
-
-    @Autowired
     private CarInfoService carInfoService;
 
     @RequestMapping(value = {"/login"})
@@ -34,56 +31,10 @@ public class LoginController {
             UserInfo itemUser = userInfoService.selectUser(paramUser);
             if (itemUser != null) {
                 if (md5pwd.equals(itemUser.getPassword())) {
-                    /*int userLevel = itemUser.getLevel();
-                    UserInfo userInfo = new UserInfo();
-                    userInfo.setId(itemUser.getId());
-                    userInfo.setUserName(paramInfo.getUserName());
-                    userInfo.setPassword(paramInfo.getPassword());
-                    userInfo.setName(itemUser.getName());
-                    userInfo.setLevel(userLevel);
-                    userInfo.setDept(itemUser.getDept());
-                    userInfo.setDeptName(itemUser.getDeptName());
-                    if(userLevel==2){
-                    }else if(userLevel==3){
-                        ArrayList empList = new ArrayList();
-                        ArrayList carList = new ArrayList();
-                        List<InternalInfo> internalInfoList = internalInfoService.selectInternalListByDeptId(itemUser.getDept());
-                        for (int i=0;i<internalInfoList.size();i++){
-                            List<UserInfo> userInfoList = userInfoService.selectUserListByInternalId(internalInfoList.get(i).getId());
-                            List<CarInfo> carInfoList = carInfoService.selectCarListByInternalId(internalInfoList.get(i).getId());
-                            JSONObject internalInfoEmp = new JSONObject();
-                            JSONObject internalInfoCar = new JSONObject();
-                            JSONArray empGroup = new JSONArray();
-                            JSONArray carGroup = new JSONArray();
-                            for (int j=0;j<userInfoList.size();j++){
-                                JSONObject internalUser = new JSONObject();
-                                internalUser.put("id",userInfoList.get(j).getId());
-                                internalUser.put("name",userInfoList.get(j).getName());
-                                empGroup.add(internalUser);
-                            }
-                            for (int j=0;j<carInfoList.size();j++){
-                                JSONObject internalCar = new JSONObject();
-                                internalCar.put("id",carInfoList.get(j).getId());
-                                internalCar.put("name",carInfoList.get(j).getName());
-                                internalCar.put("typeId",carInfoList.get(j).getTypeId());
-                                internalCar.put("typeName",carInfoList.get(j).getTypeName());
-                                carGroup.add(internalCar);
-                            }
-                            internalInfoEmp.put("internalId",internalInfoList.get(i).getId());
-                            internalInfoEmp.put("internalName",internalInfoList.get(i).getInternalName());
-                            internalInfoEmp.put("empGroup",empGroup);
-                            empList.add(internalInfoEmp);
-                            internalInfoCar.put("internalId",internalInfoList.get(i).getId());
-                            internalInfoCar.put("internalName",internalInfoList.get(i).getInternalName());
-                            internalInfoCar.put("carGroup",carGroup);
-                            carList.add(internalInfoCar);
-                        }
-                        userInfo.setEmpList(empList);
-                        userInfo.setCarList(carList);
-                    }*/
+
                     JSONObject userInfoJson = new JSONObject();
                     userInfoJson.put("level",itemUser.getLevel());
-                    userInfoJson.put("dept",itemUser.getDept());
+                    userInfoJson.put("dept",itemUser.getDeptId());
                     userInfoJson.put("deptName",itemUser.getDeptName());
                     userInfoJson.put("name",itemUser.getName());
                     userInfoJson.put("id",itemUser.getId());

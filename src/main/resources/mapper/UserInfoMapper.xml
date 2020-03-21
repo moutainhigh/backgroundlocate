@@ -13,12 +13,11 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    id,user_name,password,name,level,dept,dept_name,internal_id,internal_name
+        id,user_name,password,name,level,dept_id,dept_name,leader_id
     </sql>
 
     <select id="selectUserById" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.UserInfo">
         select <include refid="Base_Column_List" /> from t_user_info where id = #{id,jdbcType=INTEGER}
-
     </select>
 
     <select id="selectUser" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.UserInfo">

@@ -7,7 +7,8 @@ public class Department {
     private int deptType;
     private int deptLevel;
     private int parentId;
-    private int parentName;
+    private String parentName;
+
     public int getId() {
         return id;
     }
@@ -48,11 +49,11 @@ public class Department {
         this.parentId = parentId;
     }
 
-    public int getParentName() {
+    public String getParentName() {
         return parentName;
     }
 
-    public void setParentName(int parentName) {
+    public void setParentName(String parentName) {
         this.parentName = parentName;
     }
 }

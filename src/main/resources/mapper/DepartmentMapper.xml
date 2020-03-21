@@ -4,5 +4,25 @@
     <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.Department">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="dept_type" jdbcType="INTEGER" property="deptType" />
+        <result column="dept_level" jdbcType="INTEGER" property="deptLevel" />
+        <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+        <result column="parent_name" jdbcType="VARCHAR" property="parentName" />
     </resultMap>
+
+    <sql id="Base_Column_List">
+        id,dept_name,dept_type,dept_level,parent_id,parent_name
+    </sql>
+
+    <select id="selectDepartment" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.Department">
+        select <include refid="Base_Column_List" /> from t_department where 1=1
+
+        <if test="id != 0">
+            and id = #{id,jdbcType=INTEGER}
+        </if >
+        <if test="parentId != 0">
+            and parent_id = #{parentId,jdbcType=INTEGER}
+        </if >
+    </select>
+
 </mapper>

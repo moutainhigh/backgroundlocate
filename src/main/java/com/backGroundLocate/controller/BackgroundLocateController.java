@@ -63,96 +63,70 @@ public class BackgroundLocateController {
         return resultJson;
     }
 
-    @RequestMapping(value = "/selectUserOrCarLocationForNewest")
-    public JSONObject selectUserOrCarLocationForNewest(@RequestParam(value = "user_id") String user_id,@RequestParam(value = "ids") String ids,@RequestParam(value = "type") String type){
-        System.out.println("======into selectUserOrCarLocationForNewest======");
-        JSONObject resultJson = new JSONObject();
-        JSONObject resultData = new JSONObject();
-        JSONArray locationInfo = new JSONArray();
-        try {
-
-            if(!StringUtils.isEmpty(ids)){
-                if("0".equals(type)){
-                    String[] paramIds = ids.split(",");
-                    for (int i=0;i<paramIds.length;i++){
-                        Map map = backgroundLocateUserNewestService.selectUserLocationForNewest(Integer.valueOf(paramIds[i]));
-                        locationInfo.add(map);
-                    }
-                }else if("1".equals(type)){
-                    String[] paramIds = ids.split(",");
-                    for (int i=0;i<paramIds.length;i++){
-                        Map map = backgroundLocateCarNewestService.selectCarLocationForNewest(Integer.valueOf(paramIds[i]));
-                        locationInfo.add(map);
-                    }
-                }
-            }else if(!StringUtils.isEmpty(user_id)){
-                UserInfo itemUser = userInfoService.selectUserById(Integer.valueOf(user_id));
-                if(itemUser.getLevel()==2){
-                    if("0".equals(type)){
-                        List<UserInfo> userInfoList = userInfoService.selectUserListByInternalId(itemUser.getInternalId());
-                        for(UserInfo i : userInfoList){
-                            Map userMap = backgroundLocateUserNewestService.selectUserLocationForNewest(i.getId());
-                            locationInfo.add(userMap);
-                        }
-                    }else if("1".equals(type)){
-                        List<CarInfo> carInfoList = carInfoService.selectCarListByInternalId(itemUser.getInternalId());
-                        for(CarInfo i : carInfoList){
-                            Map carMap = backgroundLocateCarNewestService.selectCarLocationForNewest(i.getId());
-                            locationInfo.add(carMap);
-                        }
-                    }
-                }else if(itemUser.getLevel()==3){
-                    if("0".equals(type)){
-                        List<UserInfo> userInfoList = userInfoService.selectUserListByDept(itemUser.getDept());
-                        for(UserInfo i : userInfoList){
-                            Map userMap = backgroundLocateUserNewestService.selectUserLocationForNewest(i.getId());
-                            locationInfo.add(userMap);
-                        }
-                    }else if("1".equals(type)){
-                        List<CarInfo> carInfoList = carInfoService.selectCarListByDept(itemUser.getDept());
-                        for(CarInfo i : carInfoList){
-                            Map carMap = backgroundLocateCarNewestService.selectCarLocationForNewest(i.getId());
-                            locationInfo.add(carMap);
-                        }
-                    }
-                }
-            }
-
-            resultJson.put("resultCode",0);
-            resultData.put("locationInfo",locationInfo);
-            resultJson.put("resultData",resultData);
-        }catch (Exception e){
-            e.printStackTrace();
-            resultJson.put("resultCode",1);
-            resultJson.put("resultMessage",e.getMessage());
-        }
-        System.out.println("resultJson======>"+resultJson);
-        return resultJson;
-    }
-
-    /*@RequestMapping(value = "/selectUserLocationForNewest")
-    public JSONObject selectUserLocationForNewest(@RequestParam(value = "empIds") List<String> empIds){
-        JSONObject resultJson = new JSONObject();
-        JSONObject resultData = new JSONObject();
-        try {
-            for(int i = 0;i < empIds.size();i++){
-                System.out.println("emp["+i+"]==="+empIds.get(i));
-            }
-            System.out.println("======into selectUserLocationForNewest======");
-            JSONArray locationInfo = new JSONArray();
-            for (int i=0;i<empIds.size();i++){
-                Map map = backgroundLocateUserNewestService.selectUserLocationForNewest(Integer.valueOf(empIds.get(i)));
-                locationInfo.add(map);
-            }
-            resultJson.put("resultCode",0);
-            resultData.put("locationInfo",locationInfo);
-            resultJson.put("resultData",resultData);
-        }catch (Exception e){
-            e.printStackTrace();
-            resultJson.put("resultCode",1);
-            resultJson.put("resultMessage",e.getMessage());
-        }
-        System.out.println("resultJson======>"+resultJson);
-        return resultJson;
-    }*/
+//    @RequestMapping(value = "/selectUserOrCarLocationForNewest")
+//    public JSONObject selectUserOrCarLocationForNewest(@RequestParam(value = "user_id") String user_id,@RequestParam(value = "ids") String ids,@RequestParam(value = "type") String type){
+//        System.out.println("======into selectUserOrCarLocationForNewest======");
+//        JSONObject resultJson = new JSONObject();
+//        JSONObject resultData = new JSONObject();
+//        JSONArray locationInfo = new JSONArray();
+//        try {
+//
+//            if(!StringUtils.isEmpty(ids)){
+//                if("0".equals(type)){
+//                    String[] paramIds = ids.split(",");
+//                    for (int i=0;i<paramIds.length;i++){
+//                        Map map = backgroundLocateUserNewestService.selectUserLocationForNewest(Integer.valueOf(paramIds[i]));
+//                        locationInfo.add(map);
+//                    }
+//                }else if("1".equals(type)){
+//                    String[] paramIds = ids.split(",");
+//                    for (int i=0;i<paramIds.length;i++){
+//                        Map map = backgroundLocateCarNewestService.selectCarLocationForNewest(Integer.valueOf(paramIds[i]));
+//                        locationInfo.add(map);
+//                    }
+//                }
+//            }else if(!StringUtils.isEmpty(user_id)){
+//                UserInfo itemUser = userInfoService.selectUserById(Integer.valueOf(user_id));
+//                if(itemUser.getLevel()==2){
+//                    if("0".equals(type)){
+//                        List<UserInfo> userInfoList = userInfoService.selectUserListByInternalId(itemUser.getInternalId());
+//                        for(UserInfo i : userInfoList){
+//                            Map userMap = backgroundLocateUserNewestService.selectUserLocationForNewest(i.getId());
+//                            locationInfo.add(userMap);
+//                        }
+//                    }else if("1".equals(type)){
+//                        List<CarInfo> carInfoList = carInfoService.selectCarListByInternalId(itemUser.getInternalId());
+//                        for(CarInfo i : carInfoList){
+//                            Map carMap = backgroundLocateCarNewestService.selectCarLocationForNewest(i.getId());
+//                            locationInfo.add(carMap);
+//                        }
+//                    }
+//                }else if(itemUser.getLevel()==3){
+//                    if("0".equals(type)){
+//                        List<UserInfo> userInfoList = userInfoService.selectUserListByDept(itemUser.getDept());
+//                        for(UserInfo i : userInfoList){
+//                            Map userMap = backgroundLocateUserNewestService.selectUserLocationForNewest(i.getId());
+//                            locationInfo.add(userMap);
+//                        }
+//                    }else if("1".equals(type)){
+//                        List<CarInfo> carInfoList = carInfoService.selectCarListByDept(itemUser.getDept());
+//                        for(CarInfo i : carInfoList){
+//                            Map carMap = backgroundLocateCarNewestService.selectCarLocationForNewest(i.getId());
+//                            locationInfo.add(carMap);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            resultJson.put("resultCode",0);
+//            resultData.put("locationInfo",locationInfo);
+//            resultJson.put("resultData",resultData);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            resultJson.put("resultCode",1);
+//            resultJson.put("resultMessage",e.getMessage());
+//        }
+//        System.out.println("resultJson======>"+resultJson);
+//        return resultJson;
+//    }
 }

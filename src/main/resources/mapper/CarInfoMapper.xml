@@ -11,7 +11,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,type_id,type_name,dept,dept_name,internal_id,internal_name
+        id,name,type_id,type_name,dept_id,dept_name
     </sql>
 
     <select id="selectCarListByDept" resultMap="BaseResultMap">

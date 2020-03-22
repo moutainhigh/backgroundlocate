@@ -23,6 +23,10 @@
         <if test="parentId != 0">
             and parent_id = #{parentId,jdbcType=INTEGER}
         </if >
+
+        <if test="deptType != 0">
+            and dept_type = #{deptType,jdbcType=INTEGER}
+        </if >
     </select>
 
 </mapper>

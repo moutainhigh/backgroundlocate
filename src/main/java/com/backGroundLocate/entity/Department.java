@@ -56,4 +56,15 @@ public class Department {
     public void setParentName(String parentName) {
         this.parentName = parentName;
     }
+
+    @Override
+    public String toString() {
+        return "{id:" + id +
+                ", deptName:'" + deptName + '\'' +
+                ", deptType:" + deptType +
+                ", deptLevel:" + deptLevel +
+                ", parentId:" + parentId +
+                ", parentName:'" + parentName + '\'' +
+                '}';
+    }
 }

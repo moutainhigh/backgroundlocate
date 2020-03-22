@@ -1,0 +1,263 @@
+{
+  "resultData": {
+    "deptInfo": {
+      "deptName": "项目一部",
+      "directlyList": [
+        {
+          "deptName": "人员一部",
+          "parentName": "项目一部",
+          "deptLevel": 3,
+          "directlyUserList": [
+            {
+              "deptName": "人员一部",
+              "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+              "level": 3,
+              "deptId": 5,
+              "name": "环卫1",
+              "id": 8,
+              "userName": "sanitation_1",
+              "leaderId": 0
+            },
+            {
+              "deptName": "人员一部",
+              "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+              "level": 4,
+              "deptId": 5,
+              "name": "环卫2",
+              "id": 9,
+              "userName": "sanitation_2",
+              "leaderId": 8
+            },
+            {
+              "deptName": "人员一部",
+              "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+              "level": 4,
+              "deptId": 5,
+              "name": "环卫3",
+              "id": 10,
+              "userName": "sanitation_3",
+              "leaderId": 8
+            }
+          ],
+          "id": 5,
+          "deptType": 3,
+          "parentId": 2
+        },
+        {
+          "deptName": "人员二部",
+          "parentName": "项目一部",
+          "deptLevel": 3,
+          "directlyUserList": [
+            {
+              "deptName": "人员二部",
+              "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+              "level": 3,
+              "deptId": 6,
+              "name": "环卫4",
+              "id": 11,
+              "userName": "sanitation_4",
+              "leaderId": 0
+            },
+            {
+              "deptName": "人员二部",
+              "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+              "level": 4,
+              "deptId": 6,
+              "name": "环卫5",
+              "id": 12,
+              "userName": "sanitation_5",
+              "leaderId": 12
+            }
+          ],
+          "id": 6,
+          "deptType": 3,
+          "parentId": 2
+        },
+        {
+          "deptName": "人员三部",
+          "parentName": "项目一部",
+          "deptLevel": 3,
+          "directlyUserList": [
+            {
+              "deptName": "人员三部",
+              "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+              "level": 3,
+              "deptId": 7,
+              "name": "环卫6",
+              "id": 13,
+              "userName": "sanitation_6",
+              "leaderId": 0
+            },
+            {
+              "deptName": "人员三部",
+              "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+              "level": 4,
+              "deptId": 7,
+              "name": "环卫7",
+              "id": 14,
+              "userName": "sanitation_7",
+              "leaderId": 13
+            }
+          ],
+          "id": 7,
+          "deptType": 3,
+          "parentId": 2
+        },
+        {
+          "deptName": "车辆一部",
+          "parentName": "项目一部",
+          "deptLevel": 3,
+          "id": 8,
+          "deptType": 4,
+          "parentId": 2,
+          "directlyCarList": [
+            {
+              "deptId": 8,
+              "name": "鲁A11111",
+              "typeName": "洒水车",
+              "deptName": "车辆一部",
+              "typeId": 1,
+              "id": 1
+            },
+            {
+              "deptId": 8,
+              "name": "鲁A11112",
+              "typeName": "洒水车",
+              "deptName": "车辆一部",
+              "typeId": 1,
+              "id": 2
+            },
+            {
+              "deptId": 8,
+              "name": "鲁A11113",
+              "typeName": "洒水车",
+              "deptName": "车辆一部",
+              "typeId": 1,
+              "id": 3
+            },
+            {
+              "deptId": 8,
+              "name": "鲁A11114",
+              "typeName": "雾炮车",
+              "deptName": "车辆一部",
+              "typeId": 2,
+              "id": 4
+            },
+            {
+              "deptId": 8,
+              "name": "鲁A11115",
+              "typeName": "雾炮车",
+              "deptName": "车辆一部",
+              "typeId": 2,
+              "id": 5
+            },
+            {
+              "deptId": 8,
+              "name": "鲁A11116",
+              "typeName": "雾炮车",
+              "deptName": "车辆一部",
+              "typeId": 2,
+              "id": 6
+            }
+          ]
+        },
+        {
+          "deptName": "车辆二部",
+          "parentName": "项目一部",
+          "deptLevel": 3,
+          "id": 9,
+          "deptType": 4,
+          "parentId": 2,
+          "directlyCarList": [
+            {
+              "deptId": 9,
+              "name": "鲁A11117",
+              "typeName": "洒水车",
+              "deptName": "车辆二部",
+              "typeId": 1,
+              "id": 7
+            },
+            {
+              "deptId": 9,
+              "name": "鲁A11118",
+              "typeName": "洒水车",
+              "deptName": "车辆二部",
+              "typeId": 1,
+              "id": 8
+            },
+            {
+              "deptId": 9,
+              "name": "鲁A11119",
+              "typeName": "雾炮车",
+              "deptName": "车辆二部",
+              "typeId": 2,
+              "id": 9
+            },
+            {
+              "deptId": 9,
+              "name": "鲁A11120",
+              "typeName": "雾炮车",
+              "deptName": "车辆二部",
+              "typeId": 2,
+              "id": 10
+            }
+          ]
+        },
+        {
+          "deptName": "车辆三部",
+          "parentName": "项目一部",
+          "deptLevel": 3,
+          "id": 10,
+          "deptType": 4,
+          "parentId": 2,
+          "directlyCarList": [
+            {
+              "deptId": 10,
+              "name": "鲁A11121",
+              "typeName": "洒水车",
+              "deptName": "车辆三部",
+              "typeId": 1,
+              "id": 11
+            },
+            {
+              "deptId": 10,
+              "name": "鲁A11122",
+              "typeName": "雾炮车",
+              "deptName": "车辆三部",
+              "typeId": 2,
+              "id": 12
+            }
+          ]
+        }
+      ],
+      "parentName": "总部",
+      "deptLevel": 2,
+      "currentUserList": [
+        {
+          "deptName": "项目一部",
+          "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+          "level": 2,
+          "deptId": 2,
+          "name": "张三1",
+          "id": 2,
+          "userName": "zhangsan1",
+          "leaderId": 0
+        },
+        {
+          "deptName": "项目一部",
+          "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+          "level": 2,
+          "deptId": 2,
+          "name": "张三2",
+          "id": 3,
+          "userName": "zhangsan2",
+          "leaderId": 0
+        }
+      ],
+      "id": 2,
+      "deptType": 2,
+      "parentId": 1
+    }
+  },
+  "resultCode": 0
+}

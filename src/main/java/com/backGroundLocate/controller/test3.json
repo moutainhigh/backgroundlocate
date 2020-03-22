@@ -1,0 +1,45 @@
+{
+  "resultData": {
+    "deptInfo": {
+      "deptName": "人员一部",
+      "parentName": "项目一部",
+      "deptLevel": 3,
+      "currentUserList": [
+        {
+          "deptName": "人员一部",
+          "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+          "level": 3,
+          "deptId": 5,
+          "name": "环卫1",
+          "id": 8,
+          "userName": "sanitation_1",
+          "leaderId": 0
+        },
+        {
+          "deptName": "人员一部",
+          "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+          "level": 4,
+          "deptId": 5,
+          "name": "环卫2",
+          "id": 9,
+          "userName": "sanitation_2",
+          "leaderId": 8
+        },
+        {
+          "deptName": "人员一部",
+          "password": "l&la0$#l%am$&nm0$#@0&n^ml)l!@0n&",
+          "level": 4,
+          "deptId": 5,
+          "name": "环卫3",
+          "id": 10,
+          "userName": "sanitation_3",
+          "leaderId": 8
+        }
+      ],
+      "id": 5,
+      "deptType": 3,
+      "parentId": 2
+    }
+  },
+  "resultCode": 0
+}

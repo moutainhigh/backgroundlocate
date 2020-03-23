@@ -1,4 +1,4 @@
-package com.backGroundLocate.mapper;
+package com.backGroundLocate.mapper.main;
 
 import com.backGroundLocate.entity.UserInfo;
 import org.apache.ibatis.annotations.Mapper;

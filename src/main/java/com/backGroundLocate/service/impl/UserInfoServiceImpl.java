@@ -1,7 +1,7 @@
 package com.backGroundLocate.service.impl;
 
 import com.backGroundLocate.entity.UserInfo;
-import com.backGroundLocate.mapper.UserInfoMapper;
+import com.backGroundLocate.mapper.main.UserInfoMapper;
 import com.backGroundLocate.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

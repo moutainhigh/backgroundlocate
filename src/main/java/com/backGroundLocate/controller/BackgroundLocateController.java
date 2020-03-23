@@ -99,8 +99,7 @@ public class BackgroundLocateController {
                         }
                     }
                 }
-
-            }if(!StringUtils.isEmpty(deptList)){
+            }else if(!StringUtils.isEmpty(deptList)){
                 if("0".equals(type)){
                     String[] paramIds = deptList.split(",");
                     for (int i=0;i<paramIds.length;i++){
@@ -114,7 +113,7 @@ public class BackgroundLocateController {
                         locationInfo.add(map);
                     }
                 }
-            }if(!StringUtils.isEmpty(idList)){
+            }else if(!StringUtils.isEmpty(idList)){
                 if("0".equals(type)){
                     String[] paramIds = idList.split(",");
                     for (int i=0;i<paramIds.length;i++){

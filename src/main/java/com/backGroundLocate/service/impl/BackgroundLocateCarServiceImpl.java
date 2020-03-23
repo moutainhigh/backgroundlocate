@@ -1,7 +1,7 @@
 package com.backGroundLocate.service.impl;
 
 import com.backGroundLocate.entity.BackgroundLocateCar;
-import com.backGroundLocate.mapper.BackgroundLocateCarMapper;
+import com.backGroundLocate.mapper.main.BackgroundLocateCarMapper;
 import com.backGroundLocate.service.BackgroundLocateCarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

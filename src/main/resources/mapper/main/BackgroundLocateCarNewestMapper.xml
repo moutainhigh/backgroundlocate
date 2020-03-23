@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.backGroundLocate.mapper.BackgroundLocateCarNewestMapper">
+<mapper namespace="com.backGroundLocate.mapper.main.BackgroundLocateCarNewestMapper">
     <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BackgroundLocateCarNewest">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="car_id" jdbcType="INTEGER" property="car_id" />

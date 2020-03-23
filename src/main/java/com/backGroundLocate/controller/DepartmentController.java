@@ -119,7 +119,6 @@ public class DepartmentController {
             }
         }catch (Exception e){
             e.printStackTrace();
-            e.printStackTrace();
             resultJson.put("resultCode",1);
             resultJson.put("resultMessage",e.getMessage());
         }

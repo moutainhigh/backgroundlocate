@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.backGroundLocate.mapper.BackgroundLocateCarMapper">
-    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BackgroundLocateCar">
+<mapper namespace="com.backGroundLocate.mapper.main.BackgroundLocateUserMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BackgroundLocateUser">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="car_id" jdbcType="INTEGER" property="carId" />
-        <result column="car_name" jdbcType="VARCHAR" property="carName" />
+        <result column="user_id" jdbcType="INTEGER" property="user_id" />
         <result column="address" jdbcType="VARCHAR" property="address" />
         <result column="longitude" jdbcType="VARCHAR" property="longitude" />
         <result column="latitude" jdbcType="VARCHAR" property="latitude" />
@@ -12,18 +11,15 @@
         <result column="upload_time" jdbcType="VARCHAR" property="upload_time" />
         <result column="times_tamp" jdbcType="INTEGER" property="times_tamp" />
     </resultMap>
-    <insert id="saveLocation" parameterType="com.backGroundLocate.entity.BackgroundLocateCar" >
-    insert into t_background_locate_car(
-                car_id,
-                car_name,
+    <insert id="saveLocation" parameterType="com.backGroundLocate.entity.BackgroundLocateUser" >
+    insert into t_background_locate_user(user_id,
                 address,
                 longitude,
                 latitude,
                 longitude_latitude,
                 upload_time,
                 times_tamp)
-    values(#{car_id,jdbcType=INTEGER},
-           #{car_name,jdbcType=VARCHAR},
+    values(#{user_id,jdbcType=INTEGER},
            #{address,jdbcType=VARCHAR},
            #{longitude,jdbcType=VARCHAR},
            #{latitude,jdbcType=VARCHAR},
@@ -35,6 +31,6 @@
   </insert>
 
     <delete id="deleteLocation" parameterType="java.lang.Integer" >
-    delete from t_background_locate_car where id = #{id,jdbcType=INTEGER}
+    delete from t_background_locate_user where id = #{id,jdbcType=INTEGER}
   </delete>
 </mapper>

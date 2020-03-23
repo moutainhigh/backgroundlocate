@@ -1,7 +1,7 @@
 package com.backGroundLocate.service.impl;
 
 import com.backGroundLocate.entity.BackgroundLocateUser;
-import com.backGroundLocate.mapper.BackgroundLocateUserNewestMapper;
+import com.backGroundLocate.mapper.main.BackgroundLocateUserNewestMapper;
 import com.backGroundLocate.service.BackgroundLocateUserNewestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

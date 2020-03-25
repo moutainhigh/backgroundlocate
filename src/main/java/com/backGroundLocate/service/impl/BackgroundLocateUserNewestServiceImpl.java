@@ -6,6 +6,7 @@ import com.backGroundLocate.service.BackgroundLocateUserNewestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -25,7 +26,7 @@ public class BackgroundLocateUserNewestServiceImpl implements BackgroundLocateUs
     }
 
     @Override
-    public Map selectUserLocationForNewest(int id) {
-        return backgroundLocateNewestMapper.selectUserLocationForNewest(id);
+    public List<Map> selectUserLocationForNewest(Map paramMap) {
+        return backgroundLocateNewestMapper.selectUserLocationForNewest(paramMap);
     }
 }

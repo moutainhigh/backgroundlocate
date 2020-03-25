@@ -13,4 +13,5 @@ public class UserInfo {
     private int deptId;
     private String deptName;
     private int leaderId;
+    private String mobile;
 }

@@ -10,6 +10,7 @@ import com.backGroundLocate.service.DepartmentService;
 import com.backGroundLocate.service.UserInfoService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,101 +31,77 @@ public class DepartmentController {
     @Autowired
     private DepartmentService departmentService;
 
-    @RequestMapping(value = "/selectDepartmentList")
-    public JSONObject selectDepartmentList(@RequestParam(value = "userId") String userId){
+    @RequestMapping(value = "/selectUnitInfo")
+    public JSONObject selectUnitInfo(@RequestParam(value = "userId") String userId,
+                                     @RequestParam(value = "deptId",required = false) String deptId,
+                                     @RequestParam(value = "unitId",required = false) String unitId,
+                                     @RequestParam(value = "type",required = false) String type){
+        System.out.println("======into selectUnitInfo======");
         JSONObject resultJson = new JSONObject();
         JSONObject resultData = new JSONObject();
+        JSONObject information = new JSONObject();
+        JSONArray deptList = new JSONArray();
+        JSONArray unitList = new JSONArray();
+        JSONObject departmentInfo = new JSONObject();
+        Department conDept;
+        UserInfo conUser;
         try {
-            UserInfo itemUser = userInfoService.selectUserById(Integer.valueOf(userId));
-            Department conDept = new Department();
-            conDept.setId(itemUser.getDeptId());
-
-            List<Department> departmentList = departmentService.selectDepartment(conDept);
-            List<UserInfo> userList = new ArrayList<UserInfo>();
-            List<CarInfo> carList = new ArrayList<CarInfo>();
-            //账号所在部门
-            if(departmentList.size()>0){
-                JSONObject deptInfo = new JSONObject();
-                for(Department dept : departmentList){
-                    System.out.println("一");
-                    deptInfo = JSONObject.parseObject(dept.toString());
-                    userList = userInfoService.selectUserListByDept(dept.getId());
-                    deptInfo.put("currentUserList",JSONArray.toJSON(userList));
-                    System.out.println(JSONObject.toJSONString(userList));
-                    if(dept.getDeptLevel()<3){
-                        JSONArray directlyList = new JSONArray();
-                        JSONObject directlyDept = new JSONObject();
-
-                        //账号所在部门--直辖部门
-                        conDept = new Department();
-                        conDept.setParentId(dept.getId());
-                        departmentList = departmentService.selectDepartment(conDept);
-                        System.out.println(JSONObject.toJSONString(departmentList));
-
-                        for(Department dept1 : departmentList){
-                            System.out.println("二");
-                            directlyDept = JSONObject.parseObject(dept1.toString());
-                            if(dept.getDeptLevel()==1){
-                                userList = userInfoService.selectUserListByDept(dept1.getId());
-                                directlyDept.put("directlyUserList",JSONArray.toJSON(userList));
-                                System.out.println(JSONObject.toJSONString(userList));
-                                //账号所在部门--直辖部门--下属部门
-                                conDept = new Department();
-                                conDept.setParentId(dept1.getId());
-                                departmentList = departmentService.selectDepartment(conDept);
-                                System.out.println(JSONObject.toJSONString(departmentList));
-                                JSONArray administerUserDeptList = new JSONArray();
-                                JSONArray administerCarDeptList = new JSONArray();
-                                JSONObject administerDept;
-
-                                for (Department dept2:departmentList){
-                                    System.out.println("三");
-                                    administerDept = JSONObject.parseObject(dept2.toString());
-                                    if(dept2.getDeptType()==3){
-                                        userList = userInfoService.selectUserListByDept(dept2.getId());
-                                        System.out.println(JSONObject.toJSONString(userList));
-                                        administerDept.put("userList",JSONArray.toJSON(userList));
-                                        administerUserDeptList.add(administerDept);
-
-                                    }else if(dept2.getDeptType()==4){
-                                        carList = carInfoService.selectCarListByDept(dept2.getId());
-                                        System.out.println(JSONObject.toJSONString(carList));
-                                        administerDept.put("carList",JSONArray.toJSON(carList));
-                                        administerCarDeptList.add(administerDept);
-
-                                    }
-                                    directlyDept.put("administerUserDeptList",administerUserDeptList);
-                                    directlyDept.put("administerCarDeptList",administerCarDeptList);
-
-                                }
-                                directlyList.add(directlyDept);
-                            }else {
-                                if(dept1.getDeptType()==3){
-                                    userList = userInfoService.selectUserListByDept(dept1.getId());
-                                    directlyDept.put("directlyUserList",JSONArray.toJSON(userList));
-                                    System.out.println(JSONObject.toJSONString(userList));
-                                }else if(dept1.getDeptType()==4){
-                                    carList = carInfoService.selectCarListByDept(dept1.getId());
-                                    System.out.println(JSONObject.toJSONString(carList));
-                                    directlyDept.put("directlyCarList",JSONArray.toJSON(carList));
-                                }
-                                directlyList.add(directlyDept);
-                            }
-                        }
-                        deptInfo.put("directlyList",directlyList);
+            if(!StringUtils.isEmpty(deptId)){
+                conDept = new Department();
+                conDept.setParentId(Integer.valueOf(deptId));
+                List<Department> departmentList = departmentService.selectDepartmentList(conDept);
+                for (Department dept : departmentList){
+                    List<UserInfo> userInfoList = userInfoService.selectUserListByDept(dept.getId());
+                    for(UserInfo userInfo : userInfoList){
+                        unitList.add(userInfo);
                     }
+                    List<CarInfo> carInfoList = carInfoService.selectCarListByDept(dept.getId());
+                    for(CarInfo carInfo : carInfoList){
+                        unitList.add(carInfo);
+                    }
+                    deptList.add(dept);
                 }
-                System.out.println(deptInfo);
-                resultJson.put("resultCode",0);
-                resultData.put("deptInfo",deptInfo);
-                resultJson.put("resultData",resultData);
+                departmentInfo.put("deptList",deptList);
+                departmentInfo.put("unitList",unitList);
+                resultData.put("departmentInfo",departmentInfo);
+            }else if(!StringUtils.isEmpty(unitId)){
+                if ("1".equals(type)){
+                    information.put("id","");
+                    information.put("name","");
+                    information.put("mobile","");
+                    information.put("shift","");
+                    information.put("attendance","");
+                    information.put("address","");
+                    information.put("status","");
+                    information.put("mileage","");
+                    information.put("arriveTime","");
+                    information.put("leaveTime","");
+                }else if("2".equals(type)){
+                    information.put("id","");
+                    information.put("name","");
+                    information.put("type","");
+                    information.put("address","");
+                    information.put("status","");
+                    information.put("mileage","");
+                }
+                resultData.put("information",information);
+            }else{
+                UserInfo userInfo = userInfoService.selectUserById(Integer.valueOf(userId));
+                List<UserInfo> userInfoList = userInfoService.selectUserListByDept(userInfo.getDeptId());
+                Department dept = departmentService.selectDepartmentByPrimary(userInfo.getDeptId());
+                deptList.add(dept);
+                departmentInfo.put("deptList",deptList);
+                departmentInfo.put("unitList",userInfoList);
+                resultData.put("departmentInfo",departmentInfo);
             }
+            resultJson.put("resultCode",0);
+            resultJson.put("resultData",resultData);
         }catch (Exception e){
             e.printStackTrace();
             resultJson.put("resultCode",1);
             resultJson.put("resultMessage",e.getMessage());
         }
-
+        System.out.println("resultJson======>"+resultJson);
         return resultJson;
     }
 }

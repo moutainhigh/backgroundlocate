@@ -7,13 +7,13 @@ import java.sql.Statement;
 
 public class JdbcUtil {
 
-    public ResultSet connectionGpsDataBase(String sql,String url ){
+    public ResultSet connectionDataBase(String sql,String driveName,String url ,String userName,String password){
         Connection conn = null;
         Statement stm = null;
         ResultSet rs = null;
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn = DriverManager.getConnection(url, "sa", "1qaz_2wsx");
+            Class.forName(driveName);
+            conn = DriverManager.getConnection(url, userName, password);
             stm = conn.createStatement();
             rs = stm.executeQuery(sql);
         }catch (Exception e){

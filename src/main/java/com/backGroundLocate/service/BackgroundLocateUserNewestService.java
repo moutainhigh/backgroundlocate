@@ -2,6 +2,7 @@ package com.backGroundLocate.service;
 
 import com.backGroundLocate.entity.BackgroundLocateUser;
 
+import java.util.List;
 import java.util.Map;
 
 public interface BackgroundLocateUserNewestService {
@@ -9,5 +10,5 @@ public interface BackgroundLocateUserNewestService {
 
     void deleteLocationOfNewest(BackgroundLocateUser backgroundLocateUser);
 
-    Map selectUserLocationForNewest(int id);
+    List<Map> selectUserLocationForNewest(Map paramMap);
 }

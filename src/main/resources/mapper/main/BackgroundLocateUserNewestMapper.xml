@@ -29,13 +29,21 @@
            #{times_tamp,jdbcType=INTEGER})
 
 
-  </insert>
+    </insert>
 
-    <select id="selectUserLocationForNewest" resultType="java.util.Map" parameterType="int">
-        select b.id,b.name,a.longitude_latitude as lon_lat from t_background_locate_user_newest a,t_user_info b where a.user_id = b.id and a.user_id = #{id,jdbcType=INTEGER}
-    </select>
+    <select id="selectUserLocationForNewest" resultType="java.util.Map" parameterType="map">
+            SELECT  b.id, b.name,a.longitude_latitude as latlon  FROM t_background_locate_user_newest a,t_user_info b WHERE a.user_id = b.id  AND user_id IN (
+                SELECT u.id FROM t_user_info u, t_department d  WHERE u.dept_id = d.id
+                <if test="deptName!=null and deptName!=''">
+                    AND (d.dept_name LIKE '%'+#{deptName,jdbcType=VARCHAR}+'%'  OR d.id = #{deptId,jdbcType=INTEGER} OR d.parent_id = #{parentId,jdbcType=INTEGER})
+                </if >
 
+                <if test="unitName!=null and unitName!=''">
+                    AND u.name LIKE  '%'+#{unitName,jdbcType=VARCHAR}+'%'
+                </if >
+            )
+	    </select>
     <delete id="deleteLocationOfNewest" parameterType="com.backGroundLocate.entity.BackgroundLocateUserNewest" >
-    delete from t_background_locate_user_newest where user_id = #{user_id,jdbcType=INTEGER}
-  </delete>
+        delete from t_background_locate_user_newest where user_id = #{user_id,jdbcType=INTEGER}
+    </delete>
 </mapper>

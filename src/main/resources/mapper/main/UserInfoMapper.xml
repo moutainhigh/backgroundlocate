@@ -10,13 +10,14 @@
         <result column="dept_id" jdbcType="INTEGER" property="deptId" />
         <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
         <result column="leader_id" jdbcType="INTEGER" property="leaderId" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_name,password,name,level,dept_id,dept_name,leader_id
+        id,user_name,password,name,level,dept_id,dept_name,leader_id,mobile
     </sql>
 
-    <select id="selectUserById" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.UserInfo">
+    <select id="selectUserById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select <include refid="Base_Column_List" /> from t_user_info where id = #{id,jdbcType=INTEGER}
     </select>
 

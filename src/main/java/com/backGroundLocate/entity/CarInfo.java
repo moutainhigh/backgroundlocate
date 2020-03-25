@@ -11,4 +11,5 @@ public class CarInfo {
     private String typeName;
     private int deptId;
     private String deptName;
+    private String simNumber;
 }

@@ -8,10 +8,11 @@
         <result column="type_name" jdbcType="VARCHAR" property="typeName" />
         <result column="dept_id" jdbcType="INTEGER" property="deptId" />
         <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="sim_number" jdbcType="VARCHAR" property="simNumber" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,type_id,type_name,dept_id,dept_name
+        id,name,type_id,type_name,dept_id,dept_name,sim_number
     </sql>
 
     <select id="selectCarListByDept" resultMap="BaseResultMap">

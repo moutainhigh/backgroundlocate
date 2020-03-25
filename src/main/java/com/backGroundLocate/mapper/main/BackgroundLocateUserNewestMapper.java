@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -15,5 +16,5 @@ public interface BackgroundLocateUserNewestMapper {
 
     void deleteLocationOfNewest(BackgroundLocateUser backgroundLocateUser);
 
-    Map selectUserLocationForNewest(@Param("id") int id);
+    List<Map> selectUserLocationForNewest(Map<String,String> paramMap);
 }

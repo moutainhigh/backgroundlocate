@@ -44,7 +44,6 @@ public class BackgroundLocateController {
     private DepartmentService departmentService;
 
 
-    @ApiOperation(value="人员定位上传")
     @RequestMapping(value = "/saveLocation")
     public JSONObject saveLocation(BackgroundLocateUser backgroundLocateUser){
         System.out.println("======into saveLocation======");

@@ -8,6 +8,7 @@ import com.backGroundLocate.entity.UserInfo;
 import com.backGroundLocate.service.CarInfoService;
 import com.backGroundLocate.service.DepartmentService;
 import com.backGroundLocate.service.UserInfoService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
+@Api(tags = "部门接口")
 @RestController
 public class DepartmentController {
 

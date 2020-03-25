@@ -2,8 +2,6 @@ package com.backGroundLocate.entity;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class BackgroundLocateCarNewest {
 
@@ -16,5 +14,4 @@ public class BackgroundLocateCarNewest {
     private String longitude_latitude;
     private String upload_time;
     private String times_tamp;
-
 }

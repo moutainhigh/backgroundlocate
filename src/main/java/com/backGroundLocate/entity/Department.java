@@ -11,5 +11,4 @@ public class Department {
     private int deptLevel;
     private int parentId;
     private String parentName;
-
 }

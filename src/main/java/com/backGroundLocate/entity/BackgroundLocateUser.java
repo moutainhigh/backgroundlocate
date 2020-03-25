@@ -13,5 +13,4 @@ public class BackgroundLocateUser {
     private String longitude_latitude;
     private String upload_time;
     private String times_tamp;
-
 }

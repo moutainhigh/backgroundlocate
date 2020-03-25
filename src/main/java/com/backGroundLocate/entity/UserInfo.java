@@ -2,8 +2,6 @@ package com.backGroundLocate.entity;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class UserInfo {
 
@@ -15,5 +13,4 @@ public class UserInfo {
     private int deptId;
     private String deptName;
     private int leaderId;
-
 }

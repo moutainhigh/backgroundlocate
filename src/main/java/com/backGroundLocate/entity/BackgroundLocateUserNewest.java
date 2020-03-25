@@ -16,6 +16,4 @@ public class BackgroundLocateUserNewest {
     private String upload_time;
     private String times_tamp;
     private List empIds;
-
-
 }

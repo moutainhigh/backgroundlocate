@@ -10,4 +10,6 @@ public interface DepartmentService {
     List<Department> selectDepartmentList(Department department);
 
     Department selectDepartmentByPrimary(int id);
+
+    Department selectDepartment(Department department);
 }

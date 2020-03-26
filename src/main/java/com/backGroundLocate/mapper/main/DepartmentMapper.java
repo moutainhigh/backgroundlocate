@@ -14,4 +14,6 @@ public interface DepartmentMapper {
     List<Department> selectDepartmentList(Department department);
 
     Department selectDepartmentByPrimary(@Param(value = "id") int id);
+
+    Department selectDepartment(Department department);
 }

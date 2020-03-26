@@ -32,17 +32,49 @@
     </insert>
 
     <select id="selectUserLocationForNewest" resultType="java.util.Map" parameterType="map">
+        <if test="userLevel == 1">
             SELECT  b.id, b.name,a.longitude_latitude as latlon  FROM t_background_locate_user_newest a,t_user_info b WHERE a.user_id = b.id  AND user_id IN (
                 SELECT u.id FROM t_user_info u, t_department d  WHERE u.dept_id = d.id
-                <if test="deptName!=null and deptName!=''">
-                    AND (d.dept_name LIKE '%'+#{deptName,jdbcType=VARCHAR}+'%'  OR d.id = #{deptId,jdbcType=INTEGER} OR d.parent_id = #{parentId,jdbcType=INTEGER})
+                <if test="onlyDeptName!=null and onlyDeptName!=''">
+                    AND d.dept_name = #{onlyDeptName,jdbcType=VARCHAR}
                 </if >
-
+                <if test="deptName!=null and deptName!=''">
+                    AND (d.dept_name = #{deptName,jdbcType=VARCHAR}  OR d.parent_id = #{parentId,jdbcType=INTEGER})
+                </if >
                 <if test="unitName!=null and unitName!=''">
                     AND u.name LIKE  '%'+#{unitName,jdbcType=VARCHAR}+'%'
                 </if >
             )
-	    </select>
+        </if>
+
+        <if test="userLevel == 2">
+            SELECT  b.id, b.name,a.longitude_latitude as latlon  FROM t_background_locate_user_newest a,t_user_info b WHERE a.user_id = b.id  AND user_id IN (
+                SELECT u.id FROM t_user_info u, t_department d  WHERE u.dept_id = d.id
+                AND d.dept_level &gt;= 2
+                <if test="onlyDeptName!=null and onlyDeptName!=''">
+                    AND d.dept_name = #{onlyDeptName,jdbcType=VARCHAR}
+                </if >
+                <if test="deptName!=null and deptName!=''">
+                    AND (d.dept_name = #{deptName,jdbcType=VARCHAR}  OR d.id = #{deptId,jdbcType=INTEGER} OR d.parent_id = #{parentId,jdbcType=INTEGER})
+                </if >
+                <if test="unitName!=null and unitName!=''">
+                    AND u.name LIKE  '%'+#{unitName,jdbcType=VARCHAR}+'%'
+                    AND (d.id = #{deptId,jdbcType=INTEGER} or d.parent_id = #{deptId,jdbcType=INTEGER})
+                </if >
+            )
+        </if>
+
+        <if test="userLevel gte 3">
+            SELECT  b.id, b.name,a.longitude_latitude as latlon  FROM t_background_locate_user_newest a,t_user_info b WHERE a.user_id = b.id  AND user_id IN (
+                SELECT u.id FROM t_user_info u, t_department d  WHERE u.dept_id = d.id
+                AND d.dept_level = 3
+                AND d.id = #{deptId,jdbcType=INTEGER}
+                <if test="unitName!=null and unitName!=''">
+                    AND u.name LIKE '%'+#{unitName,jdbcType=VARCHAR}+'%'
+                </if >
+            )
+        </if>
+    </select>
     <delete id="deleteLocationOfNewest" parameterType="com.backGroundLocate.entity.BackgroundLocateUserNewest" >
         delete from t_background_locate_user_newest where user_id = #{user_id,jdbcType=INTEGER}
     </delete>

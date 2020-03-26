@@ -75,31 +75,109 @@ public class BackgroundLocateController {
         System.out.println("======into selectUnitLocationForNewest======");
         JSONObject resultJson = new JSONObject();
         JSONObject resultData = new JSONObject();
-        JSONObject unitLocation = new JSONObject();
-        JSONArray unitLocationList = new JSONArray();
         Map paramMap = new HashMap<String, String>();
         Department conDept;
-        UserInfo conUser;
         try {
+
             UserInfo userInfo = userInfoService.selectUserById(Integer.valueOf(userId));
-            if (!StringUtils.isEmpty(deptName)) {
-                if(userInfo.getLevel()>2){
-                    resultJson.put("resultCode",1);
-                    resultJson.put("resultMessage","权限不足,无法查询部门信息");
-                    return resultJson;
-                }else if(userInfo.getLevel()==2){
-                    Department dept = departmentService.selectDepartmentByPrimary(userInfo.getDeptId());
-                    paramMap.put("deptName",deptName);
-                    paramMap.put("deptId",dept.getId());
-                    paramMap.put("parentId",dept.getId());
-                    List<Map> mapList = backgroundLocateUserNewestService.selectUserLocationForNewest(paramMap);
-                    resultJson.put("unitLocationList",mapList);
+            Department userDept = departmentService.selectDepartmentByPrimary(userInfo.getDeptId());
+            paramMap.put("userLevel",userInfo.getLevel());
+
+            if(userInfo.getLevel()>=3){
+                if(!StringUtils.isEmpty(deptName)){
+                    conDept = new Department();
+                    conDept.setDeptName(deptName);
+                    Department itemDept = departmentService.selectDepartment(conDept);
+                    if(itemDept != null){
+                        if(itemDept.getId() != userDept.getId()) {
+                            //三级账号,除本部门外其余同级部门与上级部门无权查询
+                            resultJson.put("resultCode", 1);
+                            resultJson.put("resultMessage", "权限不足,无法查询");
+                            return resultJson;
+                        }
+                    }else{
+                        resultJson.put("resultCode", 1);
+                        resultJson.put("resultMessage", "未查询到部门");
+                        return resultJson;
+                    }
+                }else if(!StringUtils.isEmpty(unitName)){
+                    paramMap.put("unitName",unitName);
                 }
-            }else if(!StringUtils.isEmpty(unitName)){
-                paramMap.put("unitName",unitName);
+                paramMap.put("deptId",userDept.getId());
                 List<Map> mapList = backgroundLocateUserNewestService.selectUserLocationForNewest(paramMap);
-                resultJson.put("unitLocation",mapList.get(0));
+                resultData.put("unitLocationList",mapList);
+            }else if(userInfo.getLevel()==2){
+                if(!StringUtils.isEmpty(deptName)){
+                    conDept = new Department();
+                    conDept.setDeptName(deptName);
+                    Department itemDept = departmentService.selectDepartment(conDept);
+                    if(itemDept != null){
+                        if(itemDept.getDeptLevel()>=userDept.getDeptLevel()) {
+                            //二级账号,除本部门与下属部门外其余同级部门与上级部门无权查询
+                            if (itemDept.getParentId() == userDept.getId()) {
+                                //目标部门的上级部门id与账号所属部门id相同，查询目标部门下所属人员信息
+                                paramMap.put("onlyDeptName",deptName);
+                            }else if(itemDept.getId() == userDept.getId()){
+                                //目标部门id与账号所属部门id相同，查询目标部门及下属所有部门人员信息
+                                paramMap.put("deptName",deptName);
+                                paramMap.put("deptId",userDept.getId());
+                                paramMap.put("parentId",userDept.getId());
+                            }else{
+                                resultJson.put("resultCode", 1);
+                                resultJson.put("resultMessage", "权限不足,无法查询");
+                                return resultJson;
+                            }
+                        }else{
+                            resultJson.put("resultCode", 1);
+                            resultJson.put("resultMessage", "权限不足,无法查询");
+                            return resultJson;
+                        }
+                    }else{
+                        resultJson.put("resultCode", 1);
+                        resultJson.put("resultMessage", "未查询到部门");
+                        return resultJson;
+                    }
+                }else if(!StringUtils.isEmpty(unitName)){
+                    paramMap.put("unitName",unitName);
+                    paramMap.put("deptId",userDept.getId());
+                    paramMap.put("parentId",userDept.getId());
+                }else{
+                    paramMap.put("deptName",userDept.getDeptName());
+                    paramMap.put("deptId",userDept.getId());
+                    paramMap.put("parentId",userDept.getId());
+                }
+                List<Map> mapList = backgroundLocateUserNewestService.selectUserLocationForNewest(paramMap);
+                resultData.put("unitLocationList",mapList);
+
+            }else if(userInfo.getLevel()==1){
+                if(!StringUtils.isEmpty(deptName)){
+                    conDept = new Department();
+                    conDept.setDeptName(deptName);
+                    Department itemDept = departmentService.selectDepartment(conDept);
+                    if(itemDept != null){
+                        if(itemDept.getDeptLevel()==2){
+                            //如果目标部门为2级部门,查询目标部门及下属所有部门人员信息
+                            paramMap.put("deptName",itemDept.getDeptName());
+                            paramMap.put("parentId",itemDept.getId());
+                        }else if(itemDept.getDeptLevel()==3){
+                            //如果目标部门为3级部门,查询目标部门下属所有人员信息
+                            paramMap.put("onlyDeptName",itemDept.getDeptName());
+                        }
+                    }else {
+                        resultJson.put("resultCode", 1);
+                        resultJson.put("resultMessage", "未查询到部门");
+                        return resultJson;
+                    }
+
+                }else if(!StringUtils.isEmpty(unitName)){
+                    paramMap.put("unitName",unitName);
+                }
+                List<Map> mapList = backgroundLocateUserNewestService.selectUserLocationForNewest(paramMap);
+                resultData.put("unitLocationList",mapList);
             }
+
+            resultJson.put("resultCode",0);
+            resultJson.put("resultData",resultData);
         }catch (Exception e){
             e.printStackTrace();
             resultJson.put("resultCode",1);

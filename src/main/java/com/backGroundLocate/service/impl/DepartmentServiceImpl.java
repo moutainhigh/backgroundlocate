@@ -23,4 +23,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Department selectDepartmentByPrimary(int id) {
         return departmentMapper.selectDepartmentByPrimary(id);
     }
+
+    @Override
+    public Department selectDepartment(Department department) {
+        return departmentMapper.selectDepartment(department);
+    }
 }

@@ -82,7 +82,7 @@ public class BackgroundLocateController {
             UserInfo userInfo = userInfoService.selectUserById(Integer.valueOf(userId));
             Department userDept = departmentService.selectDepartmentByPrimary(userInfo.getDeptId());
             paramMap.put("userLevel",userInfo.getLevel());
-
+            System.out.println();
             if(userInfo.getLevel()>=3){
                 if(!StringUtils.isEmpty(deptName)){
                     conDept = new Department();

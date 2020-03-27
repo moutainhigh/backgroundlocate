@@ -7,16 +7,20 @@ import com.backGroundLocate.entity.CarInfo;
 import com.backGroundLocate.entity.Department;
 import com.backGroundLocate.entity.UserInfo;
 import com.backGroundLocate.service.*;
+import com.backGroundLocate.util.JdbcUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 @Api(tags="定位接口")
 @RestController
@@ -42,6 +46,16 @@ public class BackgroundLocateController {
     @Autowired
     private DepartmentService departmentService;
 
+    @Autowired
+    private ExLiveService exLiveService;
+
+    private String driveName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+
+    private String dbUrl = "jdbc:sqlserver://47.104.179.40:1433;DatabaseName=gserver_";
+
+    private String dbUserName = "sa";
+
+    private String dbPassWord = "1qaz_2wsx";
 
     @RequestMapping(value = "/saveLocation")
     public JSONObject saveLocation(BackgroundLocateUser backgroundLocateUser){
@@ -71,19 +85,24 @@ public class BackgroundLocateController {
     public JSONObject selectUnitLocationForNewest(@RequestParam(value = "userId") String userId,
                                                   @RequestParam(value = "deptName",required = false) String deptName,
                                                   @RequestParam(value = "unitName",required = false) String unitName,
-                                                  @RequestParam(value = "type",required = false) String type){
+                                                  @RequestParam(value = "type") String type){
         System.out.println("======into selectUnitLocationForNewest======");
         JSONObject resultJson = new JSONObject();
         JSONObject resultData = new JSONObject();
-        Map paramMap = new HashMap<String, String>();
+        Map userParamMap = new HashMap();
+        Map carParamMap = new HashMap();
         Department conDept;
+        CarInfo conCar;
+        List<Map> resultList = null;
         try {
 
             UserInfo userInfo = userInfoService.selectUserById(Integer.valueOf(userId));
             Department userDept = departmentService.selectDepartmentByPrimary(userInfo.getDeptId());
-            paramMap.put("userLevel",userInfo.getLevel());
+            userParamMap.put("userLevel",userInfo.getLevel());
+            carParamMap.put("userLevel",userInfo.getLevel());
             System.out.println();
             if(userInfo.getLevel()>=3){
+                conCar = new CarInfo();
                 if(!StringUtils.isEmpty(deptName)){
                     conDept = new Department();
                     conDept.setDeptName(deptName);
@@ -101,11 +120,18 @@ public class BackgroundLocateController {
                         return resultJson;
                     }
                 }else if(!StringUtils.isEmpty(unitName)){
-                    paramMap.put("unitName",unitName);
+                    userParamMap.put("unitName",unitName);
+                    carParamMap.put("unitName",unitName);
                 }
-                paramMap.put("deptId",userDept.getId());
-                List<Map> mapList = backgroundLocateUserNewestService.selectUserLocationForNewest(paramMap);
-                resultData.put("unitLocationList",mapList);
+                userParamMap.put("deptId",userDept.getId());
+                carParamMap.put("deptId",userDept.getId());
+                if("1".equals(type)){
+                    resultList = backgroundLocateUserNewestService.selectUserLocationForNewest(userParamMap);
+                }else if("2".equals(type)){
+                    List<CarInfo> carInfoList = carInfoService.selectCarForNewest(carParamMap);
+                    resultList = getResultCarLocationList(carInfoList);
+                }
+
             }else if(userInfo.getLevel()==2){
                 if(!StringUtils.isEmpty(deptName)){
                     conDept = new Department();
@@ -116,12 +142,16 @@ public class BackgroundLocateController {
                             //二级账号,除本部门与下属部门外其余同级部门与上级部门无权查询
                             if (itemDept.getParentId() == userDept.getId()) {
                                 //目标部门的上级部门id与账号所属部门id相同，查询目标部门下所属人员信息
-                                paramMap.put("onlyDeptName",deptName);
+                                userParamMap.put("onlyDeptName",deptName);
+                                carParamMap.put("onlyDeptName",deptName);
                             }else if(itemDept.getId() == userDept.getId()){
                                 //目标部门id与账号所属部门id相同，查询目标部门及下属所有部门人员信息
-                                paramMap.put("deptName",deptName);
-                                paramMap.put("deptId",userDept.getId());
-                                paramMap.put("parentId",userDept.getId());
+                                userParamMap.put("deptName",deptName);
+                                userParamMap.put("deptId",userDept.getId());
+                                userParamMap.put("parentId",userDept.getId());
+                                carParamMap.put("deptName",deptName);
+                                carParamMap.put("deptId",userDept.getId());
+                                carParamMap.put("parentId",userDept.getId());
                             }else{
                                 resultJson.put("resultCode", 1);
                                 resultJson.put("resultMessage", "权限不足,无法查询");
@@ -138,17 +168,26 @@ public class BackgroundLocateController {
                         return resultJson;
                     }
                 }else if(!StringUtils.isEmpty(unitName)){
-                    paramMap.put("unitName",unitName);
-                    paramMap.put("deptId",userDept.getId());
-                    paramMap.put("parentId",userDept.getId());
+                    userParamMap.put("unitName",unitName);
+                    userParamMap.put("deptId",userDept.getId());
+                    userParamMap.put("parentId",userDept.getId());
+                    carParamMap.put("unitName",unitName);
+                    carParamMap.put("deptId",userDept.getId());
+                    carParamMap.put("parentId",userDept.getId());
                 }else{
-                    paramMap.put("deptName",userDept.getDeptName());
-                    paramMap.put("deptId",userDept.getId());
-                    paramMap.put("parentId",userDept.getId());
+                    userParamMap.put("deptName",userDept.getDeptName());
+                    userParamMap.put("deptId",userDept.getId());
+                    userParamMap.put("parentId",userDept.getId());
+                    carParamMap.put("deptName",userDept.getDeptName());
+                    carParamMap.put("deptId",userDept.getId());
+                    carParamMap.put("parentId",userDept.getId());
                 }
-                List<Map> mapList = backgroundLocateUserNewestService.selectUserLocationForNewest(paramMap);
-                resultData.put("unitLocationList",mapList);
-
+                if("1".equals(type)){
+                    resultList = backgroundLocateUserNewestService.selectUserLocationForNewest(userParamMap);
+                }else if("2".equals(type)){
+                    List<CarInfo> carInfoList = carInfoService.selectCarForNewest(carParamMap);
+                    resultList = getResultCarLocationList(carInfoList);
+                }
             }else if(userInfo.getLevel()==1){
                 if(!StringUtils.isEmpty(deptName)){
                     conDept = new Department();
@@ -157,11 +196,14 @@ public class BackgroundLocateController {
                     if(itemDept != null){
                         if(itemDept.getDeptLevel()==2){
                             //如果目标部门为2级部门,查询目标部门及下属所有部门人员信息
-                            paramMap.put("deptName",itemDept.getDeptName());
-                            paramMap.put("parentId",itemDept.getId());
+                            userParamMap.put("deptName",itemDept.getDeptName());
+                            userParamMap.put("parentId",itemDept.getId());
+                            carParamMap.put("deptName",itemDept.getDeptName());
+                            carParamMap.put("parentId",itemDept.getId());
                         }else if(itemDept.getDeptLevel()==3){
                             //如果目标部门为3级部门,查询目标部门下属所有人员信息
-                            paramMap.put("onlyDeptName",itemDept.getDeptName());
+                            userParamMap.put("onlyDeptName",itemDept.getDeptName());
+                            carParamMap.put("onlyDeptName",itemDept.getDeptName());
                         }
                     }else {
                         resultJson.put("resultCode", 1);
@@ -170,11 +212,17 @@ public class BackgroundLocateController {
                     }
 
                 }else if(!StringUtils.isEmpty(unitName)){
-                    paramMap.put("unitName",unitName);
+                    userParamMap.put("unitName",unitName);
+                    carParamMap.put("unitName",unitName);
                 }
-                List<Map> mapList = backgroundLocateUserNewestService.selectUserLocationForNewest(paramMap);
-                resultData.put("unitLocationList",mapList);
+                if("1".equals(type)){
+                    resultList = backgroundLocateUserNewestService.selectUserLocationForNewest(userParamMap);
+                }else if("2".equals(type)){
+                    List<CarInfo> carInfoList = carInfoService.selectCarForNewest(carParamMap);
+                    resultList = getResultCarLocationList(carInfoList);
+                }
             }
+            resultData.put("unitLocationList",resultList);
 
             resultJson.put("resultCode",0);
             resultJson.put("resultData",resultData);
@@ -186,5 +234,56 @@ public class BackgroundLocateController {
 
         System.out.println("resultJson======>"+resultJson);
         return resultJson;
+    }
+
+    private List getResultCarLocationList(List<CarInfo> carInfoList){
+        List resultList = new ArrayList();
+        Connection conn = null;
+        Statement stm = null;
+        ResultSet rs = null;
+        if(carInfoList.size()>0){
+            for (CarInfo carInfo : carInfoList){
+                Integer vehidleId = exLiveService.selectselectVehicleIdBySimNumber(carInfo.getSimNumber());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                String tableDate = sdf.format(new Date());
+                String exSql = "select top 1 cast((lng+lng3) as VARCHAR) +','+cast((lat+lat3) as VARCHAR) AS latlon" +
+                        " from gps_"+tableDate+" where recvtime<getdate() and VehicleID = "+vehidleId+" order by recvtime DESC";
+                try {
+                    Class.forName(driveName);
+                    conn = DriverManager.getConnection(dbUrl+tableDate.substring(0,tableDate.length()-2), dbUserName, dbPassWord);
+                    stm = conn.createStatement();
+                    rs = stm.executeQuery(exSql);
+                    String latlon = "";
+                    while (rs.next()){
+                        latlon = rs.getString("latlon");
+                    }
+                    if(!StringUtils.isEmpty(latlon)){
+                        Map<String,Object> resultMap = new HashMap();
+                        resultMap.put("id",carInfo.getId());
+                        resultMap.put("name",carInfo.getName());
+                        resultMap.put("latlon",latlon);
+                        resultList.add(resultMap);
+                    }
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    try {
+                        if (rs != null) {
+                            rs.close();
+                        }
+                        if (stm != null) {
+                            stm.close();
+                        }
+                        if (conn != null) {
+                            conn.close();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return resultList;
     }
 }

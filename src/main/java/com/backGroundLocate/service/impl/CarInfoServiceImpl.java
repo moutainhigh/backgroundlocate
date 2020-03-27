@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CarInfoServiceImpl implements CarInfoService {
@@ -17,5 +18,20 @@ public class CarInfoServiceImpl implements CarInfoService {
     @Override
     public List<CarInfo> selectCarListByDept(int deptId) {
         return carInfoMapper.selectCarListByDept(deptId);
+    }
+
+    @Override
+    public List<CarInfo> selectCarList(CarInfo carInfo) {
+        return carInfoMapper.selectCarList(carInfo);
+    }
+
+    @Override
+    public List<CarInfo> selectCarForNewest(Map<String, Object> paramMap) {
+        return carInfoMapper.selectCarForNewest(paramMap);
+    }
+
+    @Override
+    public CarInfo selectCar(CarInfo carInfo) {
+        return carInfoMapper.selectCar(carInfo);
     }
 }

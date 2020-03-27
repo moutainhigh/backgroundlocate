@@ -18,4 +18,80 @@
     <select id="selectCarListByDept" resultMap="BaseResultMap">
         select <include refid="Base_Column_List" /> from t_car_info where dept_id = #{deptId,jdbcType=INTEGER}
     </select>
+
+    <select id="selectCarList" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.CarInfo">
+        select <include refid="Base_Column_List" /> from t_car_info where 1=1
+        <if test="name !=null and name != ''">
+            AND name like '%'+#{name,jdbcType=VARCHAR}+'%'
+        </if>
+        <if test="deptId !=0">
+            AND dept_id = #{deptId,jdbcType=INTEGER}
+        </if>
+        <if test="simNumber !=null and simNumber != ''">
+            AND sim_number = #{simNumber,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="selectCarListForDept" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_car_info where 1=1
+        <if test="name !=null and name != ''">
+            AND name like '%'+#{name,jdbcType=VARCHAR}+'%'
+        </if>
+        <if test="deptId !=0">
+            AND dept_id = #{deptId,jdbcType=INTEGER}
+        </if>
+        <if test="simNumber !=null and simNumber != ''">
+            AND sim_number = #{simNumber,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="selectCar" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.CarInfo">
+        select <include refid="Base_Column_List" /> from t_user_info where 1=1
+        <if test="name !=null and name != ''">
+            AND name like '%'+#{name,jdbcType=VARCHAR}+'%'
+        </if>
+        <if test="simNumber !=null and simNumber != ''">
+            AND sim_number = #{simNumber,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+
+    <select id="selectCarForNewest" resultMap="BaseResultMap" parameterType="map">
+        <if test="userLevel == 1">
+            SELECT c.id,c.name,c.type_id,c.type_name,c.dept_id,c.dept_name,c.sim_number FROM t_car_info c, t_department d WHERE c.dept_id = d.id AND c.dept_id IS NOT NULL
+            <if test="onlyDeptName!=null and onlyDeptName!=''">
+                AND d.dept_name = #{onlyDeptName,jdbcType=VARCHAR}
+            </if >
+            <if test="deptName!=null and deptName!=''">
+                AND (d.dept_name = #{deptName,jdbcType=VARCHAR}  OR d.parent_id = #{parentId,jdbcType=INTEGER})
+            </if >
+            <if test="unitName!=null and unitName!=''">
+                AND c.name LIKE  '%'+#{unitName,jdbcType=VARCHAR}+'%'
+            </if >
+        </if>
+
+        <if test="userLevel == 2">
+            SELECT c.id,c.name,c.type_id,c.type_name,c.dept_id,c.dept_name,c.sim_number FROM t_car_info c, t_department d WHERE c.dept_id = d.id AND c.dept_id IS NOT NULL
+            AND d.dept_level &gt;= 2
+            <if test="onlyDeptName!=null and onlyDeptName!=''">
+                AND d.dept_name = #{onlyDeptName,jdbcType=VARCHAR}
+            </if >
+            <if test="deptName!=null and deptName!=''">
+                AND (d.dept_name = #{deptName,jdbcType=VARCHAR}  OR d.id = #{deptId,jdbcType=INTEGER} OR d.parent_id = #{parentId,jdbcType=INTEGER})
+            </if >
+            <if test="unitName!=null and unitName!=''">
+                AND c.name LIKE '%'+#{unitName,jdbcType=VARCHAR}+'%'
+                AND (d.id = #{deptId,jdbcType=INTEGER} or d.parent_id = #{deptId,jdbcType=INTEGER})
+            </if >
+        </if>
+
+        <if test="userLevel gte 3">
+            SELECT c.id,c.name,c.type_id,c.type_name,c.dept_id,c.dept_name,c.sim_number FROM t_car_info c, t_department d WHERE c.dept_id = d.id AND c.dept_id IS NOT NULL
+            AND d.dept_level = 3
+            AND d.id = #{deptId,jdbcType=INTEGER}
+            <if test="unitName !=null and unitName != ''">
+                AND c.name LIKE '%'+#{unitName,jdbcType=VARCHAR}+'%'
+            </if>
+        </if>
+    </select>
 </mapper>

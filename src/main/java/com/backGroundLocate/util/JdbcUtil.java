@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class JdbcUtil {
 
-    public ResultSet connectionDataBase(String sql,String driveName,String url ,String userName,String password){
+    public static ResultSet connectionDataBase(String sql,String driveName,String url ,String userName,String password){
         Connection conn = null;
         Statement stm = null;
         ResultSet rs = null;

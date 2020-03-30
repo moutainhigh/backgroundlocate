@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.Date;
 
@@ -57,6 +61,11 @@ public class BackgroundLocateController {
 
     private String dbPassWord = "1qaz_2wsx";
 
+    /**
+     * 人员定位上传接口
+     * @param backgroundLocateUser
+     * @return
+     */
     @RequestMapping(value = "/saveLocation")
     public JSONObject saveLocation(BackgroundLocateUser backgroundLocateUser){
         System.out.println("======into saveLocation======");
@@ -81,6 +90,14 @@ public class BackgroundLocateController {
         return resultJson;
     }
 
+    /**
+     * 单位最新定位查询接口
+     * @param userId
+     * @param deptName
+     * @param unitName
+     * @param type
+     * @return
+     */
     @RequestMapping(value = "/selectUnitLocationForNewest")
     public JSONObject selectUnitLocationForNewest(@RequestParam(value = "userId") String userId,
                                                   @RequestParam(value = "deptName",required = false) String deptName,
@@ -236,6 +253,82 @@ public class BackgroundLocateController {
         return resultJson;
     }
 
+    /**
+     * 单位轨迹查询接口
+     * @param userId
+     * @param type
+     * @param startTimestamp
+     * @param endTimestamp
+     * @param unitId
+     * @return
+     */
+    @RequestMapping(value = "/selectUnitTrackInfo")
+    public JSONObject selectUnitTrackInfo(@RequestParam(value = "userId") String userId,
+                                          @RequestParam(value = "type") String type,
+                                          @RequestParam(value = "startTimestamp",required = false) String startTimestamp,
+                                          @RequestParam(value = "endTimestamp",required = false) String endTimestamp,
+                                          @RequestParam(value = "unitId",required = false) String unitId){
+        JSONObject resultJson = new JSONObject();
+        JSONObject resultData = new JSONObject(new LinkedHashMap());
+        JSONObject unitLocationInfo = new JSONObject(new LinkedHashMap());
+        Department conDept = new Department();
+        Date startTime = null;
+        Date endTime = null;
+        Map paramMap;
+        try {
+            Department userDept = departmentService.selectDepartmentByPrimary(Integer.parseInt(userId));
+
+            if ("1".equals(type)) {
+                paramMap = new HashMap();
+                paramMap.put("startTimestamp",Integer.parseInt(startTimestamp));
+                paramMap.put("endTimestamp",Integer.parseInt(endTimestamp));
+                paramMap.put("userId",Integer.parseInt(unitId));
+                Map userTrack = backgroundLocateUserService.selectUserTrack(paramMap);
+                if(userTrack !=null ){
+                    List<LinkedHashMap> locationList = backgroundLocateUserService.selectUserTrackList(paramMap);
+                    unitLocationInfo.put("id",userTrack.get("id"));
+                    unitLocationInfo.put("name",userTrack.get("name"));
+                    unitLocationInfo.put("violation",userTrack.get("violation"));
+                    unitLocationInfo.put("status",userTrack.get("status"));
+                    unitLocationInfo.put("information",locationList);
+                }else{
+                    resultJson.put("resultCode",1);
+                    resultJson.put("resultMessage","未查询到人员信息");
+                }
+
+                resultData.put("unitLocationInfo",unitLocationInfo);
+            }else if("2".equals(type)){
+                if(StringUtils.isEmpty(startTimestamp)){
+                    startTime = initDateByDay();
+                }else{
+                    startTime = new Date(Long.parseLong(startTimestamp));
+                }
+                if(StringUtils.isEmpty(endTimestamp)){
+                    endTime = new Date();
+                }else{
+                    endTime = new Date(Long.parseLong(endTimestamp));
+                }
+                Map ymdMap = dayComparePrecise(startTimestamp,endTimestamp);
+
+
+
+            }
+            resultJson.put("resultData",resultData);
+        }catch (Exception e){
+            e.printStackTrace();
+            resultJson.put("resultCode",1);
+            resultJson.put("resultMessage",e.getMessage());
+        }
+
+        System.out.println("resultJson======>"+resultJson);
+        return resultJson;
+    }
+
+    /**
+     * 原生JDBC查询超越库车辆信息接口
+     * @param carInfoList
+     * @return
+     */
     private List getResultCarLocationList(List<CarInfo> carInfoList){
         List resultList = new ArrayList();
         Connection conn = null;
@@ -248,6 +341,7 @@ public class BackgroundLocateController {
                 String tableDate = sdf.format(new Date());
                 String exSql = "select top 1 cast((lng+lng3) as VARCHAR) +','+cast((lat+lat3) as VARCHAR) AS latlon" +
                         " from gps_"+tableDate+" where recvtime<getdate() and VehicleID = "+vehidleId+" order by recvtime DESC";
+                System.out.println(exSql);
                 try {
                     Class.forName(driveName);
                     conn = DriverManager.getConnection(dbUrl+tableDate.substring(0,tableDate.length()-2), dbUserName, dbPassWord);
@@ -262,9 +356,9 @@ public class BackgroundLocateController {
                         resultMap.put("id",carInfo.getId());
                         resultMap.put("name",carInfo.getName());
                         resultMap.put("latlon",latlon);
+//                        resultMap.put("status",carInfo.getStatus());
                         resultList.add(resultMap);
                     }
-
                 }catch (Exception e){
                     e.printStackTrace();
                 }finally {
@@ -285,5 +379,42 @@ public class BackgroundLocateController {
             }
         }
         return resultList;
+    }
+
+    /**
+     * 获得当天零时零分零秒
+     * @return
+     */
+    private Date initDateByDay(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        return calendar.getTime();
+    }
+
+    /**
+     * 计算两个时间戳相差年月日
+     * @param s
+     * @param e
+     * @return
+     */
+    private Map dayComparePrecise (String startTimestamp,String endTimestamp){
+        Date sdate = new Date(Long.valueOf(startTimestamp)*1000);
+        Date edate = new Date(Long.valueOf(endTimestamp)*1000);
+
+        LocalDate startDate = sdate.toInstant().atZone(ZoneOffset.ofHours(8)).toLocalDate();
+        System.out.println("Today : " + startDate);
+        LocalDate endDate = edate.toInstant().atZone(ZoneOffset.ofHours(8)).toLocalDate();
+        System.out.println("BirthDate : " + endDate);
+
+        Period p = Period.between(startDate, endDate);
+        System.out.printf("%d 年 %d 个月 %d 天", p.getYears(), p.getMonths(), p.getDays());
+        Map resultMap = new HashMap();
+        resultMap.put("years", p.getYears());
+        resultMap.put("months", p.getMonths());
+        resultMap.put("days", p.getDays());
+        return resultMap;
     }
 }

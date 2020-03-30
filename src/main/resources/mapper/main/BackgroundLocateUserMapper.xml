@@ -26,11 +26,40 @@
            #{longitude_latitude,jdbcType=VARCHAR},
            #{upload_time,jdbcType=VARCHAR},
            #{times_tamp,jdbcType=INTEGER})
-
-
   </insert>
 
-    <delete id="deleteLocation" parameterType="java.lang.Integer" >
+  <delete id="deleteLocation" parameterType="java.lang.Integer" >
     delete from t_background_locate_user where id = #{id,jdbcType=INTEGER}
   </delete>
+
+  <select id="selectUserTrack" resultType="java.util.Map" parameterType="map">
+      SELECT
+      u.id,
+      u.name,
+      count(i.id) as violation,
+      u.status
+      FROM
+      t_user_info u,
+      t_illegal_info i
+      WHERE
+      i.unit_id = u.id
+      AND i.illegal_time &gt;= #{startTimestamp,jdbcType=INTEGER}
+      AND i.illegal_time &lt;= #{endTimestamp,jdbcType=INTEGER}
+      AND u.id = #{userId,jdbcType=INTEGER}
+      group by u.id,u.name,u.status
+  </select>
+
+    <select id="selectUserTrackList" resultType="java.util.Map" parameterType="java.lang.Integer">
+      SELECT
+	    longitude_latitude AS lonlat,
+	    times_tamp AS timestamp
+
+      FROM
+	    t_background_locate_user
+
+      WHERE
+	    user_id = #{userId,jdbcType=INTEGER}
+        AND times_tamp &gt;= #{startTimestamp,jdbcType=INTEGER}
+        AND times_tamp &lt;= #{endTimestamp,jdbcType=INTEGER}
+    </select>
 </mapper>

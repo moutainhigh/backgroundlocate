@@ -9,10 +9,11 @@
         <result column="dept_id" jdbcType="INTEGER" property="deptId" />
         <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
         <result column="sim_number" jdbcType="VARCHAR" property="simNumber" />
+        <result column="status" jdbcType="INTEGER" property="status" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,type_id,type_name,dept_id,dept_name,sim_number
+        id,name,type_id,type_name,dept_id,dept_name,sim_number,status
     </sql>
 
     <select id="selectCarListByDept" resultMap="BaseResultMap">
@@ -58,7 +59,7 @@
 
     <select id="selectCarForNewest" resultMap="BaseResultMap" parameterType="map">
         <if test="userLevel == 1">
-            SELECT c.id,c.name,c.type_id,c.type_name,c.dept_id,c.dept_name,c.sim_number FROM t_car_info c, t_department d WHERE c.dept_id = d.id AND c.dept_id IS NOT NULL
+            SELECT c.id,c.name,c.type_id,c.type_name,c.dept_id,c.dept_name,c.sim_number,c.status FROM t_car_info c, t_department d WHERE c.dept_id = d.id AND c.dept_id IS NOT NULL
             <if test="onlyDeptName!=null and onlyDeptName!=''">
                 AND d.dept_name = #{onlyDeptName,jdbcType=VARCHAR}
             </if >
@@ -71,7 +72,7 @@
         </if>
 
         <if test="userLevel == 2">
-            SELECT c.id,c.name,c.type_id,c.type_name,c.dept_id,c.dept_name,c.sim_number FROM t_car_info c, t_department d WHERE c.dept_id = d.id AND c.dept_id IS NOT NULL
+            SELECT c.id,c.name,c.type_id,c.type_name,c.dept_id,c.dept_name,c.sim_number,c.status FROM t_car_info c, t_department d WHERE c.dept_id = d.id AND c.dept_id IS NOT NULL
             AND d.dept_level &gt;= 2
             <if test="onlyDeptName!=null and onlyDeptName!=''">
                 AND d.dept_name = #{onlyDeptName,jdbcType=VARCHAR}
@@ -86,7 +87,7 @@
         </if>
 
         <if test="userLevel gte 3">
-            SELECT c.id,c.name,c.type_id,c.type_name,c.dept_id,c.dept_name,c.sim_number FROM t_car_info c, t_department d WHERE c.dept_id = d.id AND c.dept_id IS NOT NULL
+            SELECT c.id,c.name,c.type_id,c.type_name,c.dept_id,c.dept_name,c.sim_number,c.status FROM t_car_info c, t_department d WHERE c.dept_id = d.id AND c.dept_id IS NOT NULL
             AND d.dept_level = 3
             AND d.id = #{deptId,jdbcType=INTEGER}
             <if test="unitName !=null and unitName != ''">

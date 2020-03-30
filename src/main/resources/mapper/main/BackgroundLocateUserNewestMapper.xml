@@ -33,7 +33,7 @@
 
     <select id="selectUserLocationForNewest" resultType="java.util.Map" parameterType="map">
         <if test="userLevel == 1">
-            SELECT  b.id, b.name,a.longitude_latitude as latlon  FROM t_background_locate_user_newest a,t_user_info b WHERE a.user_id = b.id  AND user_id IN (
+            SELECT  b.id, b.name,a.longitude_latitude as latlon,b.status  FROM t_background_locate_user_newest a,t_user_info b WHERE a.user_id = b.id  AND user_id IN (
                 SELECT u.id FROM t_user_info u, t_department d  WHERE u.dept_id = d.id
                 <if test="onlyDeptName!=null and onlyDeptName!=''">
                     AND d.dept_name = #{onlyDeptName,jdbcType=VARCHAR}
@@ -48,7 +48,7 @@
         </if>
 
         <if test="userLevel == 2">
-            SELECT  b.id, b.name,a.longitude_latitude as latlon  FROM t_background_locate_user_newest a,t_user_info b WHERE a.user_id = b.id  AND user_id IN (
+            SELECT  b.id, b.name,a.longitude_latitude as latlon,b.status  FROM t_background_locate_user_newest a,t_user_info b WHERE a.user_id = b.id  AND user_id IN (
                 SELECT u.id FROM t_user_info u, t_department d  WHERE u.dept_id = d.id
                 AND d.dept_level &gt;= 2
                 <if test="onlyDeptName!=null and onlyDeptName!=''">
@@ -65,7 +65,7 @@
         </if>
 
         <if test="userLevel gte 3">
-            SELECT  b.id, b.name,a.longitude_latitude as latlon  FROM t_background_locate_user_newest a,t_user_info b WHERE a.user_id = b.id  AND user_id IN (
+            SELECT  b.id, b.name,a.longitude_latitude as latlon,b.status  FROM t_background_locate_user_newest a,t_user_info b WHERE a.user_id = b.id  AND user_id IN (
                 SELECT u.id FROM t_user_info u, t_department d  WHERE u.dept_id = d.id
                 AND d.dept_level = 3
                 AND d.id = #{deptId,jdbcType=INTEGER}

@@ -14,4 +14,6 @@ public class UserInfo {
     private String deptName;
     private int leaderId;
     private String mobile;
+    private int status;
+    private int type;
 }

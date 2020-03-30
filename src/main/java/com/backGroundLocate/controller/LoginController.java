@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
+
 @Api(tags = "登录接口")
 @RestController
 public class LoginController {
@@ -34,12 +36,13 @@ public class LoginController {
             if (itemUser != null) {
                 if (md5pwd.equals(itemUser.getPassword())) {
 
-                    JSONObject userInfoJson = new JSONObject();
+                    JSONObject userInfoJson = new JSONObject(new LinkedHashMap<>());
                     userInfoJson.put("level",itemUser.getLevel());
                     userInfoJson.put("dept",itemUser.getDeptId());
                     userInfoJson.put("deptName",itemUser.getDeptName());
                     userInfoJson.put("name",itemUser.getName());
                     userInfoJson.put("id",itemUser.getId());
+                    userInfoJson.put("type",itemUser.getType());
                     resultData.put("userInfo",userInfoJson);
                     resultJson.put("resultCode",0);
                     resultJson.put("resultData",resultData);

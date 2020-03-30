@@ -6,6 +6,10 @@ import com.backGroundLocate.service.BackgroundLocateUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class BackgroundLocateUserServiceImpl implements BackgroundLocateUserService {
 
@@ -20,5 +24,15 @@ public class BackgroundLocateUserServiceImpl implements BackgroundLocateUserServ
     @Override
     public void deleteLocation(int id) {
         backgroundLocateMapper.deleteLocation(id);
+    }
+
+    @Override
+    public Map selectUserTrack(Map paramMap) {
+        return backgroundLocateMapper.selectUserTrack(paramMap);
+    }
+
+    @Override
+    public List<LinkedHashMap> selectUserTrackList(Map paramMap) {
+        return backgroundLocateMapper.selectUserTrackList(paramMap);
     }
 }

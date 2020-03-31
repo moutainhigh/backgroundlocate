@@ -18,5 +18,7 @@ public interface UserInfoMapper {
 
     List<UserInfo> selectUserListByDept(@Param("deptId") int deptId);
 
+    List<UserInfo> selectUserList(UserInfo userInfo);
+
     int selectUserIllegalNum(Map paramMap);
 }

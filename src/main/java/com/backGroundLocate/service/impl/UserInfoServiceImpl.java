@@ -31,6 +31,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
+    public List<UserInfo> selectUserList(UserInfo userInfo) {
+        return userInfoMapper.selectUserList(userInfo);
+    }
+
+    @Override
     public int selectUserIllegalNum(Map paramMap) {
         return userInfoMapper.selectUserIllegalNum(paramMap);
     }

@@ -256,7 +256,6 @@ public class BackgroundLocateController {
 
     /**
      * 单位轨迹查询接口
-     * @param userId
      * @param type
      * @param startTimestamp
      * @param endTimestamp
@@ -264,20 +263,15 @@ public class BackgroundLocateController {
      * @return
      */
     @RequestMapping(value = "/selectUnitTrackInfo")
-    public JSONObject selectUnitTrackInfo(@RequestParam(value = "userId") String userId,
-                                          @RequestParam(value = "type") String type,
+    public JSONObject selectUnitTrackInfo(@RequestParam(value = "type") String type,
                                           @RequestParam(value = "startTimestamp",required = false) String startTimestamp,
                                           @RequestParam(value = "endTimestamp",required = false) String endTimestamp,
-                                          @RequestParam(value = "unitId",required = false) String unitId){
+                                          @RequestParam(value = "unitId") String unitId){
         JSONObject resultJson = new JSONObject();
         JSONObject resultData = new JSONObject(new LinkedHashMap());
         JSONObject unitLocationInfo = new JSONObject(new LinkedHashMap());
-        Date startTime = null;
-        Date endTime = null;
         Map paramMap;
         try {
-            Department userDept = departmentService.selectDepartmentByPrimary(Integer.parseInt(userId));
-
             if ("1".equals(type)) {
 
                 UserInfo userInfo = userInfoService.selectUserById(Integer.parseInt(unitId));
@@ -354,7 +348,7 @@ public class BackgroundLocateController {
             resultJson.put("resultMessage",e.getMessage());
         }
 
-//        System.out.println("resultJson======>"+resultJson);
+        System.out.println("resultJson======>"+resultJson);
         return resultJson;
     }
 

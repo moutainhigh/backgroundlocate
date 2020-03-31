@@ -29,7 +29,7 @@
         </if >
 
         <if test="deptName != null">
-            and dept_name = #{deptName,jdbcType=VARCHAR}
+            and dept_name like '%'+#{deptName,jdbcType=VARCHAR}+'%'
         </if >
     </select>
 
@@ -47,7 +47,7 @@
         </if >
 
         <if test="deptName != null">
-            and dept_name = #{deptName,jdbcType=VARCHAR}
+            and dept_name like '%'+#{deptName,jdbcType=VARCHAR}+'%'
         </if >
     </select>
 

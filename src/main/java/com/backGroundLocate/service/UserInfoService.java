@@ -14,6 +14,8 @@ public interface UserInfoService {
 
     List<UserInfo> selectUserListByDept(int deptId);
 
+    List<UserInfo> selectUserList(UserInfo userInfo);
+
     int selectUserIllegalNum(Map paramMap);
 }
 

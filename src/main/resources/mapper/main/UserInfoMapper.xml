@@ -35,6 +35,16 @@
         select <include refid="Base_Column_List" /> from t_user_info where dept_id = #{deptId,jdbcType=INTEGER}
     </select>
 
+    <select id="selectUserList" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.UserInfo">
+        select <include refid="Base_Column_List" /> from t_user_info where 1=1
+        <if test="name !=null and name != ''">
+            AND name like '%'+#{name,jdbcType=VARCHAR}+'%'
+        </if>
+        <if test="deptId !=0">
+            AND dept_id = #{deptId,jdbcType=INTEGER}
+        </if>
+    </select>
+
 
     <select id="selectUserIllegalNum" resultType="java.lang.Integer" parameterType="map">
       SELECT

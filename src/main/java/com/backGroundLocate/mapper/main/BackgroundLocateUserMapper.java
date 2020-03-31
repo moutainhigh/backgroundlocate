@@ -17,7 +17,5 @@ public interface BackgroundLocateUserMapper {
 
     void deleteLocation(@Param("id") int id);
 
-    Map selectUserTrack(Map paramMap);
-
     List<LinkedHashMap> selectUserTrackList(Map paramMap);
 }

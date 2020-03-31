@@ -34,4 +34,18 @@
     <select id="selectUserListByDept" resultMap="BaseResultMap">
         select <include refid="Base_Column_List" /> from t_user_info where dept_id = #{deptId,jdbcType=INTEGER}
     </select>
+
+
+    <select id="selectUserIllegalNum" resultType="java.lang.Integer" parameterType="map">
+      SELECT
+            isnull(COUNT ( i.id ),0)
+        FROM
+            t_user_info u,
+            t_illegal_info i
+        WHERE
+            i.unit_id = u.id
+            AND i.illegal_time &gt;= #{ startTimestamp,jdbcType = INTEGER }
+        AND i.illegal_time &lt;= #{ endTimestamp,jdbcType = INTEGER }
+        AND u.id = #{ unitId,jdbcType = INTEGER }
+    </select>
 </mapper>

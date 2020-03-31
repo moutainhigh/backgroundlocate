@@ -15,4 +15,6 @@ public interface CarInfoService {
     List<CarInfo> selectCarForNewest(Map<String,Object> paramMap);
 
     CarInfo selectCar(CarInfo carInfo);
+
+    int selectCarIllegalNum(Map paramMap);
 }

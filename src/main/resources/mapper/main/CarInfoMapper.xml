@@ -47,13 +47,29 @@
     </select>
 
     <select id="selectCar" resultMap="BaseResultMap" parameterType="com.backGroundLocate.entity.CarInfo">
-        select <include refid="Base_Column_List" /> from t_user_info where 1=1
+        select <include refid="Base_Column_List" /> from t_car_info where 1=1
+        <if test="id !=0 ">
+            AND id = #{id,jdbcType=INTEGER}
+        </if>
         <if test="name !=null and name != ''">
             AND name like '%'+#{name,jdbcType=VARCHAR}+'%'
         </if>
         <if test="simNumber !=null and simNumber != ''">
             AND sim_number = #{simNumber,jdbcType=VARCHAR}
         </if>
+    </select>
+
+    <select id="selectCarIllegalNum" resultType="java.lang.Integer" parameterType="map">
+      SELECT
+            isnull(COUNT ( i.id ),0)
+        FROM
+            t_car_info u,
+            t_illegal_info i
+        WHERE
+            i.unit_id = u.id
+            AND i.illegal_time &gt;= #{ startTimestamp,jdbcType = INTEGER }
+        AND i.illegal_time &lt;= #{ endTimestamp,jdbcType = INTEGER }
+        AND u.id = #{ unitId,jdbcType = INTEGER }
     </select>
 
 

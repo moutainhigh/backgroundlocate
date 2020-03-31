@@ -27,11 +27,6 @@ public class BackgroundLocateUserServiceImpl implements BackgroundLocateUserServ
     }
 
     @Override
-    public Map selectUserTrack(Map paramMap) {
-        return backgroundLocateMapper.selectUserTrack(paramMap);
-    }
-
-    @Override
     public List<LinkedHashMap> selectUserTrackList(Map paramMap) {
         return backgroundLocateMapper.selectUserTrackList(paramMap);
     }

@@ -12,7 +12,5 @@ public interface BackgroundLocateUserService {
 
     void deleteLocation(int id);
 
-    Map selectUserTrack(Map paramMap);
-
     List<LinkedHashMap> selectUserTrackList(Map paramMap);
 }

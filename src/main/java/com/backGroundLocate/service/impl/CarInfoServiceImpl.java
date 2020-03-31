@@ -34,4 +34,9 @@ public class CarInfoServiceImpl implements CarInfoService {
     public CarInfo selectCar(CarInfo carInfo) {
         return carInfoMapper.selectCar(carInfo);
     }
+
+    @Override
+    public int selectCarIllegalNum(Map paramMap) {
+        return carInfoMapper.selectCarIllegalNum(paramMap);
+    }
 }

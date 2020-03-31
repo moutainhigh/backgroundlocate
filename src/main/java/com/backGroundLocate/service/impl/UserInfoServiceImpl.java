@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
@@ -27,5 +28,10 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public List<UserInfo> selectUserListByDept(int deptId) {
         return userInfoMapper.selectUserListByDept(deptId);
+    }
+
+    @Override
+    public int selectUserIllegalNum(Map paramMap) {
+        return userInfoMapper.selectUserIllegalNum(paramMap);
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -271,7 +272,6 @@ public class BackgroundLocateController {
         JSONObject resultJson = new JSONObject();
         JSONObject resultData = new JSONObject(new LinkedHashMap());
         JSONObject unitLocationInfo = new JSONObject(new LinkedHashMap());
-        Department conDept = new Department();
         Date startTime = null;
         Date endTime = null;
         Map paramMap;
@@ -279,40 +279,74 @@ public class BackgroundLocateController {
             Department userDept = departmentService.selectDepartmentByPrimary(Integer.parseInt(userId));
 
             if ("1".equals(type)) {
-                paramMap = new HashMap();
-                paramMap.put("startTimestamp",Integer.parseInt(startTimestamp));
-                paramMap.put("endTimestamp",Integer.parseInt(endTimestamp));
-                paramMap.put("userId",Integer.parseInt(unitId));
-                Map userTrack = backgroundLocateUserService.selectUserTrack(paramMap);
-                if(userTrack !=null ){
+
+                UserInfo userInfo = userInfoService.selectUserById(Integer.parseInt(unitId));
+                if(userInfo != null){
+                    paramMap = new HashMap();
+                    paramMap.put("startTimestamp",Integer.parseInt(startTimestamp));
+                    paramMap.put("endTimestamp",Integer.parseInt(endTimestamp));
+                    paramMap.put("unitId",Integer.parseInt(unitId));
+                    int illegalNum = userInfoService.selectUserIllegalNum(paramMap);
                     List<LinkedHashMap> locationList = backgroundLocateUserService.selectUserTrackList(paramMap);
-                    unitLocationInfo.put("id",userTrack.get("id"));
-                    unitLocationInfo.put("name",userTrack.get("name"));
-                    unitLocationInfo.put("violation",userTrack.get("violation"));
-                    unitLocationInfo.put("status",userTrack.get("status"));
-                    unitLocationInfo.put("information",locationList);
+                    if(locationList.size()>0){
+                        unitLocationInfo.put("id",userInfo.getId());
+                        unitLocationInfo.put("name",userInfo.getName());
+                        unitLocationInfo.put("violation",illegalNum);
+                        unitLocationInfo.put("information",locationList);
+                    }else{
+                        resultJson.put("resultCode",1);
+                        resultJson.put("resultMessage","未查询到人员轨迹");
+                        return resultJson;
+                    }
                 }else{
                     resultJson.put("resultCode",1);
                     resultJson.put("resultMessage","未查询到人员信息");
+                    return resultJson;
                 }
 
-                resultData.put("unitLocationInfo",unitLocationInfo);
+
             }else if("2".equals(type)){
+                long sTimestamp = 0L;
+                long eTimestamp = 0L;
                 if(StringUtils.isEmpty(startTimestamp)){
-                    startTime = initDateByDay();
+                    sTimestamp = initDateByDay().getTime();
                 }else{
-                    startTime = new Date(Long.parseLong(startTimestamp));
+                    sTimestamp = Long.parseLong(startTimestamp)*1000;
                 }
+
                 if(StringUtils.isEmpty(endTimestamp)){
-                    endTime = new Date();
+                    eTimestamp = new Date().getTime();
                 }else{
-                    endTime = new Date(Long.parseLong(endTimestamp));
+                    eTimestamp = Long.parseLong(endTimestamp)*1000;
                 }
-                Map ymdMap = dayComparePrecise(startTimestamp,endTimestamp);
+                CarInfo conCar = new CarInfo();
+                conCar.setId(Integer.parseInt(unitId));
+                CarInfo carInfo = carInfoService.selectCar(conCar);
 
-
-
+                if(carInfo !=null ){
+                    paramMap = new HashMap();
+                    paramMap.put("startTimestamp",Integer.parseInt(startTimestamp));
+                    paramMap.put("endTimestamp",Integer.parseInt(endTimestamp));
+                    paramMap.put("unitId",Integer.parseInt(unitId));
+                    Integer illegalNum = carInfoService.selectCarIllegalNum(paramMap);
+                    List locationList = getResultCarTrackList(sTimestamp,eTimestamp,carInfo.getSimNumber());
+                    if(locationList.size()>0){
+                        unitLocationInfo.put("id",carInfo.getId());
+                        unitLocationInfo.put("name",carInfo.getName());
+                        unitLocationInfo.put("violation",illegalNum);
+                        unitLocationInfo.put("information",locationList);
+                    }else{
+                        resultJson.put("resultCode",1);
+                        resultJson.put("resultMessage","未查询到车辆轨迹");
+                        return resultJson;
+                    }
+                }else{
+                    resultJson.put("resultCode",1);
+                    resultJson.put("resultMessage","未查询到车辆信息");
+                    return resultJson;
+                }
             }
+            resultData.put("unitLocationInfo",unitLocationInfo);
             resultJson.put("resultData",resultData);
         }catch (Exception e){
             e.printStackTrace();
@@ -320,12 +354,12 @@ public class BackgroundLocateController {
             resultJson.put("resultMessage",e.getMessage());
         }
 
-        System.out.println("resultJson======>"+resultJson);
+//        System.out.println("resultJson======>"+resultJson);
         return resultJson;
     }
 
     /**
-     * 原生JDBC查询超越库车辆信息接口
+     * 原生JDBC查询超越库车辆最新定位
      * @param carInfoList
      * @return
      */
@@ -382,6 +416,87 @@ public class BackgroundLocateController {
     }
 
     /**
+     * 原生JDBC查询超越库车辆历史轨迹
+     * @param startTimestamp
+     * @param endTimestamp
+     * @param simNumber
+     * @return
+     */
+    private List getResultCarTrackList(long startTimestamp,long endTimestamp,String simNumber){
+        List resultList = new LinkedList();
+
+        Date sdate = new Date(startTimestamp);
+        Date edate = new Date(endTimestamp);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+
+        List<String> dayList = getTimeList(sdf1.format(sdate),sdf1.format(edate));
+        List<String> monthList = getTimeList(sdf.format(sdate),sdf.format(edate));
+        Integer vehidleId = exLiveService.selectselectVehicleIdBySimNumber(simNumber);
+        for (String month :monthList){
+            Connection conn = null;
+            Statement stm = null;
+            ResultSet rs = null;
+            month = month.replace("-","");
+            String sqlStart = "select * from (";
+
+            String sqlContent = "";
+
+            for (String day :dayList){
+                day = day.replace("-","");
+                if(day.contains(month)){
+                    String tbName = "gps_"+day;
+                    sqlContent  +=  "select cast((lng+lng3) as VARCHAR) +','+cast((lat+lat3) as VARCHAR) AS latlon," +
+                                    "distance as mileage," +
+                                    "DATEDIFF(second, '1970-01-01 08:00:00', recvtime) as timestamp" +
+                                    " from "+ tbName +" where VehicleID = "+vehidleId+" union all ";
+                }
+            }
+
+            String sqlCondition = ") a where 1=1 " +
+                                  "and a.timestamp >= "+startTimestamp/1000+" " +
+                                  "and a.timestamp <= "+endTimestamp/1000+" ";
+
+            String sqlEnd = " order by a.timestamp asc";
+
+            String exSql = sqlStart+sqlContent.substring(0,sqlContent.length()-10)+sqlCondition+sqlEnd;
+
+            System.out.println(exSql);
+            try {
+                Class.forName(driveName);
+                conn = DriverManager.getConnection(dbUrl+month, dbUserName, dbPassWord);
+                stm = conn.createStatement();
+                rs = stm.executeQuery(exSql);
+                while(rs.next()){
+                    Map map = new LinkedHashMap();
+                    map.put("latlon",rs.getString("latlon"));
+                    map.put("mileage",rs.getFloat("mileage"));
+                    map.put("timestamp",rs.getInt("timestamp"));
+                    resultList.add(map);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                try {
+                    if (rs != null) {
+                        rs.close();
+                    }
+                    if (stm != null) {
+                        stm.close();
+                    }
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return resultList;
+    }
+
+    /**
      * 获得当天零时零分零秒
      * @return
      */
@@ -394,27 +509,44 @@ public class BackgroundLocateController {
         return calendar.getTime();
     }
 
-    /**
-     * 计算两个时间戳相差年月日
-     * @param s
-     * @param e
-     * @return
-     */
-    private Map dayComparePrecise (String startTimestamp,String endTimestamp){
-        Date sdate = new Date(Long.valueOf(startTimestamp)*1000);
-        Date edate = new Date(Long.valueOf(endTimestamp)*1000);
 
-        LocalDate startDate = sdate.toInstant().atZone(ZoneOffset.ofHours(8)).toLocalDate();
-        System.out.println("Today : " + startDate);
-        LocalDate endDate = edate.toInstant().atZone(ZoneOffset.ofHours(8)).toLocalDate();
-        System.out.println("BirthDate : " + endDate);
+    private List<String> getTimeList(String startDate, String endxDate){
+        SimpleDateFormat sdf ;
+        int calendarType;
 
-        Period p = Period.between(startDate, endDate);
-        System.out.printf("%d 年 %d 个月 %d 天", p.getYears(), p.getMonths(), p.getDays());
-        Map resultMap = new HashMap();
-        resultMap.put("years", p.getYears());
-        resultMap.put("months", p.getMonths());
-        resultMap.put("days", p.getDays());
-        return resultMap;
+        switch (startDate.length()){
+            case 10:
+                sdf = new SimpleDateFormat("yyyy-MM-dd");
+                calendarType = Calendar.DATE;
+                break;
+            case 7:
+                sdf = new SimpleDateFormat("yyyy-MM");
+                calendarType = Calendar.MONTH;
+                break;
+            case 4:
+                sdf = new SimpleDateFormat("yyyy");
+                calendarType = Calendar.YEAR;
+                break;
+            default:
+                return null;
+        }
+
+        List<String> result = new ArrayList<>();
+        Calendar min = Calendar.getInstance();
+        Calendar max = Calendar.getInstance();
+        try {
+            min.setTime(sdf.parse(startDate));
+            min.add(calendarType, 0);
+            max.setTime(sdf.parse(endxDate));
+            max.add(calendarType, 1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar curr = min;
+        while (curr.before(max)) {
+            result.add(sdf.format(min.getTime()));
+            curr.add(calendarType, 1);
+        }
+        return result;
     }
 }

@@ -37,12 +37,6 @@ public class BackgroundLocateController {
     private BackgroundLocateUserNewestService backgroundLocateUserNewestService;
 
     @Autowired
-    private BackgroundLocateCarService backgroundLocateCarService;
-
-    @Autowired
-    private BackgroundLocateCarNewestService backgroundLocateCarNewestService;
-
-    @Autowired
     private UserInfoService userInfoService;
 
     @Autowired
@@ -101,6 +95,7 @@ public class BackgroundLocateController {
      */
     @RequestMapping(value = "/selectUnitLocationForNewest")
     public JSONObject selectUnitLocationForNewest(@RequestParam(value = "userId") String userId,
+                                                  @RequestParam(value = "status",required = false) String status,
                                                   @RequestParam(value = "deptName",required = false) String deptName,
                                                   @RequestParam(value = "unitName",required = false) String unitName,
                                                   @RequestParam(value = "type") String type){
@@ -143,6 +138,10 @@ public class BackgroundLocateController {
                 }
                 userParamMap.put("deptId",userDept.getId());
                 carParamMap.put("deptId",userDept.getId());
+                if(!StringUtils.isEmpty(status)){
+                    userParamMap.put("status",status);
+                    carParamMap.put("status",status);
+                }
                 if("1".equals(type)){
                     resultList = backgroundLocateUserNewestService.selectUserLocationForNewest(userParamMap);
                 }else if("2".equals(type)){
@@ -200,6 +199,10 @@ public class BackgroundLocateController {
                     carParamMap.put("deptId",userDept.getId());
                     carParamMap.put("parentId",userDept.getId());
                 }
+                if(!StringUtils.isEmpty(status)){
+                    userParamMap.put("status",status);
+                    carParamMap.put("status",status);
+                }
                 if("1".equals(type)){
                     resultList = backgroundLocateUserNewestService.selectUserLocationForNewest(userParamMap);
                 }else if("2".equals(type)){
@@ -232,6 +235,10 @@ public class BackgroundLocateController {
                 }else if(!StringUtils.isEmpty(unitName)){
                     userParamMap.put("unitName",unitName);
                     carParamMap.put("unitName",unitName);
+                }
+                if(!StringUtils.isEmpty(status)){
+                    userParamMap.put("status",status);
+                    carParamMap.put("status",status);
                 }
                 if("1".equals(type)){
                     resultList = backgroundLocateUserNewestService.selectUserLocationForNewest(userParamMap);
@@ -267,6 +274,7 @@ public class BackgroundLocateController {
                                           @RequestParam(value = "startTimestamp",required = false) String startTimestamp,
                                           @RequestParam(value = "endTimestamp",required = false) String endTimestamp,
                                           @RequestParam(value = "unitId") String unitId){
+        System.out.println("======into selectUnitTrackInfo======");
         JSONObject resultJson = new JSONObject();
         JSONObject resultData = new JSONObject(new LinkedHashMap());
         JSONObject unitLocationInfo = new JSONObject(new LinkedHashMap());
@@ -341,6 +349,7 @@ public class BackgroundLocateController {
                 }
             }
             resultData.put("unitLocationInfo",unitLocationInfo);
+            resultJson.put("resultCode",0);
             resultJson.put("resultData",resultData);
         }catch (Exception e){
             e.printStackTrace();

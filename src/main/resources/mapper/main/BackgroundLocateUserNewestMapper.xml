@@ -44,6 +44,9 @@
                 <if test="unitName!=null and unitName!=''">
                     AND u.name LIKE  '%'+#{unitName,jdbcType=VARCHAR}+'%'
                 </if >
+                <if test="status!=null and status!=''">
+                    AND u.status =  #{status,jdbcType=INTEGER}
+                </if >
             )
         </if>
 
@@ -61,6 +64,9 @@
                     AND u.name LIKE  '%'+#{unitName,jdbcType=VARCHAR}+'%'
                     AND (d.id = #{deptId,jdbcType=INTEGER} or d.parent_id = #{deptId,jdbcType=INTEGER})
                 </if >
+                <if test="status!=null and status!=''">
+                    AND u.status =  #{status,jdbcType=INTEGER}
+                </if >
             )
         </if>
 
@@ -71,6 +77,9 @@
                 AND d.id = #{deptId,jdbcType=INTEGER}
                 <if test="unitName!=null and unitName!=''">
                     AND u.name LIKE '%'+#{unitName,jdbcType=VARCHAR}+'%'
+                </if >
+                <if test="status!=null and status!=''">
+                    AND u.status =  #{status,jdbcType=INTEGER}
                 </if >
             )
         </if>

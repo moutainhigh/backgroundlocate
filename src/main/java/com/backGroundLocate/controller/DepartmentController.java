@@ -112,160 +112,173 @@ public class DepartmentController {
                                              @RequestParam(value = "searchName") String searchName){
         JSONObject resultJson = new JSONObject();
         JSONObject resultData = new JSONObject();
-        JSONArray deptList = new JSONArray();
-        JSONArray unitList = new JSONArray();
+        JSONArray resultList = new JSONArray();
         Department conDept = new Department();
         UserInfo conUser = new UserInfo();
         CarInfo conCar = new CarInfo();
 
-        UserInfo userInfo = userInfoService.selectUserById(Integer.parseInt(userId));
-        Department userDept = departmentService.selectDepartmentByPrimary(userInfo.getDeptId());
+        try {
+            UserInfo userInfo = userInfoService.selectUserById(Integer.parseInt(userId));
+            Department userDept = departmentService.selectDepartmentByPrimary(userInfo.getDeptId());
 
-        conDept.setDeptName(searchName);
-        List<Department> departmentList = departmentService.selectDepartmentList(conDept);
-        conUser.setName(searchName);
-        List<UserInfo> userInfoList = userInfoService.selectUserList(conUser);
-        conCar.setName(searchName);
-        List<CarInfo> carInfoList = carInfoService.selectCarList(conCar);
+            conDept.setDeptName(searchName);
+            List<Department> departmentList = departmentService.selectDepartmentList(conDept);
+            conUser.setName(searchName);
+            List<UserInfo> userInfoList = userInfoService.selectUserList(conUser);
+            conCar.setName(searchName);
+            List<CarInfo> carInfoList = carInfoService.selectCarList(conCar);
 
-        if(userInfo.getLevel()>=3){
-            for (Department department:departmentList){
-                if(department.getId()==userDept.getId()){
-                    Map map = new HashMap();
-                    map.put("id",department.getId());
-                    map.put("name",department.getDeptName());
-                    deptList.add(map);
-                }
-            }
-            if("1".equals(type)){
-                for (UserInfo user : userInfoList){
-                    if(user.getDeptId()==userDept.getId()&&user.getName().contains(searchName)){
+            if(userInfo.getLevel()>=3){
+                for (Department department:departmentList){
+                    if(department.getId()==userDept.getId()){
                         Map map = new HashMap();
-                        map.put("id",user.getId());
-                        map.put("name",user.getName());
-                        unitList.add(map);
+                        map.put("id",department.getId());
+                        map.put("name",department.getDeptName());
+                        resultList.add(map);
                     }
-                }
-
-            }else if("2".equals(type)){
-                for (CarInfo car : carInfoList){
-                    if(car.getDeptId()==userDept.getId()&&car.getName().contains(searchName)){
-                        Map map = new HashMap();
-                        map.put("id",car.getId());
-                        map.put("name",car.getName());
-                        unitList.add(map);
-                    }
-                }
-
-            }
-        }else if(userInfo.getLevel()==2){
-            conDept = new Department();
-            conDept.setParentId(userDept.getId());
-            List<Department> subDepartmentList = departmentService.selectDepartmentList(conDept);
-
-            for (Department department:departmentList){
-                if(department.getId()==userDept.getId()){
-                    Map map = new HashMap();
-                    map.put("id",department.getId());
-                    map.put("name",department.getDeptName());
-                    deptList.add(map);
                 }
                 if("1".equals(type)){
-                    if(department.getParentId()==userDept.getId()&&department.getDeptType()==3){
-                        Map map = new HashMap();
-                        map.put("id",department.getId());
-                        map.put("name",department.getDeptName());
-                        deptList.add(map);
+                    for (UserInfo user : userInfoList){
+                        if(user.getDeptId()==userDept.getId()&&user.getName().contains(searchName)){
+                            Map map = new HashMap();
+                            map.put("id",user.getId());
+                            map.put("name",user.getName());
+                            resultList.add(map);
+                        }
                     }
                 }else if("2".equals(type)){
-                    if(department.getParentId()==userDept.getId()&&department.getDeptType()==4){
+                    for (CarInfo car : carInfoList){
+                        if(car.getDeptId()==userDept.getId()&&car.getName().contains(searchName)){
+                            Map map = new HashMap();
+                            map.put("id",car.getId());
+                            map.put("name",car.getName());
+                            resultList.add(map);
+                        }
+                    }
+                }
+            }else if(userInfo.getLevel()==2){
+                conDept = new Department();
+                conDept.setParentId(userDept.getId());
+                List<Department> subDepartmentList = departmentService.selectDepartmentList(conDept);
+
+                for (Department department:departmentList){
+                    if(department.getId()==userDept.getId()){
                         Map map = new HashMap();
                         map.put("id",department.getId());
                         map.put("name",department.getDeptName());
-                        deptList.add(map);
+                        map.put("type",1);
+                        resultList.add(map);
+                    }
+                    if("1".equals(type)){
+                        if(department.getParentId()==userDept.getId()&&department.getDeptType()==3){
+                            Map map = new HashMap();
+                            map.put("id",department.getId());
+                            map.put("name",department.getDeptName());
+                            map.put("type",1);
+                            resultList.add(map);
+                        }
+                    }else if("2".equals(type)){
+                        if(department.getParentId()==userDept.getId()&&department.getDeptType()==4){
+                            Map map = new HashMap();
+                            map.put("id",department.getId());
+                            map.put("name",department.getDeptName());
+                            map.put("type",1);
+                            resultList.add(map);
+                        }
                     }
                 }
-
-            }
-            if("1".equals(type)){
-                for (UserInfo user : userInfoList){
-                    if (user.getDeptId() == userDept.getId()&&user.getName().contains(searchName)) {
-                        Map map = new HashMap();
-                        map.put("id",user.getId());
-                        map.put("name",user.getName());
-                        unitList.add(map);
-                    }else{
+                if("1".equals(type)){
+                    for (UserInfo user : userInfoList){
+                        if (user.getDeptId() == userDept.getId()&&user.getName().contains(searchName)) {
+                            Map map = new HashMap();
+                            map.put("id",user.getId());
+                            map.put("name",user.getName());
+                            map.put("type",2);
+                            resultList.add(map);
+                        }else{
+                            for (Department subDept:subDepartmentList){
+                                if(user.getDeptId() == subDept.getId()&&user.getName().contains(searchName)){
+                                    Map map = new HashMap();
+                                    map.put("id",user.getId());
+                                    map.put("name",user.getName());
+                                    map.put("type",2);
+                                    resultList.add(map);
+                                }
+                            }
+                        }
+                    }
+                }else if("2".equals(type)){
+                    for (CarInfo car : carInfoList){
                         for (Department subDept:subDepartmentList){
-                            if(user.getDeptId() == subDept.getId()&&user.getName().contains(searchName)){
+                            if(car.getDeptId() == subDept.getId()&&car.getName().contains(searchName)){
                                 Map map = new HashMap();
-                                map.put("id",user.getId());
-                                map.put("name",user.getName());
-                                unitList.add(map);
+                                map.put("id",car.getId());
+                                map.put("name",car.getName());
+                                map.put("type",2);
+                                resultList.add(map);
                             }
                         }
                     }
                 }
-            }else if("2".equals(type)){
-                for (CarInfo car : carInfoList){
-                    for (Department subDept:subDepartmentList){
-                        if(car.getDeptId() == subDept.getId()&&car.getName().contains(searchName)){
+            }else if(userInfo.getLevel()==1){
+                if("1".equals(type)){
+                    for (Department department:departmentList){
+                        if(department.getDeptType()==3){
                             Map map = new HashMap();
-                            map.put("id",car.getId());
-                            map.put("name",car.getName());
-                            unitList.add(map);
+                            map.put("id",department.getId());
+                            map.put("name",department.getDeptName());
+                            map.put("type",1);
+                            resultList.add(map);
+                        }else if(department.getDeptName().contains(searchName)&&department.getDeptType()!=4){
+                            Map map = new HashMap();
+                            map.put("id",department.getId());
+                            map.put("name",department.getDeptName());
+                            map.put("type",1);
+                            resultList.add(map);
                         }
                     }
-                }
-            }
-        }else if(userInfo.getLevel()==1){
-            if("1".equals(type)){
-                for (Department department:departmentList){
-                    if(department.getDeptType()==3){
+                    for (UserInfo user : userInfoList){
                         Map map = new HashMap();
-                        map.put("id",department.getId());
-                        map.put("name",department.getDeptName());
-                        deptList.add(map);
-                    }else if(department.getDeptName().contains(searchName)&&department.getDeptType()!=4){
+                        map.put("id",user.getId());
+                        map.put("name",user.getName());
+                        map.put("type",2);
+                        resultList.add(map);
+                    }
+                }else if("2".equals(type)){
+                    for (Department department:departmentList){
+                        if(department.getDeptType()==4){
+                            Map map = new HashMap();
+                            map.put("id",department.getId());
+                            map.put("name",department.getDeptName());
+                            map.put("type",1);
+                            resultList.add(map);
+                        }else if(department.getDeptName().contains(searchName)&&department.getDeptType()!=3){
+                            Map map = new HashMap();
+                            map.put("id",department.getId());
+                            map.put("name",department.getDeptName());
+                            map.put("type",2);
+                            resultList.add(map);
+                        }
+                    }
+                    for (CarInfo car : carInfoList){
                         Map map = new HashMap();
-                        map.put("id",department.getId());
-                        map.put("name",department.getDeptName());
-                        deptList.add(map);
+                        map.put("id",car.getId());
+                        map.put("name",car.getName());
+                        map.put("type",2);
+                        resultList.add(map);
                     }
                 }
-                for (UserInfo user : userInfoList){
-                    Map map = new HashMap();
-                    map.put("id",user.getId());
-                    map.put("name",user.getName());
-                    unitList.add(map);
-                }
+            }
 
-            }else if("2".equals(type)){
-                for (Department department:departmentList){
-                    if(department.getDeptType()==4){
-                        Map map = new HashMap();
-                        map.put("id",department.getId());
-                        map.put("name",department.getDeptName());
-                        deptList.add(map);
-                    }else if(department.getDeptName().contains(searchName)&&department.getDeptType()!=3){
-                        Map map = new HashMap();
-                        map.put("id",department.getId());
-                        map.put("name",department.getDeptName());
-                        deptList.add(map);
-                    }
-                }
-                for (CarInfo car : carInfoList){
-                    Map map = new HashMap();
-                    map.put("id",car.getId());
-                    map.put("name",car.getName());
-                    unitList.add(map);
-                }
-            }
+            resultData.put("resultList",resultList);
+            resultJson.put("resultCode",0);
+            resultJson.put("resultData",resultData);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            resultJson.put("resultCode",1);
+            resultJson.put("resultMessage",e.getMessage());
         }
 
-
-        resultData.put("deptList",deptList);
-        resultData.put("unitList",unitList);
-        resultJson.put("resultData",resultData);
         return resultJson;
     }
 }

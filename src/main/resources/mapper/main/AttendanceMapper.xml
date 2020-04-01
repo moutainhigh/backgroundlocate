@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.backGroundLocate.mapper.main.AttendanceMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.Attendance">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="attendance_time" jdbcType="TIMESTAMP" property="attendanceTime" />
+        <result column="lon_lat" jdbcType="VARCHAR" property="lonlat" />
+        <result column="address" jdbcType="VARCHAR" property="address" />
+        <result column="state" jdbcType="INTEGER" property="state" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,user_name,sign_in_time,sign_out_time,lon_lat,address,state,remark
+    </sql>
+
+    <insert id="saveAttendance" parameterType="com.backGroundLocate.entity.Attendance" >
+        insert into t_attendance(
+                    user_id,
+                    user_name,
+                    sign_in_time,
+                    sign_out_time,
+                    lon_lat,
+                    address,
+                    sign_in_state,
+                    sign_out_state,
+                    remark)
+        values(#{userId,jdbcType=INTEGER},
+               #{userName,jdbcType=VARCHAR},
+               #{signInTime,jdbcType=TIMESTAMP},
+               #{signOutTime,jdbcType=TIMESTAMP},
+               #{lonlat,jdbcType=VARCHAR},
+               #{address,jdbcType=VARCHAR},
+               #{signInState,jdbcType=INTEGER},
+               #{signOutState,jdbcType=INTEGER},
+               #{remark,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="selectAttendanceForToday" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_attendance
+        WHERE
+        1 = 1
+        AND DateDiff(
+        dd,
+        sign_in_time,
+        getdate()) = 0
+        <if test="userName!=null and userName!=''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if >
+
+    </select>
+
+    <update id="updateAttendance" parameterType="com.backGroundLocate.entity.Attendance">
+        UPDATE t_attendance
+        SET sign_out_time = #{signOutTime,jdbcType=TIMESTAMP},
+            sign_out_state = #{signOutState,jdbcType=INTEGER}
+        WHERE
+            id = #{id,jdbcType=INTEGER}
+
+    </update>
+
+</mapper>

@@ -2,7 +2,6 @@ package com.backGroundLocate.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.support.odps.udf.CodecCheck;
 import com.backGroundLocate.entity.Attendance;
 import com.backGroundLocate.entity.Leave;
 import com.backGroundLocate.entity.UserInfo;
@@ -12,7 +11,6 @@ import com.backGroundLocate.service.UserInfoService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

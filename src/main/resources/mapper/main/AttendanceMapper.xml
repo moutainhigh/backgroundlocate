@@ -14,30 +14,39 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,user_name,sign_in_time,sign_out_time,lon_lat,address,state,remark
+        id,user_id,user_name,attendance_time,lon_lat,address,state,type,remark
     </sql>
 
     <insert id="saveAttendance" parameterType="com.backGroundLocate.entity.Attendance" >
         insert into t_attendance(
                     user_id,
                     user_name,
-                    sign_in_time,
-                    sign_out_time,
+                    attendance_time,
                     lon_lat,
                     address,
-                    sign_in_state,
-                    sign_out_state,
+                    state,
+                    type,
                     remark)
         values(#{userId,jdbcType=INTEGER},
                #{userName,jdbcType=VARCHAR},
-               #{signInTime,jdbcType=TIMESTAMP},
-               #{signOutTime,jdbcType=TIMESTAMP},
+               #{attendanceTime,jdbcType=TIMESTAMP},
                #{lonlat,jdbcType=VARCHAR},
                #{address,jdbcType=VARCHAR},
-               #{signInState,jdbcType=INTEGER},
-               #{signOutState,jdbcType=INTEGER},
+               #{state,jdbcType=INTEGER},
+               #{type,jdbcType=INTEGER},
                #{remark,jdbcType=VARCHAR})
     </insert>
+
+    <update id="updateAttendance" parameterType="com.backGroundLocate.entity.Attendance">
+        update t_attendance
+        <trim prefix="set" suffixOverrides=",">
+            <if test="attendanceTime!=null">attendance_time=#{attendanceTime,jdbcType=TIMESTAMP},</if>
+            <if test="lonlat!=null">lon_lat=#{lonlat,jdbcType=VARCHAR},</if>
+            <if test="address!=null">address=#{address,jdbcType=VARCHAR},</if>
+            <if test="state!=null">state=#{state,jdbcType=INTEGER},</if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 
     <select id="selectAttendanceForToday" resultMap="BaseResultMap" parameterType="map">
         SELECT
@@ -48,21 +57,17 @@
         1 = 1
         AND DateDiff(
         dd,
-        sign_in_time,
+        attendance_time,
         getdate()) = 0
-        <if test="userName!=null and userName!=''">
+        <if test="type!=null">
+            AND type = #{type,jdbcType=INTEGER}
+        </if >
+        <if test="userId!=null">
             AND user_id = #{userId,jdbcType=INTEGER}
         </if >
 
     </select>
 
-    <update id="updateAttendance" parameterType="com.backGroundLocate.entity.Attendance">
-        UPDATE t_attendance
-        SET sign_out_time = #{signOutTime,jdbcType=TIMESTAMP},
-            sign_out_state = #{signOutState,jdbcType=INTEGER}
-        WHERE
-            id = #{id,jdbcType=INTEGER}
 
-    </update>
 
 </mapper>

@@ -23,4 +23,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     public Attendance selectAttendanceForToday(Map paramMap) {
         return attendanceMapper.selectAttendanceForToday(paramMap);
     }
+
+    @Override
+    public void updateAttendance(Attendance attendance) {
+        attendanceMapper.updateAttendance(attendance);
+    }
 }

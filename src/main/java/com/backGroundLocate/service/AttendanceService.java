@@ -9,4 +9,6 @@ public interface AttendanceService {
     void saveAttendance(Attendance attendance);
 
     Attendance selectAttendanceForToday(Map paramMap);
+
+    void updateAttendance(Attendance attendance);
 }

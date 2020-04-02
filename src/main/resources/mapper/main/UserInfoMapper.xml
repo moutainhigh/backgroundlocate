@@ -19,6 +19,24 @@
         id,user_name,password,name,level,dept_id,dept_name,leader_id,mobile,status,type
     </sql>
 
+
+    <update id="updateUserInfo" parameterType="com.backGroundLocate.entity.UserInfo">
+        update t_user_info
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userName!=null">user_name=#{userName,jdbcType=VARCHAR},</if>
+            <if test="password!=null">password=#{password,jdbcType=VARCHAR},</if>
+            <if test="name!=null">name=#{name,jdbcType=VARCHAR},</if>
+            <if test="level!=null">level=#{level,jdbcType=INTEGER},</if>
+            <if test="deptId!=null">dept_id=#{deptId,jdbcType=INTEGER},</if>
+            <if test="deptName!=null">dept_name=#{deptName,jdbcType=VARCHAR},</if>
+            <if test="leaderId!=null">leader_id=#{leaderId,jdbcType=INTEGER},</if>
+            <if test="mobile!=null">mobile=#{mobile,jdbcType=INTEGER},</if>
+            <if test="status!=null">status=#{status,jdbcType=INTEGER},</if>
+            <if test="type!=null">type=#{type,jdbcType=INTEGER},</if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
     <select id="selectUserById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select <include refid="Base_Column_List" /> from t_user_info where id = #{id,jdbcType=INTEGER}
     </select>

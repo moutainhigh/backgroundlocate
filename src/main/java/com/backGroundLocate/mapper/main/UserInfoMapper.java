@@ -21,4 +21,6 @@ public interface UserInfoMapper {
     List<UserInfo> selectUserList(UserInfo userInfo);
 
     int selectUserIllegalNum(Map paramMap);
+
+    void updateUserInfo(UserInfo userInfo);
 }

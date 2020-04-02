@@ -39,4 +39,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     public int selectUserIllegalNum(Map paramMap) {
         return userInfoMapper.selectUserIllegalNum(paramMap);
     }
+
+    @Override
+    public void updateUserInfo(UserInfo userInfo) {
+        userInfoMapper.updateUserInfo(userInfo);
+    }
 }

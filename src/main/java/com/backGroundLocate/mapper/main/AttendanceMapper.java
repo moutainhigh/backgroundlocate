@@ -14,4 +14,6 @@ public interface AttendanceMapper {
 
     Attendance selectAttendanceForToday(Map paramMap);
 
+    void updateAttendance(Attendance attendance);
+
 }

@@ -1,22 +1,24 @@
 package com.backGroundLocate.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.odps.udf.CodecCheck;
 import com.backGroundLocate.entity.Attendance;
+import com.backGroundLocate.entity.Leave;
 import com.backGroundLocate.entity.UserInfo;
 import com.backGroundLocate.service.AttendanceService;
+import com.backGroundLocate.service.LeaveService;
 import com.backGroundLocate.service.UserInfoService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Api(tags="考勤接口")
 @RestController
@@ -29,81 +31,244 @@ public class AttendanceController {
     private UserInfoService userInfoService;
 
     @Autowired
+    private LeaveService leaveService;
+
+    @Autowired
     private Environment env;
 
-
-    @RequestMapping(value = "/signInOrOut")
-    public JSONObject signInOrOut(@RequestParam(value = "userId") String userId,
-                                  @RequestParam(value = "lonlat") String lonlat,
-                                  @RequestParam(value = "address") String address,
-                                  @RequestParam(value = "type") String type){
-        System.out.println("======into signInOrOut======");
+    /**
+     * 人员考勤接口
+     * @param userId
+     * @param lonlat
+     * @param address
+     * @param type
+     * @return
+     */
+    @RequestMapping(value = "/staffAttendance")
+    public JSONObject staffAttendance(@RequestParam(value = "userId") String userId,
+                                      @RequestParam(value = "lon") String lon,
+                                      @RequestParam(value = "lat") String lat,
+                                      @RequestParam(value = "address") String address,
+                                      @RequestParam(value = "type") String type){
+        System.out.println("======into staffAttendance======");
         JSONObject resultJson = new JSONObject();
         JSONObject resultData = new JSONObject();
 
 
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//考勤时间格式化
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");//打卡时间格式化
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
             Date date = new Date();
-            Date inTime = format.parse("08:00:00");
-            Date lateTime = format.parse("08:30:00");
-            Date outTime = format.parse("17:00:00");
             Date nowTime = format.parse(format.format(date));
 
+            Date inTime = format.parse("08:00:00");//上班时间
+            Date lateTime = new Date(inTime.getTime()+(15*60*1000));//迟到时限
+            Date absenteeismInTime = new Date(inTime.getTime()+(30*60*1000));//签到旷工时限
+            System.out.println(inTime+","+lateTime+","+absenteeismInTime);
+
+            Date outTime = format.parse("17:00:00");
+            Date earlyTime = new Date(outTime.getTime()-(15*60*1000));//早退时限
+            Date absenteeismOutTime = new Date(outTime.getTime()-(30*60*1000));//签退旷工时限
+            System.out.println(outTime+","+earlyTime+","+absenteeismOutTime);
 
             UserInfo userInfo = userInfoService.selectUserById(Integer.parseInt(userId));
 
+            //规定区域判定未写
+
             Map paraMap = new HashMap();
             paraMap.put("userId",userId);
-            Attendance todayAttendance = attendanceService.selectAttendanceForToday(paraMap);
+            paraMap.put("type",0);
+            Attendance inAttendance = attendanceService.selectAttendanceForToday(paraMap);
             if("0".equals(type)){
-                if(todayAttendance == null){
+                if(inAttendance == null){
                     Attendance attendance = new Attendance();
                     attendance.setUserId(userInfo.getId());
                     attendance.setUserName(userInfo.getName());
-                    attendance.setLonlat(lonlat);
+                    attendance.setLonlat(lon+","+lat);
                     attendance.setAddress(address);
-                    attendance.setType(1);
-                    if (nowTime.before(lateTime) && nowTime.after(inTime)) {//迟到
+                    attendance.setType(0);
+                    attendance.setAttendanceTime(date);
+                    if (nowTime.before(absenteeismInTime) && nowTime.after(lateTime)) {
+                        //旷工时限之前,迟到时限之后为迟到
                         attendance.setState(2);
-                    } else if (nowTime.after(lateTime)) {//旷工
+                    } else if (nowTime.after(absenteeismInTime)) {
+                        //旷工时限之后为旷工
                         attendance.setState(3);
-                    } else if (nowTime.before(inTime)){
-                        attendance.setAttendanceTime(date);
+                    } else if (nowTime.before(lateTime)){
+                        //正常
                         attendance.setState(1);
-                        attendanceService.saveAttendance(attendance);
                     }
+                    attendanceService.saveAttendance(attendance);
                 }else{
                     resultJson.put("resultCode",1);
                     resultJson.put("resultMessage","已签到,请勿重复签到");
+                    return resultJson;
                 }
             }else if("1".equals(type)){
-                if(todayAttendance != null){
-                    Attendance attendance = new Attendance();
-                    attendance.setUserId(userInfo.getId());
-                    attendance.setUserName(userInfo.getName());
-                    attendance.setLonlat(lonlat);
-                    attendance.setAddress(address);
-                    attendance.setType(2);
-                    if (nowTime.before(outTime)) {//早退
-                        attendance.setState(2);
-                    } else if (nowTime.after(outTime)){
+                paraMap.put("type",1);
+
+                if(inAttendance != null){
+                    Attendance outAttendance = attendanceService.selectAttendanceForToday(paraMap);
+                    if(outAttendance != null){
+                        outAttendance.setLonlat(lon+","+lat);
+                        outAttendance.setAddress(address);
+                        outAttendance.setAttendanceTime(date);
+                        if (nowTime.after(absenteeismOutTime)&&nowTime.before(earlyTime)) {
+                            //旷工时间之后,早退时间之前为早退
+                            outAttendance.setState(2);
+                        } else if (nowTime.before(absenteeismOutTime)){
+                            //旷工时间之前为旷工
+                            outAttendance.setState(3);
+                        } else if (nowTime.after(earlyTime)){
+                            //正常
+                            outAttendance.setState(1);
+                        }
+                        attendanceService.updateAttendance(outAttendance);
+                    }else{
+                        Attendance attendance = new Attendance();
+                        attendance.setUserId(userInfo.getId());
+                        attendance.setUserName(userInfo.getName());
+                        attendance.setLonlat(lon+","+lat);
+                        attendance.setAddress(address);
+                        attendance.setType(1);
                         attendance.setAttendanceTime(date);
-                        attendance.setState(1);
+                        if (nowTime.after(absenteeismOutTime)&&nowTime.before(earlyTime)) {
+                            //旷工时间之后,早退时间之前为早退
+                            attendance.setState(2);
+                        } else if (nowTime.before(absenteeismOutTime)){
+                            //旷工时间之前为旷工
+                            attendance.setState(3);
+                        } else if (nowTime.after(earlyTime)){
+                            //正常
+                            attendance.setState(1);
+                        }
                         attendanceService.saveAttendance(attendance);
                     }
                 }else{
                     resultJson.put("resultCode",1);
                     resultJson.put("resultMessage","未签到,请先签到");
+                    return resultJson;
                 }
             }
+            resultJson.put("resultCode",0);
+            resultData.put("resultStatus","success");
+            resultJson.put("resultData",resultData);
         } catch (Exception e) {
             e.printStackTrace();
             resultJson.put("resultCode",1);
             resultJson.put("resultMessage",e.getMessage());
         }
-
         return resultJson;
     }
+
+
+    /**
+     * 请假申请
+     * @param userId
+     * @param type
+     * @param remark
+     * @param startTime
+     * @param endTime
+     * @param timestamp
+     * @return
+     */
+    @RequestMapping(value = "/requestForLeave")
+    public JSONObject requestForLeave(@RequestParam(value = "userId") String userId,
+                                      @RequestParam(value = "type") String type,
+                                      @RequestParam(value = "remark") String remark,
+                                      @RequestParam(value = "startTime") String startTime,
+                                      @RequestParam(value = "endTime") String endTime,
+                                      @RequestParam(value = "timestamp") String timestamp){
+        System.out.println("======into requestForLeave======");
+        JSONObject resultJson = new JSONObject();
+        JSONObject resultData = new JSONObject();
+
+        try {
+            UserInfo userInfo = userInfoService.selectUserById(Integer.parseInt(userId));
+            Leave leave = new Leave();
+            leave.setUserId(userInfo.getId());
+            leave.setUserName(userInfo.getName());
+            leave.setType(Integer.parseInt(type));
+            leave.setStartTime(Integer.parseInt(startTime));
+            leave.setEndTime(Integer.parseInt(endTime));
+            leave.setTimestamp(Integer.parseInt(timestamp));
+            leaveService.saveLeave(leave);
+
+            resultJson.put("resultCode",0);
+            resultData.put("resultStatus","success");
+            resultJson.put("resultData",resultData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultJson.put("resultCode",1);
+            resultJson.put("resultMessage",e.getMessage());
+        }
+        return resultJson;
+    }
+
+    /**
+     * 请假列表查询
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "/selectLeaveList")
+    public JSONObject selectLeaveList(@RequestParam(value = "userId") String userId){
+        System.out.println("======into selectLeaveList======");
+        JSONObject resultJson = new JSONObject();
+        JSONObject resultData = new JSONObject();
+        JSONArray takeleaveList = new JSONArray();
+        Map paramMap = new HashMap();
+
+        try {
+            paramMap.put("userId",Integer.parseInt(userId));
+            List<Leave> leaveList = leaveService.selectLeaveList(paramMap);
+            for (Leave leave : leaveList){
+                Map map = new LinkedHashMap();
+                map.put("id",leave.getId());
+                map.put("time",leave.getTimestamp());
+                takeleaveList.add(map);
+            }
+            resultData.put("takeleaveList",takeleaveList);
+            resultJson.put("resultData",resultData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultJson.put("resultCode",1);
+            resultJson.put("resultMessage",e.getMessage());
+        }
+        return resultJson;
+    }
+
+    /**
+     * 请假详情查询
+     * @param userId
+     * @param leaveId
+     * @return
+     */
+    @RequestMapping(value = "/selectLeaveDetail")
+    public JSONObject selectLeaveDetail(@RequestParam(value = "userId") String userId,
+                                        @RequestParam(value = "leaveId") String leaveId){
+        System.out.println("======into selectLeaveDetail======");
+        JSONObject resultJson = new JSONObject();
+        JSONObject resultData = new JSONObject();
+        JSONObject takeleaveInfo = new JSONObject(new LinkedHashMap<>());
+        Map paramMap = new HashMap();
+
+        try {
+            paramMap.put("userId",Integer.parseInt(userId));
+            paramMap.put("id",Integer.parseInt(leaveId));
+
+            Leave leave = leaveService.selectLeave(paramMap);
+            takeleaveInfo.put("id",leave.getId());
+            takeleaveInfo.put("type",leave.getType());
+            takeleaveInfo.put("startTime",leave.getStartTime());
+            takeleaveInfo.put("endTime",leave.getEndTime());
+
+            resultData.put("takeleaveInfo",takeleaveInfo);
+            resultJson.put("resultData",resultData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultJson.put("resultCode",1);
+            resultJson.put("resultMessage",e.getMessage());
+        }
+        return resultJson;
+    }
+
 }

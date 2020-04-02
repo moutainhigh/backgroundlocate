@@ -17,5 +17,7 @@ public interface UserInfoService {
     List<UserInfo> selectUserList(UserInfo userInfo);
 
     int selectUserIllegalNum(Map paramMap);
+
+    void updateUserInfo(UserInfo userInfo);
 }
 

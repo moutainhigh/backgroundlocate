@@ -15,5 +15,4 @@ public class BackgroundLocateUserNewest {
     private String longitude_latitude;
     private String upload_time;
     private String times_tamp;
-    private List empIds;
 }

@@ -34,10 +34,37 @@ public class AttendanceController {
     @Autowired
     private Environment env;
 
+
+    /**
+     * 考勤状态查询
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "/selectAttendanceStatus")
+    public JSONObject selectAttendanceStatus(@RequestParam(value = "userId") String userId){
+        System.out.println("======into selectAttendanceStatus======");
+        JSONObject resultJson = new JSONObject();
+        JSONObject resultData = new JSONObject();
+
+        Map paraMap = new HashMap();
+        paraMap.put("userId",userId);
+        paraMap.put("type",1);
+        Attendance todayAttendance = attendanceService.selectAttendanceForToday(paraMap);
+        if(todayAttendance == null){
+            resultData.put("status",1);
+        }else{
+            resultData.put("status",2);
+        }
+        resultJson.put("resultCode",0);
+        resultJson.put("resultData",resultData);
+        return resultJson;
+    }
+
     /**
      * 人员考勤接口
      * @param userId
-     * @param lonlat
+     * @param lon
+     * @param lat
      * @param address
      * @param type
      * @return
@@ -74,16 +101,16 @@ public class AttendanceController {
 
             Map paraMap = new HashMap();
             paraMap.put("userId",userId);
-            paraMap.put("type",0);
+            paraMap.put("type",1);
             Attendance inAttendance = attendanceService.selectAttendanceForToday(paraMap);
-            if("0".equals(type)){
+            if("1".equals(type)){
                 if(inAttendance == null){
                     Attendance attendance = new Attendance();
                     attendance.setUserId(userInfo.getId());
                     attendance.setUserName(userInfo.getName());
                     attendance.setLonlat(lon+","+lat);
                     attendance.setAddress(address);
-                    attendance.setType(0);
+                    attendance.setType(1);
                     attendance.setAttendanceTime(date);
                     if (nowTime.before(absenteeismInTime) && nowTime.after(lateTime)) {
                         //旷工时限之前,迟到时限之后为迟到
@@ -101,8 +128,9 @@ public class AttendanceController {
                     resultJson.put("resultMessage","已签到,请勿重复签到");
                     return resultJson;
                 }
-            }else if("1".equals(type)){
-                paraMap.put("type",1);
+                resultData.put("resultStatus","签到成功");
+            }else if("2".equals(type)){
+                paraMap.put("type",2);
 
                 if(inAttendance != null){
                     Attendance outAttendance = attendanceService.selectAttendanceForToday(paraMap);
@@ -127,7 +155,7 @@ public class AttendanceController {
                         attendance.setUserName(userInfo.getName());
                         attendance.setLonlat(lon+","+lat);
                         attendance.setAddress(address);
-                        attendance.setType(1);
+                        attendance.setType(2);
                         attendance.setAttendanceTime(date);
                         if (nowTime.after(absenteeismOutTime)&&nowTime.before(earlyTime)) {
                             //旷工时间之后,早退时间之前为早退
@@ -141,6 +169,7 @@ public class AttendanceController {
                         }
                         attendanceService.saveAttendance(attendance);
                     }
+                    resultData.put("resultStatus","签退成功");
                 }else{
                     resultJson.put("resultCode",1);
                     resultJson.put("resultMessage","未签到,请先签到");
@@ -148,7 +177,6 @@ public class AttendanceController {
                 }
             }
             resultJson.put("resultCode",0);
-            resultData.put("resultStatus","success");
             resultJson.put("resultData",resultData);
         } catch (Exception e) {
             e.printStackTrace();
@@ -188,6 +216,7 @@ public class AttendanceController {
             leave.setType(Integer.parseInt(type));
             leave.setStartTime(Integer.parseInt(startTime));
             leave.setEndTime(Integer.parseInt(endTime));
+            leave.setApproverState(0);
             leave.setTimestamp(Integer.parseInt(timestamp));
             leaveService.saveLeave(leave);
 
@@ -221,7 +250,8 @@ public class AttendanceController {
             for (Leave leave : leaveList){
                 Map map = new LinkedHashMap();
                 map.put("id",leave.getId());
-                map.put("time",leave.getTimestamp());
+                map.put("timestamp",leave.getTimestamp());
+                map.put("approverStatus",leave.getApproverState());
                 takeleaveList.add(map);
             }
             resultData.put("takeleaveList",takeleaveList);
@@ -258,6 +288,7 @@ public class AttendanceController {
             takeleaveInfo.put("type",leave.getType());
             takeleaveInfo.put("startTime",leave.getStartTime());
             takeleaveInfo.put("endTime",leave.getEndTime());
+            takeleaveInfo.put("remark",leave.getRemark());
 
             resultData.put("takeleaveInfo",takeleaveInfo);
             resultJson.put("resultData",resultData);

@@ -8,10 +8,15 @@ import com.backGroundLocate.entity.Department;
 import com.backGroundLocate.entity.UserInfo;
 import com.backGroundLocate.service.*;
 import com.backGroundLocate.util.JdbcUtil;
+import com.backGroundLocate.util.RestTemplateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,6 +52,15 @@ public class BackgroundLocateController {
 
     @Autowired
     private ExLiveService exLiveService;
+
+    @Autowired
+    private RestTemplateUtil restTemplateUtil;
+
+    private String exGpsApiUrl = "http://47.104.179.40:89/gpsonline/GPSAPI";
+
+    private String exAccount = "ydhb";
+
+    private String exPassword = "123456";
 
     private String driveName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
@@ -551,5 +565,79 @@ public class BackgroundLocateController {
             curr.add(calendarType, 1);
         }
         return result;
+    }
+
+    /**
+     * 获取超越平台所有车辆
+     * @return
+     */
+    private JSONArray getExVehicles(){
+        JSONArray resultArray = new JSONArray();
+        MultiValueMap<String, String> paramMap= new LinkedMultiValueMap<>();
+        paramMap.add("version","1");
+        paramMap.add("method","loginSystem");
+        paramMap.add("name",exAccount);
+        paramMap.add("pwd",exPassword);
+        String userStr = restTemplateUtil.PostFormData(exGpsApiUrl,paramMap);
+        System.out.println(userStr);
+        JSONObject userJson = JSONObject.parseObject(userStr);
+
+        MultiValueMap<String, String> userMap= new LinkedMultiValueMap<>();
+        userMap.add("version","1");
+        userMap.add("method","loadVehicles");
+        userMap.add("uid",userJson.getString("uid"));
+        userMap.add("uKey",userJson.getString("uKey"));
+        String groupsStr = restTemplateUtil.PostFormData(exGpsApiUrl,userMap);
+        System.out.println(groupsStr);
+        JSONObject groupsJson = JSONObject.parseObject(groupsStr);
+        JSONArray groupsArray = groupsJson.getJSONArray("groups");
+        for(int i=0;i<groupsArray.size();i++){
+            JSONArray vehicles = groupsArray.getJSONObject(i).getJSONArray("vehicles");
+            resultArray.addAll(vehicles);
+        }
+
+        return resultArray;
+    }
+
+    /**
+     * 获取车辆最新定位
+     * @param vid
+     * @param vKey
+     * @return
+     */
+    private JSONObject getExVehicleLocationForNewest(String vid,String vKey){
+        MultiValueMap<String, String> vehicleMap= new LinkedMultiValueMap<>();
+        vehicleMap.add("version","1");
+        vehicleMap.add("method","loadLocation");
+        vehicleMap.add("vid",vid);
+        vehicleMap.add("vKey",vKey);
+
+        String locationStr = restTemplateUtil.PostFormData(exGpsApiUrl,vehicleMap);
+        System.out.println(locationStr);
+        JSONObject locationJson = JSONObject.parseObject(locationStr);
+        return locationJson.getJSONArray("locs").getJSONObject(0);
+    }
+
+    /**
+     * 获取车辆历史轨迹
+     * @param vid
+     * @param vKey
+     * @param bTime
+     * @param eTime
+     * @return
+     */
+    private JSONArray getExVehicleLocationForHistory(String vid,String vKey,String bTime,String eTime){
+        MultiValueMap<String, String> vehicleMap= new LinkedMultiValueMap<>();
+        vehicleMap.add("version","1");
+        vehicleMap.add("method","loadHistory");
+        vehicleMap.add("vid",vid);
+        vehicleMap.add("vKey",vKey);
+        vehicleMap.add("bTime",bTime);
+        vehicleMap.add("eTime",eTime);
+
+        String locationStr = restTemplateUtil.PostFormData(exGpsApiUrl,vehicleMap);
+        System.out.println(locationStr);
+        JSONObject locationJson = JSONObject.parseObject(locationStr);
+        return locationJson.getJSONArray("history");
     }
 }

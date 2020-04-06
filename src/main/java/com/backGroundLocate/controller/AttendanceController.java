@@ -218,6 +218,7 @@ public class AttendanceController {
             leave.setEndTime(Integer.parseInt(endTime));
             leave.setApproverState(0);
             leave.setTimestamp(Integer.parseInt(timestamp));
+            leave.setRemark(remark);
             leaveService.saveLeave(leave);
 
             resultJson.put("resultCode",0);

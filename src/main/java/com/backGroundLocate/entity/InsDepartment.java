@@ -9,4 +9,6 @@ public class InsDepartment {
     private String deptName;
     private int deptType;
     private int deptLevel;
+    private long createTime;
+
 }

@@ -1,54 +1,62 @@
 package com.backGroundLocate.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.backGroundLocate.entity.UserInfo;
-import com.backGroundLocate.service.CarInfoService;
-import com.backGroundLocate.service.UserInfoService;
+import com.backGroundLocate.entity.AuthAccount;
+import com.backGroundLocate.entity.AuthRole;
+import com.backGroundLocate.entity.InsUser;
+import com.backGroundLocate.service.*;
 import com.backGroundLocate.util.MD5Util;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.LinkedHashMap;
 
-@Api(tags = "登录接口")
+@Api(tags = "权限管理接口")
+@RequestMapping(value = "/authManage")
 @RestController
-public class LoginController {
+public class AuthController {
 
     @Autowired
-    private UserInfoService userInfoService;
+    private AuthService authService;
 
     @Autowired
-    private CarInfoService carInfoService;
+    private UserService userService;
 
     /**
      * APP账号登陆
-     * @param userName
+     * @param account
      * @param password
      * @return
      */
-    @RequestMapping(value = {"/login"})
-    public JSONObject loginCheck(@RequestParam(value = "userName") String userName,@RequestParam(value = "password") String password) {
+    @PostMapping(value = {"/login"})
+    public JSONObject login(@RequestParam(value = "account") String account,@RequestParam(value = "password") String password) {
         System.out.println("======into login======");
         String md5pwd = MD5Util.MD5Encode(password);
         JSONObject resultJson = new JSONObject();
         JSONObject resultData = new JSONObject();
         try {
-            UserInfo paramUser = new UserInfo();
-            paramUser.setUserName(userName);
-            UserInfo itemUser = userInfoService.selectUser(paramUser);
-            if (itemUser != null) {
-                if (md5pwd.equals(itemUser.getPassword())) {
-
+            AuthAccount authAccount = authService.selectByAccount(account);
+            if (!StringUtils.isEmpty(authAccount)) {
+                AuthRole authRole = authService.selectRoleById(authAccount.getRoleId());
+                InsUser insUser = userService.selectUserById(authAccount.getUserId());
+                if (md5pwd.equals(authAccount.getPassword())) {
                     JSONObject userInfoJson = new JSONObject(new LinkedHashMap<>());
-                    userInfoJson.put("level",itemUser.getLevel());
-                    userInfoJson.put("dept",itemUser.getDeptId());
-                    userInfoJson.put("deptName",itemUser.getDeptName());
-                    userInfoJson.put("name",itemUser.getName());
-                    userInfoJson.put("id",itemUser.getId());
-                    userInfoJson.put("type",itemUser.getType());
+                    userInfoJson.put("userId",insUser.getId());
+                    userInfoJson.put("accountId",authAccount.getId());
+                    userInfoJson.put("name",insUser.getUserName());
+                    userInfoJson.put("type",authAccount.getType());
+                    userInfoJson.put("level",authRole.getRoleLevel());
+                    userInfoJson.put("deptId",insUser.getDeptId());
+                    userInfoJson.put("deptName",insUser.getDeptName());
+
+                    authAccount.setLastLoginTime(System.currentTimeMillis()/1000);
+                    authService.updateAccount(authAccount);
+
                     resultData.put("userInfo",userInfoJson);
                     resultJson.put("resultCode",0);
                     resultJson.put("resultData",resultData);
@@ -71,13 +79,13 @@ public class LoginController {
 
     /**
      * 账号密码修改
-     * @param userId
+     * @param accountId
      * @param oldPassword
      * @param newPassword
      * @return
      */
-    @RequestMapping(value = {"/modifyPassword"})
-    public JSONObject modifyPassword(@RequestParam(value = "userId") String userId,
+    @PostMapping(value = {"/modifyPassword"})
+    public JSONObject modifyPassword(@RequestParam(value = "accountId") Integer accountId,
                                      @RequestParam(value = "oldPassword") String oldPassword,
                                      @RequestParam(value = "newPassword") String newPassword){
         System.out.println("======into modifyPassword======");
@@ -85,12 +93,11 @@ public class LoginController {
         JSONObject resultData = new JSONObject();
 
         try {
-            UserInfo userInfo = userInfoService.selectUserById(Integer.parseInt(userId));
+            AuthAccount authAccount = authService.selectAccountById(accountId);
             String oldpwd = MD5Util.MD5Encode(oldPassword);
-            if (oldpwd.equals(userInfo.getPassword())){
-                userInfo.setPassword(MD5Util.MD5Encode(newPassword));
-                userInfoService.updateUserInfo(userInfo);
-
+            if (oldpwd.equals(authAccount.getPassword())){
+                authAccount.setPassword(MD5Util.MD5Encode(newPassword));
+                authService.updateAccount(authAccount);
             }else{
                 resultJson.put("resultCode",1);
                 resultJson.put("resultMessage","原始密码错误,无法修改");

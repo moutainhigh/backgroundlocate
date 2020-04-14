@@ -10,5 +10,5 @@ public class InsDepartmentRelation {
     private String deptName;
     private int parentDeptId;
     private String parentDeptName;
-    private int createTime;
+    private long createTime;
 }

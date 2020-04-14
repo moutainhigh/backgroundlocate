@@ -1,4 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.backGroundLocate.mapper.main.BnsUserNewestLocateMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BnsUserNewestLocate">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
+        <result column="address" jdbcType="VARCHAR" property="address" />
+        <result column="longitude" jdbcType="VARCHAR" property="longitude" />
+        <result column="latitude" jdbcType="VARCHAR" property="latitude" />
+        <result column="lon_lat" jdbcType="VARCHAR" property="lonLat" />
+        <result column="upload_time" jdbcType="VARCHAR" property="uploadTime" />
+        <result column="timestamp" jdbcType="BIGINT" property="timestamp" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,address,longitude,latitude,lon_lat,upload_time,timestamp
+    </sql>
+
+    <insert id="createUserLocationForNewest" parameterType="com.backGroundLocate.entity.BnsUserLocate" >
+        insert into t_bns_user_newest_locate(
+                    user_id,
+                    address,
+                    longitude,
+                    latitude,
+                    lon_lat,
+                    upload_time,
+                    times_tamp)
+        values(#{user_id,jdbcType=INTEGER},
+               #{address,jdbcType=VARCHAR},
+               #{longitude,jdbcType=VARCHAR},
+               #{latitude,jdbcType=VARCHAR},
+               #{lonLat,jdbcType=VARCHAR},
+               #{uploadTime,jdbcType=VARCHAR},
+               #{timestamp,jdbcType=BIGINT})
+    </insert>
+    
+    <select id="selectUserLocationForNewest" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_bns_user_newest_locate where 1=1
+
+        <if test="userId!=null">
+            and user_id = #{userId,jdbcType=INTEGER}
+        </if >
+
+    </select>
+
+    <update id="updateUserLocationForNewest" parameterType="com.backGroundLocate.entity.BnsUserLocate">
+        update t_bns_user_newest_locate set
+        address = #{address,jdbcType=VARCHAR},
+        longitude = #{longitude,jdbcType=VARCHAR},
+        latitude = #{latitude,jdbcType=VARCHAR},
+        lon_lat = #{lonLat,jdbcType=VARCHAR},
+        upload_time = #{uploadTime,jdbcType=VARCHAR}
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+
+
 </mapper>

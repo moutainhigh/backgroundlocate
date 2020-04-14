@@ -1,4 +1,74 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.backGroundLocate.mapper.main.InsDepartmentRelationMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.InsDepartmentRelation">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="dept_id" jdbcType="INTEGER" property="deptId" />
+        <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="parent_dept_id" jdbcType="INTEGER" property="parentDeptId" />
+        <result column="parent_dept_name" jdbcType="VARCHAR" property="parentDeptName" />
+        <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,dept_id,dept_name,parent_dept_id,parent_dept_name,create_time
+    </sql>
+
+    <insert id="createDeptRelation" parameterType="com.backGroundLocate.entity.InsDepartmentRelation" keyProperty="id" useGeneratedKeys="true">
+        insert into t_ins_department_relation(
+                    dept_id,
+                    dept_name,
+                    parent_dept_id,
+                    parent_dept_name,
+                    create_time)
+        values(#{deptId,jdbcType=INTEGER},
+               #{deptName,jdbcType=VARCHAR},
+               #{parentDeptId,jdbcType=INTEGER},
+               #{parentDeptName,jdbcType=VARCHAR},
+               #{createTime,jdbcType=BIGINT})
+    </insert>
+
+    <update id="updateDeptRelation" parameterType="com.backGroundLocate.entity.InsDepartmentRelation">
+        update t_ins_department_relation
+        <trim prefix="set" suffixOverrides=",">
+            <if test="deptId!=null">dept_id=#{deptId,jdbcType=INTEGER},</if>
+            <if test="deptName!=null and deptName!=''">dept_name=#{deptName,jdbcType=VARCHAR},</if>
+            <if test="parentDeptId!=null">parent_dept_id=#{parentDeptId,jdbcType=INTEGER},</if>
+            <if test="parentDeptName!=null and parentDeptName!=''">parent_dept_name=#{parentDeptName,jdbcType=VARCHAR},</if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+
+    </update>
+
+    <select id="selectDeptRelation" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_ins_department_relation where 1=1
+        and del_flag = 0
+
+        <if test="deptId!=null">
+            and dept_id = #{deptId,jdbcType=INTEGER}
+        </if >
+        <if test="deptName!=null and deptName!=''">
+            and dept_name = #{deptName,jdbcType=VARCHAR}
+        </if >
+        <if test="parentDeptId!=null">
+            and parent_dept_id = #{parentDeptId,jdbcType=INTEGER}
+        </if >
+        <if test="parentDeptName!=null and parentDeptName!=''">
+            and parent_dept_name = #{deptName,jdbcType=VARCHAR}
+        </if >
+    </select>
+
+    <select id="selectDeptRelationById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_ins_department_relation where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectDeptRelationByDeptId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_ins_department_relation where dept_id = #{deptId,jdbcType=INTEGER}
+    </select>
+
+    <update id="deleteDeptRelation" parameterType="java.lang.Integer">
+        update t_ins_department_relation set del_flag = 1 where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    
 </mapper>

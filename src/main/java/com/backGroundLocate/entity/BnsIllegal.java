@@ -9,5 +9,5 @@ public class BnsIllegal {
     private int unitId;
     private String unitName;
     private int illegalType;
-    private int illegalTime;
+    private long illegalTime;
 }

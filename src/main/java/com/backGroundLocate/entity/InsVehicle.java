@@ -3,14 +3,15 @@ package com.backGroundLocate.entity;
 import lombok.Data;
 
 @Data
-public class CarInfo {
-
+public class InsVehicle {
     private int id;
-    private String name;
+    private String vehicleName;
     private int typeId;
     private String typeName;
     private int deptId;
     private String deptName;
     private String simNumber;
-    private int status;
+    private long annual;
+    private String maintenance;
+    private long createTime;
 }

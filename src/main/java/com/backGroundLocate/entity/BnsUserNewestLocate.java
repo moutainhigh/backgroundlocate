@@ -10,7 +10,7 @@ public class BnsUserNewestLocate {
     private String address;
     private String longitude;
     private String latitude;
-    private String longitudeLatitude;
+    private String lonLat;
     private String uploadTime;
-    private String timestamp;
+    private long timestamp;
 }

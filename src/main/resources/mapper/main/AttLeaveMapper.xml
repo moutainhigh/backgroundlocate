@@ -1,4 +1,101 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.backGroundLocate.mapper.main.AttLeaveMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.AttLeave">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="start_time" jdbcType="BIGINT" property="startTime" />
+        <result column="end_time" jdbcType="BIGINT" property="endTime" />
+        <result column="timestamp" jdbcType="BIGINT" property="timestamp" />
+        <result column="approver_id" jdbcType="INTEGER" property="approverId" />
+        <result column="approver_name" jdbcType="VARCHAR" property="approverName" />
+        <result column="approve_state" jdbcType="INTEGER" property="approveState" />
+        <result column="approve_time" jdbcType="BIGINT" property="approveTime" />
+        <result column="approve_opinion" jdbcType="VARCHAR" property="approveOpinion" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,user_name,type,start_time,end_time,timestamp,approver_id,approver_name,approve_state,approve_time,approve_opinion,remark
+    </sql>
+
+    <insert id="createLeave" parameterType="com.backGroundLocate.entity.AttLeave" keyProperty="id" useGeneratedKeys="true">
+        insert into t_att_leave(
+                    user_id,
+                    user_name,
+                    type,
+                    start_time,
+                    end_time,
+                    timestamp,
+                    approver_id,
+                    approver_name,
+                    approve_state,
+                    approve_time,
+                    approve_opinion,
+                    remark)
+        values(#{userId,jdbcType=INTEGER},
+               #{userName,jdbcType=VARCHAR},
+               #{type,jdbcType=INTEGER},
+               #{startTime,jdbcType=BIGINT},
+               #{endTime,jdbcType=BIGINT},
+               #{timestamp,jdbcType=BIGINT},
+               #{approverId,jdbcType=INTEGER},
+               #{approverName,jdbcType=VARCHAR},
+               #{approveState,jdbcType=INTEGER},
+               #{approveTime,jdbcType=BIGINT},
+               #{approveOpinion,jdbcType=VARCHAR},
+               #{remark,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateLeave" parameterType="com.backGroundLocate.entity.AttLeave">
+        update t_att_leave
+        <trim prefix="set" suffixOverrides=",">
+            <if test="approverId!=null">approver_id=#{approverId,jdbcType=INTEGER},</if>
+            <if test="approverName!=null and approver!=''">approver_name=#{approverName,jdbcType=VARCHAR},</if>
+            <if test="approveState!=null">approve_state=#{approveState,jdbcType=INTEGER},</if>
+            <if test="approveTime!=null">approve_time=#{approveTime,jdbcType=BIGINT},</if>
+            <if test="approveOpinion!=null and approveOpinion!=''">approve_opinion=#{approveOpinion,jdbcType=VARCHAR},</if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+
+    </update>
+
+    <select id="selectLeave" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_att_leave where 1=1
+
+        <if test="userId!=null">
+            and user_id = #{userId,jdbcType=INTEGER}
+        </if >
+        <if test="approverId!=null">
+            and approver_id = #{approverId,jdbcType=INTEGER}
+        </if >
+        <if test="type!=null">
+            and type = #{type,jdbcType=INTEGER}
+        </if >
+        <if test="approveState!=null">
+            and approveState = #{type,jdbcType=INTEGER}
+        </if >
+        <if test="startTime!=null">
+            AND timestamp &gt;= #{startTime,jdbcType=BIGINT}
+        </if >
+        <if test="endTime!=null">
+            AND timestamp &lt;= #{endTime,jdbcType=BIGINT}
+        </if >
+        <if test="aprStartTime!=null">
+            AND approve_time &gt;= #{aprStartTime,jdbcType=BIGINT}
+        </if >
+        <if test="aprEndTime!=null">
+            AND approve_time &lt;= #{aprEndTime,jdbcType=BIGINT}
+        </if >
+        <if test="paramTime!=null">
+            AND #{aprEndTime,jdbcType=BIGINT} between start_time and end_time
+        </if>
+        order by timestamp desc
+    </select>
+
+    <select id="selectLeaveById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_att_leave where id = #{id,jdbcType=INTEGER}
+    </select>
 </mapper>

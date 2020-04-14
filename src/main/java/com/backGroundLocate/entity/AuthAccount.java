@@ -13,7 +13,7 @@ public class AuthAccount {
     private int type;
     private int roleId;
     private String roleName;
-    private int createTime;
-    private int lastLoginTime;
+    private long createTime;
+    private long lastLoginTime;
 
 }

@@ -6,6 +6,7 @@
         <result column="user_id" jdbcType="INTEGER" property="userId" />
         <result column="user_name" jdbcType="VARCHAR" property="userName" />
         <result column="attendance_time" jdbcType="TIMESTAMP" property="attendanceTime" />
+        <result column="timestamp" jdbcType="BIGINT" property="timestamp" />
         <result column="lon_lat" jdbcType="VARCHAR" property="lonlat" />
         <result column="address" jdbcType="VARCHAR" property="address" />
         <result column="state" jdbcType="INTEGER" property="state" />
@@ -14,14 +15,15 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,user_name,attendance_time,lon_lat,address,state,type,remark
+        id,user_id,user_name,attendance_time,timestamp,lon_lat,address,state,type,remark
     </sql>
 
     <insert id="saveAttendance" parameterType="com.backGroundLocate.entity.Attendance" >
-        insert into t_attendance(
+        insert into t_att_attendance(
                     user_id,
                     user_name,
                     attendance_time,
+                    timestamp,
                     lon_lat,
                     address,
                     state,
@@ -30,6 +32,7 @@
         values(#{userId,jdbcType=INTEGER},
                #{userName,jdbcType=VARCHAR},
                #{attendanceTime,jdbcType=TIMESTAMP},
+               #{timestamp,jdbcType=BIGINT},
                #{lonlat,jdbcType=VARCHAR},
                #{address,jdbcType=VARCHAR},
                #{state,jdbcType=INTEGER},
@@ -38,9 +41,10 @@
     </insert>
 
     <update id="updateAttendance" parameterType="com.backGroundLocate.entity.Attendance">
-        update t_attendance
+        update t_att_attendance
         <trim prefix="set" suffixOverrides=",">
             <if test="attendanceTime!=null">attendance_time=#{attendanceTime,jdbcType=TIMESTAMP},</if>
+            <if test="timestamp!=null">timestamp=#{timestamp,jdbcType=BIGINT},</if>
             <if test="lonlat!=null">lon_lat=#{lonlat,jdbcType=VARCHAR},</if>
             <if test="address!=null">address=#{address,jdbcType=VARCHAR},</if>
             <if test="state!=null">state=#{state,jdbcType=INTEGER},</if>
@@ -52,7 +56,7 @@
         SELECT
         <include refid="Base_Column_List"/>
         FROM
-        t_attendance
+        t_att_attendance
         WHERE
         1 = 1
         AND DateDiff(

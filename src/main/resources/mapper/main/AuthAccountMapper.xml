@@ -1,4 +1,82 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.backGroundLocate.mapper.main.AuthAccountMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.AuthAccount">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="account" jdbcType="VARCHAR" property="account" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="role_id" jdbcType="INTEGER" property="roleId" />
+        <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+        <result column="create_time" jdbcType="BIGINT" property="createTime" />
+        <result column="last_login_time" jdbcType="BIGINT" property="lastLoginTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,user_name,account,password,type,role_id,role_name,create_time,last_login_time
+    </sql>
+
+    <insert id="createAccount" parameterType="com.backGroundLocate.entity.AuthAccount" keyProperty="id" useGeneratedKeys="true">
+        insert into t_auth_account(
+                    user_id,
+                    user_name,
+                    account,
+                    password,
+                    type,
+                    role_id,
+                    role_name,
+                    create_time,
+                    last_login_time)
+        values(#{userId,jdbcType=INTEGER},
+               #{userName,jdbcType=VARCHAR},
+               #{account,jdbcType=INTEGER},
+               #{type,jdbcType=INTEGER},
+               #{roleId,jdbcType=INTEGER},
+               #{roleName,jdbcType=INTEGER},
+               #{createTime,jdbcType=BIGINT},
+               #{lastLoginTime,jdbcType=BIGINT})
+    </insert>
+
+    <update id="updateAccount" parameterType="com.backGroundLocate.entity.AuthAccount">
+        update t_auth_account
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userId!=null">user_id=#{userId,jdbcType=INTEGER},</if>
+            <if test="userName!=null and userName!=''">user_name=#{userName,jdbcType=VARCHAR},</if>
+            <if test="account!=null and account!=''">account=#{account,jdbcType=VARCHAR},</if>
+            <if test="password!=null and password!=''">password=#{password,jdbcType=VARCHAR},</if>
+            <if test="type!=null">type=#{type,jdbcType=INTEGER},</if>
+            <if test="roleId!=null">role_id=#{roleId,jdbcType=INTEGER},</if>
+            <if test="roleName!=null and roleName!=''">role_name=#{roleName,jdbcType=VARCHAR},</if>
+            <if test="lastLoginTime!=null">last_login_time=#{lastLoginTime,jdbcType=BIGINT},</if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectAccount" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_auth_account where 1=1
+
+
+        <if test="roleId!=null">
+            and role_id = #{roleId,jdbcType=INTEGER}
+        </if >
+    </select>
+
+    <select id="selectAccountById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_auth_account where id = #{id,jdbcType=INTEGER}
+
+    </select>
+    
+    <select id="selectByAccount" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select <include refid="Base_Column_List" /> from t_auth_account where account = #{account,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectAccountByUser" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_auth_account where user_id = #{userId,jdbcType=INTEGER}
+    </select>
+
+    <update id="deleteAccount" parameterType="java.lang.Integer">
+        update t_auth_account set del_flag = 1 where id = #{id,jdbcType=INTEGER}
+    </update>
 </mapper>

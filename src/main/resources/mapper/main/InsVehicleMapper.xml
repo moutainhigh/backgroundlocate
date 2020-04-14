@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.backGroundLocate.mapper.main.InsVehicleMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.InsVehicle">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="vehicle_name" jdbcType="VARCHAR" property="vehicleName" />
+        <result column="type_id" jdbcType="INTEGER" property="typeId" />
+        <result column="type_name" jdbcType="BIGINT" property="typeName" />
+        <result column="dept_id" jdbcType="INTEGER" property="deptId" />
+        <result column="dept_name" jdbcType="BIGINT" property="deptName" />
+        <result column="sim_number" jdbcType="INTEGER" property="simNumber" />
+        <result column="annual" jdbcType="BIGINT" property="annual" />
+        <result column="maintenance" jdbcType="VARCHAR" property="maintenance" />
+        <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id,vehicle_name,type_id,type_name,dept_id,dept_name,sim_number,annual,maintenance,create_time
+    </sql>
+
+    <insert id="createVehicle" parameterType="com.backGroundLocate.entity.InsVehicle" keyProperty="id" useGeneratedKeys="true">
+        insert into t_ins_vehicle(
+                    vehicle_name,
+                    type_id,
+                    type_name,
+                    dept_id,
+                    dept_name,
+                    sim_number,
+                    annual,
+                    maintenance
+                    create_time)
+        values(#{vehicleName,jdbcType=VARCHAR},
+               #{typeId,jdbcType=INTEGER},
+               #{typeName,jdbcType=VARCHAR},
+               #{deptId,jdbcType=INTEGER},
+               #{deptName,jdbcType=VARCHAR},
+               #{simNumber,jdbcType=VARCHAR},
+               #{annual,jdbcType=BIGINT},
+               #{maintenance,jdbcType=VARCHAR}
+               #{createTime,jdbcType=BIGINT})
+    </insert>
+
+    <update id="updateVehicle" parameterType="com.backGroundLocate.entity.InsVehicle">
+        update t_ins_vehicle
+        <trim prefix="set" suffixOverrides=",">
+            <if test="vehicleName!=null and vehicleName!=''">vehicle_name=#{vehicleName,jdbcType=VARCHAR},</if>
+            <if test="typeId!=null">type_id=#{typeId,jdbcType=INTEGER},</if>
+            <if test="typeName!=null and typeName!=''">type_name=#{typeName,jdbcType=VARCHAR},</if>
+            <if test="deptId!=null">dept_id=#{deptId,jdbcType=INTEGER},</if>
+            <if test="deptName!=null and deptName!=''">dept_name=#{deptName,jdbcType=VARCHAR},</if>
+            <if test="annual!=null">annual=#{annual,jdbcType=VARCHAR},</if>
+            <if test="maintenance!=null and simNumber!=''">maintenance=#{maintenance,jdbcType=INTEGER},</if>
+            <if test="simNumber!=null and simNumber!=''">sim_number=#{simNumber,jdbcType=INTEGER},</if>
+
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+
+    </update>
+
+    <select id="selectVehicle" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_ins_vehicle where 1=1
+        and del_flag = 0
+
+        <if test="vehicleName!=null and vehicleName!=''">
+            and vehicle_name like '%'+#{vehicleName,jdbcType=VARCHAR}+'%'
+        </if >
+        <if test="typeId!=null">
+            and type_id = #{typeId,jdbcType=INTEGER}
+        </if >
+        <if test="deptId!=null">
+            and dept_id = #{deptId,jdbcType=INTEGER}
+        </if >
+    </select>
+
+    <select id="selectVehicleById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_ins_vehicle where id = #{id,jdbcType=INTEGER}
+
+    </select>
+
+    <update id="deleteVehicle" parameterType="java.lang.Integer">
+        update t_ins_vehicle set del_flag = 1 where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectDirectlyVehicle" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_ins_vehicle where dept_id = #{deptId,jdbcType=INTEGER}
+    </select>
+</mapper>

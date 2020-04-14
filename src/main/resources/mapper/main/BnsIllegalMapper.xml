@@ -1,4 +1,54 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.backGroundLocate.mapper.main.BnsIllegalMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BnsIllegal">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="unit_id" jdbcType="VARCHAR" property="unitId" />
+        <result column="unit_name" jdbcType="INTEGER" property="unitName" />
+        <result column="illegal_type" jdbcType="INTEGER" property="illegalType" />
+        <result column="illegal_time" jdbcType="BIGINT" property="illegalTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,unit_id,unit_name,illegal_type,illegal_time
+    </sql>
+
+    <insert id="createIllegal" parameterType="com.backGroundLocate.entity.BnsIllegal" keyProperty="id" useGeneratedKeys="true">
+        insert into t_bns_illegal(
+                    unit_id,
+                    unit_name,
+                    illegal_type,
+                    illegal_time)
+        values(#{unitId,jdbcType=INTEGER},
+               #{unitName,jdbcType=VARCHAR},
+               #{illegalType,jdbcType=INTEGER},
+               #{illegalTime,jdbcType=BIGINT})
+    </insert>
+
+
+    <select id="selectIllegal" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_bns_illegal where 1=1
+        and del_flag = 0
+
+        <if test="roleName!=null and roleName!=''">
+            and role_name = #{roleName,jdbcType=VARCHAR}
+        </if >
+    </select>
+
+    <select id="selectIllegalById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_bns_illegal where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectIllegalNum" resultType="java.lang.Integer" parameterType="map">
+        SELECT
+            isnull(COUNT ( i.id ),0)
+        FROM
+            ${tableName} u,
+            t_illegal_info i
+        WHERE
+            i.unit_id = u.id
+            AND i.illegal_time &gt;= #{ startTimestamp,jdbcType = BIGINT }
+        AND i.illegal_time &lt;= #{ endTimestamp,jdbcType = BIGINT }
+        AND u.id = #{ unitId,jdbcType = INTEGER }
+    </select>
 </mapper>

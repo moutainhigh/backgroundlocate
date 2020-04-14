@@ -1,4 +1,96 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.backGroundLocate.mapper.main.InsUserMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.InsUser">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="user_account" jdbcType="INTEGER" property="userAccount" />
+        <result column="role_id" jdbcType="INTEGER" property="roleId" />
+        <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+        <result column="dept_id" jdbcType="INTEGER" property="deptId" />
+        <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="foreman_id" jdbcType="INTEGER" property="foremanId" />
+        <result column="foreman_name" jdbcType="VARCHAR" property="foremanName" />
+        <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber" />
+        <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_name,user_account,role_id,role_name,dept_id,dept_name,foreman_id,foreman_name,phone_number,create_time
+    </sql>
+
+    <insert id="createUser" parameterType="com.backGroundLocate.entity.InsUser" keyProperty="id" useGeneratedKeys="true">
+        insert into t_ins_user(
+                    user_name,
+                    user_account,
+                    role_id,
+                    role_name,
+                    dept_id,
+                    dept_name,
+                    foreman_id,
+                    foreman_name,
+                    phone_number,
+                    create_time)
+        values(#{userName,jdbcType=VARCHAR},
+               #{userAccount,jdbcType=INTEGER},
+               #{roleId,jdbcType=VARCHAR},
+               #{roleName,jdbcType=INTEGER},
+               #{deptId,jdbcType=VARCHAR},
+               #{deptName,jdbcType=INTEGER},
+               #{foremanId,jdbcType=VARCHAR},
+               #{foremanName,jdbcType=INTEGER},
+               #{phoneNumber,jdbcType=VARCHAR},
+               #{createTime,jdbcType=BIGINT})
+    </insert>
+
+    <update id="updateUser" parameterType="com.backGroundLocate.entity.InsUser">
+        update t_ins_user
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userName!=null and userName!=''">user_name=#{roleName,jdbcType=VARCHAR},</if>
+            <if test="userAccount!=null and userAccount!=''">user_account=#{userAccount,jdbcType=INTEGER},</if>
+            <if test="roleId!=null">role_id=#{roleId,jdbcType=INTEGER},</if>
+            <if test="roleName!=null and roleName!=''">role_name=#{roleName,jdbcType=VARCHAR},</if>
+            <if test="deptId!=null">dept_id=#{deptId,jdbcType=INTEGER},</if>
+            <if test="deptName!=null and deptName!=''">dept_name=#{deptName,jdbcType=VARCHAR},</if>
+            <if test="foremanId!=null">foreman_id=#{foremanId,jdbcType=INTEGER},</if>
+            <if test="foremanName!=null and foremanName!=''">foreman_name=#{foremanName,jdbcType=VARCHAR},</if>
+            <if test="phoneNumber!=null and phoneNumber!=''">phone_number=#{phoneNumber,jdbcType=VARCHAR},</if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+
+    </update>
+
+    <select id="selectUser" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_ins_user where 1=1
+        and del_flag = 0
+        <if test="userName!=null and userName!=''">
+            and user_name like '%'+#{userName,jdbcType=VARCHAR}+'%'
+        </if >
+        <if test="userAccount!=null and userAccount!=''">
+            and user_account = #{userAccount,jdbcType=VARCHAR}
+        </if >
+        <if test="roleId!=null">
+            and role_id = #{roleId,jdbcType=INTEGER}
+        </if >
+        <if test="deptId!=null">
+            and dept_id = #{deptId,jdbcType=INTEGER}
+        </if >
+        <if test="foremanId!=null">
+            and foreman_id = #{foremanId,jdbcType=INTEGER}
+        </if >
+    </select>
+
+    <select id="selectUserById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_ins_user where id = #{id,jdbcType=INTEGER}
+
+    </select>
+
+    <update id="deleteUser" parameterType="java.lang.Integer">
+        update t_ins_user set del_flag = 1 where id = #{id,jdbcType=INTEGER}
+    </update>
+    
+    <select id="selectDirectlyUser" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_ins_user where dept_id = #{deptId,jdbcType=INTEGER}
+    </select>
+
 </mapper>

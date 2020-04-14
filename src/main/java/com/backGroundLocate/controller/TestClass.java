@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,8 +45,19 @@ public class TestClass {
     }
 
 
-    @RequestMapping(value = "/test")
+    @PostMapping(value = "/test")
     public void restCar(){
+        MultiValueMap<String, Object> vehicleMap= new LinkedMultiValueMap<>();
+        vehicleMap.add("version","1");
+        vehicleMap.add("method","loadHistory");
+        vehicleMap.add("vid","13986108");
+        vehicleMap.add("vKey","447663dece4ed3ee3075e9ad687a5787");
+        vehicleMap.add("bTime","1605068776");
+        vehicleMap.add("eTime","1605068776");
 
+        String locationStr = restTemplateUtil.PostFormData(exGpsApiUrl,vehicleMap);
+        System.out.println(locationStr);
+        JSONObject locationJson = JSONObject.parseObject(locationStr);
+        System.out.println(locationJson.toJSONString());
     }
 }

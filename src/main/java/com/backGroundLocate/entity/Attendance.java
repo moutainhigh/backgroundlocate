@@ -12,6 +12,7 @@ public class Attendance {
     private int userId;
     private String userName;
     private Date attendanceTime;
+    private long timestamp;
     private String lonlat;
     private String address;
     private int state;

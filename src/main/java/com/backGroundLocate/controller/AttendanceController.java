@@ -2,15 +2,13 @@ package com.backGroundLocate.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.backGroundLocate.entity.Attendance;
-import com.backGroundLocate.entity.Leave;
-import com.backGroundLocate.entity.UserInfo;
+import com.backGroundLocate.entity.*;
 import com.backGroundLocate.service.AttendanceService;
-import com.backGroundLocate.service.LeaveService;
-import com.backGroundLocate.service.UserInfoService;
+import com.backGroundLocate.service.UserService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,31 +18,25 @@ import java.util.*;
 
 @Api(tags="考勤接口")
 @RestController
+@RequestMapping(value = "/attendance")
 public class AttendanceController {
 
     @Autowired
     private AttendanceService attendanceService;
 
     @Autowired
-    private UserInfoService userInfoService;
-
-    @Autowired
-    private LeaveService leaveService;
-
-    @Autowired
-    private Environment env;
-
+    private UserService userService;
 
     /**
      * 考勤状态查询
      * @param userId
      * @return
      */
-    @RequestMapping(value = "/selectAttendanceStatus")
+    @PostMapping(value = "/selectAttendanceStatus")
     public JSONObject selectAttendanceStatus(@RequestParam(value = "userId") String userId){
         System.out.println("======into selectAttendanceStatus======");
-        JSONObject resultJson = new JSONObject();
-        JSONObject resultData = new JSONObject();
+        JSONObject resultJson = new JSONObject(new LinkedHashMap<>());
+        JSONObject resultData = new JSONObject(new LinkedHashMap<>());
 
         Map paraMap = new HashMap();
         paraMap.put("userId",userId);
@@ -69,16 +61,16 @@ public class AttendanceController {
      * @param type
      * @return
      */
-    @RequestMapping(value = "/staffAttendance")
-    public JSONObject staffAttendance(@RequestParam(value = "userId") String userId,
+    @PostMapping(value = "/staffAttendance")
+    public JSONObject staffAttendance(@RequestParam(value = "userId") Integer userId,
                                       @RequestParam(value = "lon") String lon,
                                       @RequestParam(value = "lat") String lat,
                                       @RequestParam(value = "address") String address,
-                                      @RequestParam(value = "type") String type){
+                                      @RequestParam(value = "type") Integer type
+    ){
         System.out.println("======into staffAttendance======");
-        JSONObject resultJson = new JSONObject();
-        JSONObject resultData = new JSONObject();
-
+        JSONObject resultJson = new JSONObject(new LinkedHashMap<>());
+        JSONObject resultData = new JSONObject(new LinkedHashMap<>());
 
         try {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
@@ -95,7 +87,7 @@ public class AttendanceController {
             Date absenteeismOutTime = new Date(outTime.getTime()-(30*60*1000));//签退旷工时限
             System.out.println(outTime+","+earlyTime+","+absenteeismOutTime);
 
-            UserInfo userInfo = userInfoService.selectUserById(Integer.parseInt(userId));
+            InsUser insUser = userService.selectUserById(userId);
 
             //规定区域判定未写
 
@@ -103,15 +95,16 @@ public class AttendanceController {
             paraMap.put("userId",userId);
             paraMap.put("type",1);
             Attendance inAttendance = attendanceService.selectAttendanceForToday(paraMap);
-            if("1".equals(type)){
+            if(type == 1){
                 if(inAttendance == null){
                     Attendance attendance = new Attendance();
-                    attendance.setUserId(userInfo.getId());
-                    attendance.setUserName(userInfo.getName());
+                    attendance.setUserId(insUser.getId());
+                    attendance.setUserName(insUser.getUserName());
                     attendance.setLonlat(lon+","+lat);
                     attendance.setAddress(address);
                     attendance.setType(1);
                     attendance.setAttendanceTime(date);
+                    attendance.setTimestamp(System.currentTimeMillis()/1000);
                     if (nowTime.before(absenteeismInTime) && nowTime.after(lateTime)) {
                         //旷工时限之前,迟到时限之后为迟到
                         attendance.setState(2);
@@ -129,7 +122,7 @@ public class AttendanceController {
                     return resultJson;
                 }
                 resultData.put("resultStatus","签到成功");
-            }else if("2".equals(type)){
+            }else if(type == 2){
                 paraMap.put("type",2);
 
                 if(inAttendance != null){
@@ -138,6 +131,7 @@ public class AttendanceController {
                         outAttendance.setLonlat(lon+","+lat);
                         outAttendance.setAddress(address);
                         outAttendance.setAttendanceTime(date);
+                        outAttendance.setTimestamp(System.currentTimeMillis()/1000);
                         if (nowTime.after(absenteeismOutTime)&&nowTime.before(earlyTime)) {
                             //旷工时间之后,早退时间之前为早退
                             outAttendance.setState(2);
@@ -151,12 +145,13 @@ public class AttendanceController {
                         attendanceService.updateAttendance(outAttendance);
                     }else{
                         Attendance attendance = new Attendance();
-                        attendance.setUserId(userInfo.getId());
-                        attendance.setUserName(userInfo.getName());
+                        attendance.setUserId(insUser.getId());
+                        attendance.setUserName(insUser.getUserName());
                         attendance.setLonlat(lon+","+lat);
                         attendance.setAddress(address);
                         attendance.setType(2);
                         attendance.setAttendanceTime(date);
+                        attendance.setTimestamp(System.currentTimeMillis()/1000);
                         if (nowTime.after(absenteeismOutTime)&&nowTime.before(earlyTime)) {
                             //旷工时间之后,早退时间之前为早退
                             attendance.setState(2);
@@ -197,29 +192,29 @@ public class AttendanceController {
      * @param timestamp
      * @return
      */
-    @RequestMapping(value = "/requestForLeave")
-    public JSONObject requestForLeave(@RequestParam(value = "userId") String userId,
+    @PostMapping(value = "/requestForLeave")
+    public JSONObject requestForLeave(@RequestParam(value = "userId") Integer userId,
                                       @RequestParam(value = "type") String type,
                                       @RequestParam(value = "remark") String remark,
                                       @RequestParam(value = "startTime") String startTime,
                                       @RequestParam(value = "endTime") String endTime,
-                                      @RequestParam(value = "timestamp") String timestamp){
+                                      @RequestParam(value = "timestamp") Long timestamp
+    ){
         System.out.println("======into requestForLeave======");
-        JSONObject resultJson = new JSONObject();
-        JSONObject resultData = new JSONObject();
+        JSONObject resultJson = new JSONObject(new LinkedHashMap<>());
+        JSONObject resultData = new JSONObject(new LinkedHashMap<>());
 
         try {
-            UserInfo userInfo = userInfoService.selectUserById(Integer.parseInt(userId));
-            Leave leave = new Leave();
-            leave.setUserId(userInfo.getId());
-            leave.setUserName(userInfo.getName());
-            leave.setType(Integer.parseInt(type));
-            leave.setStartTime(Integer.parseInt(startTime));
-            leave.setEndTime(Integer.parseInt(endTime));
-            leave.setApproverState(0);
-            leave.setTimestamp(Integer.parseInt(timestamp));
-            leave.setRemark(remark);
-            leaveService.saveLeave(leave);
+            InsUser insUser = userService.selectUserById(userId);
+            AttLeave attLeave = new AttLeave();
+            attLeave.setUserId(insUser.getId());
+            attLeave.setUserName(insUser.getUserName());
+            attLeave.setType(Integer.parseInt(type));
+            attLeave.setStartTime(Integer.parseInt(startTime));
+            attLeave.setEndTime(Integer.parseInt(endTime));
+            attLeave.setTimestamp(timestamp);
+            attLeave.setRemark(remark);
+            attendanceService.createLeave(attLeave);
 
             resultJson.put("resultCode",0);
             resultData.put("resultStatus","success");
@@ -237,22 +232,22 @@ public class AttendanceController {
      * @param userId
      * @return
      */
-    @RequestMapping(value = "/selectLeaveList")
-    public JSONObject selectLeaveList(@RequestParam(value = "userId") String userId){
+    @PostMapping(value = "/selectLeaveList")
+    public JSONObject selectLeaveList(@RequestParam(value = "userId") Integer userId){
         System.out.println("======into selectLeaveList======");
-        JSONObject resultJson = new JSONObject();
-        JSONObject resultData = new JSONObject();
+        JSONObject resultJson = new JSONObject(new LinkedHashMap<>());
+        JSONObject resultData = new JSONObject(new LinkedHashMap<>());
         JSONArray takeleaveList = new JSONArray();
         Map paramMap = new HashMap();
 
         try {
-            paramMap.put("userId",Integer.parseInt(userId));
-            List<Leave> leaveList = leaveService.selectLeaveList(paramMap);
-            for (Leave leave : leaveList){
+            paramMap.put("userId",userId);
+            List<AttLeave> leaveList = attendanceService.selectLeave(paramMap);
+            for (AttLeave attLeave : leaveList){
                 Map map = new LinkedHashMap();
-                map.put("id",leave.getId());
-                map.put("timestamp",leave.getTimestamp());
-                map.put("approverStatus",leave.getApproverState());
+                map.put("id",attLeave.getId());
+                map.put("timestamp",attLeave.getTimestamp());
+                map.put("approverStatus",attLeave.getApproveState());
                 takeleaveList.add(map);
             }
             resultData.put("takeleaveList",takeleaveList);
@@ -267,32 +262,33 @@ public class AttendanceController {
 
     /**
      * 请假详情查询
-     * @param userId
      * @param leaveId
      * @return
      */
-    @RequestMapping(value = "/selectLeaveDetail")
-    public JSONObject selectLeaveDetail(@RequestParam(value = "userId") String userId,
-                                        @RequestParam(value = "leaveId") String leaveId){
+    @PostMapping(value = "/selectLeaveDetail")
+    public JSONObject selectLeaveDetail(@RequestParam(value = "leaveId") Integer leaveId){
         System.out.println("======into selectLeaveDetail======");
-        JSONObject resultJson = new JSONObject();
-        JSONObject resultData = new JSONObject();
+        JSONObject resultJson = new JSONObject(new LinkedHashMap<>());
+        JSONObject resultData = new JSONObject(new LinkedHashMap<>());
         JSONObject takeleaveInfo = new JSONObject(new LinkedHashMap<>());
-        Map paramMap = new HashMap();
 
         try {
-            paramMap.put("userId",Integer.parseInt(userId));
-            paramMap.put("id",Integer.parseInt(leaveId));
+            AttLeave attleave = attendanceService.selectLeaveById(leaveId);
+            if(!StringUtils.isEmpty(attleave)){
+                takeleaveInfo.put("id",attleave.getId());
+                takeleaveInfo.put("type",attleave.getType());
+                takeleaveInfo.put("startTime",attleave.getStartTime());
+                takeleaveInfo.put("endTime",attleave.getEndTime());
+                takeleaveInfo.put("remark",attleave.getRemark());
 
-            Leave leave = leaveService.selectLeave(paramMap);
-            takeleaveInfo.put("id",leave.getId());
-            takeleaveInfo.put("type",leave.getType());
-            takeleaveInfo.put("startTime",leave.getStartTime());
-            takeleaveInfo.put("endTime",leave.getEndTime());
-            takeleaveInfo.put("remark",leave.getRemark());
+                resultData.put("takeleaveInfo",takeleaveInfo);
+                resultJson.put("resultData",resultData);
+            }else{
+                resultJson.put("resultCode",1);
+                resultJson.put("resultMessage","未查询到请假申请信息");
+                return resultJson;
 
-            resultData.put("takeleaveInfo",takeleaveInfo);
-            resultJson.put("resultData",resultData);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             resultJson.put("resultCode",1);

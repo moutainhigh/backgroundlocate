@@ -9,11 +9,13 @@ public class AttLeave {
     private int userId;
     private String userName;
     private int type;
-    private int startTime;
-    private int endTime;
-    private int timestamp;
-    private String approver;
-    private int approverState;
-    private int approverTime;
+    private long startTime;
+    private long endTime;
+    private long timestamp;
+    private int approverId;
+    private String approverName;
+    private int approveState;
+    private long approveTime;
+    private String approveOpinion;
     private String remark;
 }

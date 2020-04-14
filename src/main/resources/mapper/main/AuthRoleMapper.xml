@@ -1,4 +1,51 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.backGroundLocate.mapper.main.AuthRoleMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.AuthRole">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+        <result column="role_level" jdbcType="INTEGER" property="roleLevel" />
+        <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,role_name,role_level,create_time
+    </sql>
+
+    <insert id="createRole" parameterType="com.backGroundLocate.entity.AuthRole" keyProperty="id" useGeneratedKeys="true">
+        insert into t_auth_role(
+                    role_name,
+                    role_level,
+                    create_time)
+        values(#{roleName,jdbcType=VARCHAR},
+               #{roleLevel,jdbcType=INTEGER},
+               #{createTime,jdbcType=BIGINT})
+    </insert>
+
+    <update id="updateRole" parameterType="com.backGroundLocate.entity.AuthRole">
+        update t_auth_role
+        <trim prefix="set" suffixOverrides=",">
+            <if test="roleName!=null and roleName!=''">role_name=#{roleName,jdbcType=VARCHAR},</if>
+            <if test="roleLevel!=null">role_level=#{roleLevel,jdbcType=INTEGER},</if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+
+    </update>
+
+    <select id="selectRole" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_auth_role where 1=1
+        and del_flag = 0
+
+        <if test="roleName!=null and roleName!=''">
+            and role_name = #{roleName,jdbcType=VARCHAR}
+        </if >
+    </select>
+
+    <select id="selectRoleById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_auth_role where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <update id="deleteRole" parameterType="java.lang.Integer">
+        update t_auth_role set del_flag = 1 where id = #{id,jdbcType=INTEGER}
+    </update>
 </mapper>

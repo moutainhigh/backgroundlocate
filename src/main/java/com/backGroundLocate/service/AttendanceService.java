@@ -1,7 +1,11 @@
 package com.backGroundLocate.service;
 
+import com.backGroundLocate.entity.AttLeave;
 import com.backGroundLocate.entity.Attendance;
+import com.backGroundLocate.entity.Leave;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 public interface AttendanceService {
@@ -11,4 +15,12 @@ public interface AttendanceService {
     Attendance selectAttendanceForToday(Map paramMap);
 
     void updateAttendance(Attendance attendance);
+
+    int createLeave(AttLeave attLeave);
+
+    List<AttLeave> selectLeave(Map paramMap);
+
+    AttLeave selectLeaveById(int id);
+
+    void updateLeave(AttLeave attLeave);
 }

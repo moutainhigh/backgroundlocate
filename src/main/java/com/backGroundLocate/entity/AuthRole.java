@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class AuthRole {
 
-    private int roleId;
+    private int id;
     private String roleName;
     private int roleLevel;
-    private int createTime;
+    private long createTime;
 }

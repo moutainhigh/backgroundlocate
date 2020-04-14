@@ -15,5 +15,5 @@ public class InsUser {
     private int foremanId;
     private String foremanName;
     private String phoneNumber;
-    private int createTime;
+    private long createTime;
 }

@@ -194,10 +194,10 @@ public class AttendanceController {
      */
     @PostMapping(value = "/requestForLeave")
     public JSONObject requestForLeave(@RequestParam(value = "userId") Integer userId,
-                                      @RequestParam(value = "type") String type,
+                                      @RequestParam(value = "type") Integer type,
                                       @RequestParam(value = "remark") String remark,
-                                      @RequestParam(value = "startTime") String startTime,
-                                      @RequestParam(value = "endTime") String endTime,
+                                      @RequestParam(value = "startTime") Long startTime,
+                                      @RequestParam(value = "endTime") Long endTime,
                                       @RequestParam(value = "timestamp") Long timestamp
     ){
         System.out.println("======into requestForLeave======");
@@ -209,9 +209,9 @@ public class AttendanceController {
             AttLeave attLeave = new AttLeave();
             attLeave.setUserId(insUser.getId());
             attLeave.setUserName(insUser.getUserName());
-            attLeave.setType(Integer.parseInt(type));
-            attLeave.setStartTime(Integer.parseInt(startTime));
-            attLeave.setEndTime(Integer.parseInt(endTime));
+            attLeave.setType(type);
+            attLeave.setStartTime(startTime);
+            attLeave.setEndTime(endTime);
             attLeave.setTimestamp(timestamp);
             attLeave.setRemark(remark);
             attendanceService.createLeave(attLeave);
@@ -247,7 +247,7 @@ public class AttendanceController {
                 Map map = new LinkedHashMap();
                 map.put("id",attLeave.getId());
                 map.put("timestamp",attLeave.getTimestamp());
-                map.put("approverStatus",attLeave.getApproveState());
+                map.put("approvalStatus",attLeave.getApprovalState());
                 takeleaveList.add(map);
             }
             resultData.put("takeleaveList",takeleaveList);
@@ -275,7 +275,6 @@ public class AttendanceController {
         try {
             AttLeave attleave = attendanceService.selectLeaveById(leaveId);
             if(!StringUtils.isEmpty(attleave)){
-                takeleaveInfo.put("id",attleave.getId());
                 takeleaveInfo.put("type",attleave.getType());
                 takeleaveInfo.put("startTime",attleave.getStartTime());
                 takeleaveInfo.put("endTime",attleave.getEndTime());

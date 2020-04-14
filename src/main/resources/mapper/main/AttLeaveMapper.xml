@@ -11,14 +11,14 @@
         <result column="timestamp" jdbcType="BIGINT" property="timestamp" />
         <result column="approver_id" jdbcType="INTEGER" property="approverId" />
         <result column="approver_name" jdbcType="VARCHAR" property="approverName" />
-        <result column="approve_state" jdbcType="INTEGER" property="approveState" />
-        <result column="approve_time" jdbcType="BIGINT" property="approveTime" />
-        <result column="approve_opinion" jdbcType="VARCHAR" property="approveOpinion" />
+        <result column="approval_state" jdbcType="INTEGER" property="approvalState" />
+        <result column="approval_time" jdbcType="BIGINT" property="approvalTime" />
+        <result column="approval_opinion" jdbcType="VARCHAR" property="approvalOpinion" />
         <result column="remark" jdbcType="VARCHAR" property="remark" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,user_name,type,start_time,end_time,timestamp,approver_id,approver_name,approve_state,approve_time,approve_opinion,remark
+        id,user_id,user_name,type,start_time,end_time,timestamp,approver_id,approver_name,approval_state,approval_time,approval_opinion,remark
     </sql>
 
     <insert id="createLeave" parameterType="com.backGroundLocate.entity.AttLeave" keyProperty="id" useGeneratedKeys="true">
@@ -31,9 +31,9 @@
                     timestamp,
                     approver_id,
                     approver_name,
-                    approve_state,
-                    approve_time,
-                    approve_opinion,
+                    approval_state,
+                    approval_time,
+                    approval_opinion,
                     remark)
         values(#{userId,jdbcType=INTEGER},
                #{userName,jdbcType=VARCHAR},
@@ -43,9 +43,9 @@
                #{timestamp,jdbcType=BIGINT},
                #{approverId,jdbcType=INTEGER},
                #{approverName,jdbcType=VARCHAR},
-               #{approveState,jdbcType=INTEGER},
-               #{approveTime,jdbcType=BIGINT},
-               #{approveOpinion,jdbcType=VARCHAR},
+               #{approvalState,jdbcType=INTEGER},
+               #{approvalTime,jdbcType=BIGINT},
+               #{approvalOpinion,jdbcType=VARCHAR},
                #{remark,jdbcType=VARCHAR})
     </insert>
 
@@ -54,9 +54,9 @@
         <trim prefix="set" suffixOverrides=",">
             <if test="approverId!=null">approver_id=#{approverId,jdbcType=INTEGER},</if>
             <if test="approverName!=null and approver!=''">approver_name=#{approverName,jdbcType=VARCHAR},</if>
-            <if test="approveState!=null">approve_state=#{approveState,jdbcType=INTEGER},</if>
-            <if test="approveTime!=null">approve_time=#{approveTime,jdbcType=BIGINT},</if>
-            <if test="approveOpinion!=null and approveOpinion!=''">approve_opinion=#{approveOpinion,jdbcType=VARCHAR},</if>
+            <if test="approvalState!=null">approval_state=#{approvalState,jdbcType=INTEGER},</if>
+            <if test="approvalTime!=null">approval_time=#{approvalTime,jdbcType=BIGINT},</if>
+            <if test="approvalOpinion!=null and approvalOpinion!=''">approval_opinion=#{approvalOpinion,jdbcType=VARCHAR},</if>
         </trim>
         where id = #{id,jdbcType=INTEGER}
 
@@ -74,8 +74,8 @@
         <if test="type!=null">
             and type = #{type,jdbcType=INTEGER}
         </if >
-        <if test="approveState!=null">
-            and approveState = #{type,jdbcType=INTEGER}
+        <if test="approvalState!=null">
+            and approval_state = #{approvalState,jdbcType=INTEGER}
         </if >
         <if test="startTime!=null">
             AND timestamp &gt;= #{startTime,jdbcType=BIGINT}
@@ -84,10 +84,10 @@
             AND timestamp &lt;= #{endTime,jdbcType=BIGINT}
         </if >
         <if test="aprStartTime!=null">
-            AND approve_time &gt;= #{aprStartTime,jdbcType=BIGINT}
+            AND approval_time &gt;= #{aprStartTime,jdbcType=BIGINT}
         </if >
         <if test="aprEndTime!=null">
-            AND approve_time &lt;= #{aprEndTime,jdbcType=BIGINT}
+            AND approval_time &lt;= #{aprEndTime,jdbcType=BIGINT}
         </if >
         <if test="paramTime!=null">
             AND #{aprEndTime,jdbcType=BIGINT} between start_time and end_time

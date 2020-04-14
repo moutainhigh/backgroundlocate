@@ -47,12 +47,14 @@ public class AuthController {
                 if (md5pwd.equals(authAccount.getPassword())) {
                     JSONObject userInfoJson = new JSONObject(new LinkedHashMap<>());
                     userInfoJson.put("userId",insUser.getId());
+                    userInfoJson.put("userName",insUser.getUserName());
                     userInfoJson.put("accountId",authAccount.getId());
-                    userInfoJson.put("name",insUser.getUserName());
                     userInfoJson.put("type",authAccount.getType());
-                    userInfoJson.put("level",authRole.getRoleLevel());
+                    userInfoJson.put("roleName",authRole.getRoleName());
+                    userInfoJson.put("roleLevel",authRole.getRoleLevel());
                     userInfoJson.put("deptId",insUser.getDeptId());
                     userInfoJson.put("deptName",insUser.getDeptName());
+
 
                     authAccount.setLastLoginTime(System.currentTimeMillis()/1000);
                     authService.updateAccount(authAccount);

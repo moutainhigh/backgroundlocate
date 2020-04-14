@@ -14,8 +14,8 @@ public class AttLeave {
     private long timestamp;
     private int approverId;
     private String approverName;
-    private int approveState;
-    private long approveTime;
-    private String approveOpinion;
+    private int approvalState;
+    private long approvalTime;
+    private String approvalOpinion;
     private String remark;
 }

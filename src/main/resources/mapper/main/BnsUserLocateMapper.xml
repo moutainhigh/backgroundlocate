@@ -8,7 +8,7 @@
         <result column="longitude" jdbcType="VARCHAR" property="longitude" />
         <result column="latitude" jdbcType="VARCHAR" property="latitude" />
         <result column="lon_lat" jdbcType="VARCHAR" property="lonLat" />
-        <result column="upload_time" jdbcType="VARCHAR" property="uoloadTime" />
+        <result column="upload_time" jdbcType="VARCHAR" property="uploadTime" />
         <result column="timestamp" jdbcType="BIGINT" property="timestamp" />
     </resultMap>
 

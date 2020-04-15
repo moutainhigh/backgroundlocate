@@ -2,8 +2,6 @@ package com.backGroundLocate.service;
 
 import com.backGroundLocate.entity.AttLeave;
 import com.backGroundLocate.entity.Attendance;
-import com.backGroundLocate.entity.Leave;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;

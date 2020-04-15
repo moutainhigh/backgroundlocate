@@ -8,10 +8,10 @@
         <version>2.2.4.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.backgroundlocate</groupId>
-    <artifactId>backgroundlocate</artifactId>
+    <groupId>com.backGroundLocate</groupId>
+    <artifactId>backGroundLocate</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>backgroundlocate</name>
+    <name>backGroundLocate</name>
     <description>Demo project for Spring Boot</description>
     <repositories>
         <repository>
@@ -78,7 +78,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        <finalName>backgroundlocate</finalName>
+        <finalName>backGroundLocate</finalName>
     </build>
 
 </project>

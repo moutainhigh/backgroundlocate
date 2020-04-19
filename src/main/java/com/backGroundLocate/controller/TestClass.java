@@ -43,24 +43,29 @@ public class TestClass {
     private String uri = "http://47.104.179.40:89/gpsonline/GPSAPI";
 
     public static void main(String[] args) {
-        //点在多边形内
-                Point2D.Double point = new Point2D.Double(116.309098,40.070144);
-                //点在多边形外
-        //		Point2D.Double point = new Point2D.Double(116.404072, 39.916605);
-
-        List<Point2D.Double> polygon = new ArrayList<Point2D.Double>();
-        polygon.add(new Point2D.Double(116.301744, 40.070643));
-        polygon.add(new Point2D.Double(116.31626,40.069676));
-        polygon.add(new Point2D.Double(116.304367,40.062636));
-        polygon.add(new Point2D.Double(116.311948,40.074728));
-        polygon.add(new Point2D.Double(116.311948,40.074728));
-//        polygon.add(new Point2D.Double(116.277266,40.074728));
-
-        if(contains(polygon,point)){
-            System.out.println("点在多边形内");
-        }else{
-            System.out.println("点在多边形外");
+//        //点在多边形内
+////                Point2D.Double point = new Point2D.Double(116.309098,40.070144);
+////                //点在多边形外
+////        //		Point2D.Double point = new Point2D.Double(116.404072, 39.916605);
+////
+////        List<Point2D.Double> polygon = new ArrayList<Point2D.Double>();
+////        polygon.add(new Point2D.Double(116.301744, 40.070643));
+////        polygon.add(new Point2D.Double(116.31626,40.069676));
+////        polygon.add(new Point2D.Double(116.304367,40.062636));
+////        polygon.add(new Point2D.Double(116.311948,40.074728));
+////        polygon.add(new Point2D.Double(116.311948,40.074728));
+//////        polygon.add(new Point2D.Double(116.277266,40.074728));
+////
+////        if(contains(polygon,point)){
+////            System.out.println("点在多边形内");
+////        }else{
+////            System.out.println("点在多边形外");
+////        }
+        List<String> result = getTimeList("2020-04-01","2020-04-19");
+        for (String str : result){
+            System.out.println(str);
         }
+
 
     }
 
@@ -91,6 +96,46 @@ public class TestClass {
         p.closePath();
 
         return p.contains(point);
+    }
+
+    private static List<String> getTimeList(String startDate, String endxDate){
+        SimpleDateFormat sdf ;
+        int calendarType;
+
+        switch (startDate.length()){
+            case 10:
+                sdf = new SimpleDateFormat("yyyy-MM-dd");
+                calendarType = Calendar.DATE;
+                break;
+            case 7:
+                sdf = new SimpleDateFormat("yyyy-MM");
+                calendarType = Calendar.MONTH;
+                break;
+            case 4:
+                sdf = new SimpleDateFormat("yyyy");
+                calendarType = Calendar.YEAR;
+                break;
+            default:
+                return null;
+        }
+
+        List<String> result = new ArrayList<>();
+        Calendar min = Calendar.getInstance();
+        Calendar max = Calendar.getInstance();
+        try {
+            min.setTime(sdf.parse(startDate));
+            min.add(calendarType, 0);
+            max.setTime(sdf.parse(endxDate));
+            max.add(calendarType, 1);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar curr = min;
+        while (curr.before(max)) {
+            result.add(sdf.format(min.getTime()));
+            curr.add(calendarType, 1);
+        }
+        return result;
     }
 
 

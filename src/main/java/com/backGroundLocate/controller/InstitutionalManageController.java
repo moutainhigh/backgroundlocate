@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.awt.geom.Point2D;
 import java.util.*;
 
 @Api(tags = "组织机构管理接口")
@@ -108,7 +109,7 @@ public class InstitutionalManageController {
 
                         BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                         information.put("address",bnsUserNewestLocate.getAddress());
-                        information.put("status","正常");
+                        information.put("status",getUserStatus(insUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
 
                         paramMap.put("type",1);
                         Attendance inAttendance = attendanceService.selectAttendanceForToday(paramMap);
@@ -162,8 +163,17 @@ public class InstitutionalManageController {
                             JSONObject vehicleObj = vehicleArray.getJSONObject(i);
                             if(insVehicle.getVehicleName().equals(vehicleObj.get("name"))){
                                 JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
+                                String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
+                                String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
+                                Map vehicleMap = new HashMap();
+                                vehicleMap.put("vehicleId",insVehicle.getId());
+                                vehicleMap.put("vehicleName",insVehicle.getVehicleName());
+                                vehicleMap.put("vehicleLon",lon);
+                                vehicleMap.put("vehicleLat",lat);
+                                vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
+                                vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                 information.put("address",vehicleJson.getString("info"));
-                                information.put("status",vehicleJson.getString("state"));
+                                information.put("status",getVehicleStatus(vehicleMap));
                                 information.put("mileage",vehicleJson.getString("totalDis"));
 
                             }
@@ -195,7 +205,7 @@ public class InstitutionalManageController {
                     List<InsUser> insUserList = userService.selectDirectlyUser(insUser.getDeptId());
                     for(InsUser user : insUserList){
                         Map userMap = new LinkedHashMap();
-                        userMap.put("id",user.getDeptId());
+                        userMap.put("id",user.getId());
                         userMap.put("name",user.getUserName());
                         unitList.add(userMap);
                     }
@@ -388,6 +398,80 @@ public class InstitutionalManageController {
         }
 
         return resultJson;
+    }
+
+    private Integer getUserStatus(Integer userId,Double longitude,Double latitude){
+        Integer result = 1;
+        Map paramMap = new HashMap();
+
+        paramMap.put("userId",userId);
+        paramMap.put("type",1);
+        Attendance todayAttendance = attendanceService.selectAttendanceForToday(paramMap);
+        if(todayAttendance == null){
+            result = 4;
+        }else{
+            Point2D.Double point = new Point2D.Double(longitude,latitude);
+            List<BnsArea> bnsAreaList = locationService.selectArea(paramMap);
+            List<Point2D.Double> polygon = new ArrayList<Point2D.Double>();
+            if(bnsAreaList.size()>0){
+                for (BnsArea bnsArea : bnsAreaList){
+                    paramMap.put("areaId",bnsArea.getId());
+                    List<BnsAreaPoint> bnsAreaPointList = locationService.selectAreaPoint(paramMap);
+                    for (BnsAreaPoint bnsAreaPoint : bnsAreaPointList){
+                        polygon.add(new Point2D.Double(Double.parseDouble(bnsAreaPoint.getLongitude()), Double.parseDouble(bnsAreaPoint.getLatitude())));
+                    }
+                }
+            }
+
+            if(!locationUtil.contains(polygon,point)){
+                result = 2;
+            }
+        }
+
+        return result;
+    }
+
+    private Integer getVehicleStatus(Map vehicleMap){
+        Integer result = 1;
+        Map paramMap = new HashMap();
+
+        String vehicleId = vehicleMap.get("vehicleId").toString();
+        String vehicleName = vehicleMap.get("vehicleName").toString();
+
+        Double speed = Double.parseDouble(vehicleMap.get("vehicleSpeed").toString());
+        String exState = vehicleMap.get("vehicleExState").toString();
+
+        if(exState.contains("超时")){
+            result = 4;
+        }else{
+            Point2D.Double point = new Point2D.Double(Double.parseDouble(vehicleMap.get("vehicleLon").toString()),Double.parseDouble(vehicleMap.get("vehicleLat").toString()));
+            List<BnsArea> bnsAreaList = locationService.selectArea(paramMap);
+            List<Point2D.Double> polygon = new ArrayList<Point2D.Double>();
+            if(bnsAreaList.size()>0){
+                for (BnsArea bnsArea : bnsAreaList){
+                    paramMap.put("areaId",bnsArea.getId());
+                    List<BnsAreaPoint> bnsAreaPointList = locationService.selectAreaPoint(paramMap);
+                    for (BnsAreaPoint bnsAreaPoint : bnsAreaPointList){
+                        polygon.add(new Point2D.Double(Double.parseDouble(bnsAreaPoint.getLongitude()), Double.parseDouble(bnsAreaPoint.getLatitude())));
+                    }
+                }
+            }
+            if(!locationUtil.contains(polygon,point)){
+                result = 3;
+            }else if(speed > 30){
+                result = 2;
+            }
+        }
+
+//        vehicleMap.put("vehicleId",vehicle.getId());
+//        vehicleMap.put("vehicleName",vehicle.getVehicleName());
+//        vehicleMap.put("vehicleLon",vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
+//        vehicleMap.put("vehicleLat",vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
+//        vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
+//        vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
+
+
+        return result;
     }
 
 

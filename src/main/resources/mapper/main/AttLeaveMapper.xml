@@ -90,7 +90,7 @@
             AND approval_time &lt;= #{aprEndTime,jdbcType=BIGINT}
         </if >
         <if test="paramTime!=null">
-            AND #{aprEndTime,jdbcType=BIGINT} between start_time and end_time
+            AND #{paramTime,jdbcType=BIGINT} between start_time and end_time
         </if>
         order by timestamp desc
     </select>

@@ -4,6 +4,7 @@ import com.backGroundLocate.entity.Attendance;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -15,5 +16,9 @@ public interface AttendanceMapper {
     Attendance selectAttendanceForToday(Map paramMap);
 
     void updateAttendance(Attendance attendance);
+
+    Attendance selectAttendanceForDay(Map paramMap);
+
+    List<Attendance> selectAttendance(Map paramMap);
 
 }

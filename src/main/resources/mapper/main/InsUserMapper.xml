@@ -64,7 +64,7 @@
         select <include refid="Base_Column_List" /> from t_ins_user where 1=1
         and del_flag = 0
         <if test="userName!=null and userName!=''">
-            and user_name = #{userName,jdbcType=VARCHAR}
+            and user_name like '%'+#{userName,jdbcType=VARCHAR}+'%'
         </if >
         <if test="userAccount!=null and userAccount!=''">
             and user_account = #{userAccount,jdbcType=VARCHAR}

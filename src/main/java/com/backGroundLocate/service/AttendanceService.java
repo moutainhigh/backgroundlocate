@@ -21,4 +21,8 @@ public interface AttendanceService {
     AttLeave selectLeaveById(int id);
 
     void updateLeave(AttLeave attLeave);
+
+    Attendance selectAttendanceForDay(Map paramMap);
+
+    List<Attendance> selectAttendance(Map paramMap);
 }

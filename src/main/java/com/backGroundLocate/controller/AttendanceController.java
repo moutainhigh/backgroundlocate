@@ -38,10 +38,10 @@ public class AttendanceController {
         JSONObject resultJson = new JSONObject(new LinkedHashMap<>());
         JSONObject resultData = new JSONObject(new LinkedHashMap<>());
 
-        Map paraMap = new HashMap();
-        paraMap.put("userId",userId);
-        paraMap.put("type",1);
-        Attendance todayAttendance = attendanceService.selectAttendanceForToday(paraMap);
+        Map paramMap = new HashMap();
+        paramMap.put("userId",userId);
+        paramMap.put("type",1);
+        Attendance todayAttendance = attendanceService.selectAttendanceForToday(paramMap);
         if(todayAttendance == null){
             resultData.put("status",1);
         }else{

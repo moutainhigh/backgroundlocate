@@ -52,6 +52,27 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
 
+    <select id="selectAttendance" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_att_attendance where 1=1
+
+        <if test="userId!=null">
+            and user_id = #{userId,jdbcType=INTEGER}
+        </if >
+        <if test="type!=null">
+            and type = #{type,jdbcType=INTEGER}
+        </if >
+        <if test="state!=null">
+            and state = #{state,jdbcType=INTEGER}
+        </if >
+        <if test="startTime!=null">
+            AND timestamp &gt;= #{startTime,jdbcType=BIGINT}
+        </if >
+        <if test="endTime!=null">
+            AND timestamp &lt;= #{endTime,jdbcType=BIGINT}
+        </if >
+        order by timestamp desc
+    </select>
+
     <select id="selectAttendanceForToday" resultMap="BaseResultMap" parameterType="map">
         SELECT
         <include refid="Base_Column_List"/>
@@ -63,6 +84,26 @@
         dd,
         attendance_time,
         getdate()) = 0
+        <if test="type!=null">
+            AND type = #{type,jdbcType=INTEGER}
+        </if >
+        <if test="userId!=null">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if >
+
+    </select>
+
+    <select id="selectAttendanceForDay" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_att_attendance
+        WHERE
+        1 = 1
+        AND DateDiff(
+        dd,
+        attendance_time,
+        #{attDay,jdbcType=VARCHAR}) = 0
         <if test="type!=null">
             AND type = #{type,jdbcType=INTEGER}
         </if >

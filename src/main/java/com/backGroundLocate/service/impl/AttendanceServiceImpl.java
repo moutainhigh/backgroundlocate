@@ -54,4 +54,14 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void updateLeave(AttLeave attLeave) {
         attLeaveMapper.updateLeave(attLeave);
     }
+
+    @Override
+    public Attendance selectAttendanceForDay(Map paramMap) {
+        return attendanceMapper.selectAttendanceForDay(paramMap);
+    }
+
+    @Override
+    public List<Attendance> selectAttendance(Map paramMap) {
+        return attendanceMapper.selectAttendance(paramMap);
+    }
 }

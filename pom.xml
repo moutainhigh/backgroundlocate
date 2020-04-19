@@ -78,7 +78,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        <finalName>backGroundLocate</finalName>
+        <finalName>backgroundlocate</finalName>
     </build>
 
 </project>

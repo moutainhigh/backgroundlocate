@@ -1,11 +1,7 @@
 package com.backGroundLocate.service.impl;
 
-import com.backGroundLocate.entity.BnsUserLocate;
-import com.backGroundLocate.entity.BnsUserNewestLocate;
-import com.backGroundLocate.mapper.main.BnsIllegalMapper;
-import com.backGroundLocate.entity.BnsIllegal;
-import com.backGroundLocate.mapper.main.BnsUserLocateMapper;
-import com.backGroundLocate.mapper.main.BnsUserNewestLocateMapper;
+import com.backGroundLocate.entity.*;
+import com.backGroundLocate.mapper.main.*;
 import com.backGroundLocate.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +21,12 @@ public class LocationServiceImpl implements LocationService {
 
     @Autowired
     private BnsUserNewestLocateMapper bnsUserNewestLocateMapper;
+
+    @Autowired
+    private BnsAreaMapper bnsAreaMapper;
+
+    @Autowired
+    private BnsAreaPointMapper bnsAreaPointMapper;
 
     @Override
     public int createIllegal(BnsIllegal bnsIllegal) {
@@ -69,5 +71,45 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public List<LinkedHashMap> selectUserTrackList(Map paramMap) {
         return bnsUserLocateMapper.selectUserTrackList(paramMap);
+    }
+
+    @Override
+    public int createArea(BnsArea bnsArea) {
+        return bnsAreaMapper.createArea(bnsArea);
+    }
+
+    @Override
+    public List<BnsArea> selectArea(Map paramMap) {
+        return bnsAreaMapper.selectArea(paramMap);
+    }
+
+    @Override
+    public void deleteArea(int id) {
+        bnsAreaMapper.deleteArea(id);
+    }
+
+    @Override
+    public int createAreaPoint(BnsAreaPoint bnsAreaPoint) {
+        return bnsAreaPointMapper.createAreaPoint(bnsAreaPoint);
+    }
+
+    @Override
+    public List<BnsAreaPoint> selectAreaPoint(Map paramMap) {
+        return bnsAreaPointMapper.selectAreaPoint(paramMap);
+    }
+
+    @Override
+    public void deleteAreaPoint(int areaId) {
+        bnsAreaPointMapper.deleteAreaPoint(areaId);
+    }
+
+    @Override
+    public void updateArea(BnsArea bnsArea) {
+        bnsAreaMapper.updateArea(bnsArea);
+    }
+
+    @Override
+    public BnsArea selectAreaById(int id) {
+        return bnsAreaMapper.selectAreaById(id);
     }
 }

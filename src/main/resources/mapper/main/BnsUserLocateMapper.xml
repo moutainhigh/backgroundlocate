@@ -36,6 +36,8 @@
 
     <select id="selectUserTrackList" resultType="java.util.Map" parameterType="map">
       SELECT
+        lon as lng,
+        lat as lat,
 	    lon_lat AS lonlat,
 	    timestamp AS timestamp
       FROM

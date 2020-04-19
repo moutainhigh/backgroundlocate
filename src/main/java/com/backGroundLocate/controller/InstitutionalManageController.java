@@ -56,9 +56,16 @@ public class InstitutionalManageController {
         try {
             if(!StringUtils.isEmpty(deptId)){
                 List<InsDepartment> insDepartmentList = institutionalService.selectSubDepartment(deptId);
+//                List<InsUser> directlyUserList = userService.selectDirectlyUser(deptId);
+//                for(InsUser insUser : directlyUserList){
+//                    Map map = new LinkedHashMap();
+//                    map.put("id",insUser.getDeptId());
+//                    map.put("name",insUser.getUserName());
+//                    unitList.add(map);
+//                }
                 for (InsDepartment insDepartment : insDepartmentList){
                     Map deptMap = new LinkedHashMap();
-                    if(type == 1 && insDepartment.getDeptType() == 3){
+                    if(type == 1 && insDepartment.getDeptType() != 4){
                         List<InsUser> insUserList = userService.selectDirectlyUser(insDepartment.getId());
                         for(InsUser insUser : insUserList){
                             Map map = new LinkedHashMap();
@@ -69,11 +76,11 @@ public class InstitutionalManageController {
                         deptMap.put("id",insDepartment.getId());
                         deptMap.put("name",insDepartment.getDeptName());
                         deptList.add(deptMap);
-                    }else if(type == 2 && insDepartment.getDeptType() == 4){
+                    }else if(type == 2 && insDepartment.getDeptType() != 3){
                         List<InsVehicle> vehicleList = vehicleService.selectDirectlyVehicle(insDepartment.getId());
                         for(InsVehicle insVehicle : vehicleList){
                             Map map = new LinkedHashMap();
-                            map.put("id",insVehicle.getDeptId());
+                            map.put("id",insVehicle.getId());
                             map.put("name",insVehicle.getVehicleName());
                             unitList.add(map);
                         }
@@ -171,11 +178,12 @@ public class InstitutionalManageController {
 
 
                 }
+                information.put("category",type);
                 resultData.put("information",information);
             }else{
 
                 InsUser insUser = userService.selectUserById(userId);
-                List<InsUser> insUserList = userService.selectDirectlyUser(insUser.getDeptId());
+
                 InsDepartment insDepartment = institutionalService.selectDepartmentById(insUser.getDeptId());
 
                 Map map = new LinkedHashMap();
@@ -183,8 +191,19 @@ public class InstitutionalManageController {
                 map.put("name",insDepartment.getDeptName());
                 deptList.add(map);
 
+                if(type ==1){
+                    List<InsUser> insUserList = userService.selectDirectlyUser(insUser.getDeptId());
+                    for(InsUser user : insUserList){
+                        Map userMap = new LinkedHashMap();
+                        userMap.put("id",user.getDeptId());
+                        userMap.put("name",user.getUserName());
+                        unitList.add(userMap);
+                    }
+                }
+
+
                 departmentInfo.put("deptList",deptList);
-                departmentInfo.put("unitList",insUserList);
+                departmentInfo.put("unitList",unitList);
                 departmentInfo.put("type",type);
 
                 resultData.put("departmentInfo",departmentInfo);

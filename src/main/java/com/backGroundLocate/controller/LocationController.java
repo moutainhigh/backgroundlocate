@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.awt.geom.Point2D;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -159,14 +160,14 @@ public class LocationController {
                     List<InsUser> userList = userService.selectUser(userParamMap);
                     for (InsUser user : userList){
                         Map map = new LinkedHashMap();
+                        BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                         map.put("id",user.getId());
                         map.put("name",user.getUserName());
-                        map.put("status",getUserStatus(user.getId()));
+                        map.put("status",getUserStatus(user.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                         paramMap.put("userId",user.getId());
-                        BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                        map.put("lng",bnsUserNewestLocate.getLongitude());
+                        map.put("lat",bnsUserNewestLocate.getLatitude());
                         map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
-
-
                         resultList.add(map);
                     }
 
@@ -185,14 +186,16 @@ public class LocationController {
                                 String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz"));
                                 String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lat_xz"));
                                 String lonLat = lon+","+lat;
-                                Map vehicleMap = new HashMap();
+                                Map<String,Object> vehicleMap = new HashMap();
                                 vehicleMap.put("vehicleId",vehicle.getId());
                                 vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                vehicleMap.put("vehicleLon",lon);
-                                vehicleMap.put("vehicleLat",lat);
+                                vehicleMap.put("vehicleLon",vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz"));
+                                vehicleMap.put("vehicleLat",vehicleJson.getDouble("lat")+vehicleJson.getDouble("lat_xz"));
                                 vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
                                 vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                 map.put("status",getVehicleStatus(vehicleMap));
+                                map.put("lng",lon);
+                                map.put("lat",lat);
                                 map.put("latlon",lonLat);
                             }
                         }
@@ -221,11 +224,13 @@ public class LocationController {
                                     List<InsUser> dirUserList = userService.selectDirectlyUser(insDepartment.getId());
                                     for (InsUser dirUser : dirUserList){
                                         Map map = new LinkedHashMap();
+                                        BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                         map.put("id",dirUser.getId());
                                         map.put("name",dirUser.getUserName());
-                                        map.put("status",getUserStatus(dirUser.getId()));
+                                        map.put("status",getUserStatus(dirUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                                         paramMap.put("userId",dirUser.getId());
-                                        BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                                        map.put("lng",bnsUserNewestLocate.getLongitude());
+                                        map.put("lat",bnsUserNewestLocate.getLatitude());
                                         map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                         resultList.add(map);
 
@@ -235,11 +240,13 @@ public class LocationController {
                                             List<InsUser> subUserList = userService.selectDirectlyUser(subDept.getId());
                                             for (InsUser subUser : subUserList){
                                                 Map map = new LinkedHashMap();
+                                                BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                                 map.put("id",subUser.getId());
                                                 map.put("name",subUser.getUserName());
-                                                map.put("status",getUserStatus(subUser.getId()));
+                                                map.put("status",getUserStatus(subUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                                                 paramMap.put("userId",subUser.getId());
-                                                BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                                                map.put("lng",bnsUserNewestLocate.getLongitude());
+                                                map.put("lat",bnsUserNewestLocate.getLatitude());
                                                 map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                                 resultList.add(map);
                                             }
@@ -270,6 +277,8 @@ public class LocationController {
                                                         vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
                                                         vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                                         map.put("status",getVehicleStatus(vehicleMap));
+                                                        map.put("lng",lon);
+                                                        map.put("lat",lat);
                                                         map.put("lonLat",lonLat);
                                                     }
                                                 }
@@ -293,11 +302,13 @@ public class LocationController {
                                             List<InsUser> subUserList = userService.selectDirectlyUser(insDepartment.getId());
                                             for (InsUser subUser : subUserList){
                                                 Map map = new LinkedHashMap();
+                                                BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                                 map.put("id",subUser.getId());
                                                 map.put("name",subUser.getUserName());
-                                                map.put("status",getUserStatus(subUser.getId()));
+                                                map.put("status",getUserStatus(subUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                                                 paramMap.put("userId",subUser.getId());
-                                                BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                                                map.put("lng",bnsUserNewestLocate.getLongitude());
+                                                map.put("lat",bnsUserNewestLocate.getLatitude());
                                                 map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                                 resultList.add(map);
                                             }
@@ -324,6 +335,8 @@ public class LocationController {
                                                         vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
                                                         vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                                         map.put("status",getVehicleStatus(vehicleMap));
+                                                        map.put("lng",lon);
+                                                        map.put("lat",lat);
                                                         map.put("lonLat",lonLat);
                                                     }
                                                 }
@@ -350,11 +363,13 @@ public class LocationController {
                         List<InsUser> dirUserList = userService.selectUser(userParamMap);
                         for (InsUser dirUser : dirUserList){
                             Map map = new LinkedHashMap();
+                            BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                             map.put("id",dirUser.getId());
                             map.put("name",dirUser.getUserName());
-                            map.put("status",getUserStatus(dirUser.getId()));
+                            map.put("status",getUserStatus(dirUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                             paramMap.put("userId",dirUser.getId());
-                            BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                            map.put("lng",bnsUserNewestLocate.getLongitude());
+                            map.put("lat",bnsUserNewestLocate.getLatitude());
                             map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                             resultList.add(map);
 
@@ -364,11 +379,13 @@ public class LocationController {
                             List<InsUser> subUserList = userService.selectUser(userParamMap);
                             for (InsUser subUser : subUserList){
                                 Map map = new LinkedHashMap();
+                                BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                 map.put("id",subUser.getId());
                                 map.put("name",subUser.getUserName());
-                                map.put("status",getUserStatus(subUser.getId()));
+                                map.put("status",getUserStatus(subUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                                 paramMap.put("userId",subUser.getId());
-                                BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                                map.put("lng",bnsUserNewestLocate.getLongitude());
+                                map.put("lat",bnsUserNewestLocate.getLatitude());
                                 map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                 resultList.add(map);
                             }
@@ -398,6 +415,8 @@ public class LocationController {
                                         vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
                                         vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                         map.put("status",getVehicleStatus(vehicleMap));
+                                        map.put("lng",lon);
+                                        map.put("lat",lat);
                                         map.put("lonLat",lonLat);
                                     }
                                 }
@@ -411,11 +430,13 @@ public class LocationController {
                         List<InsUser> dirUserList = userService.selectUser(userParamMap);
                         for (InsUser dirUser : dirUserList){
                             Map map = new LinkedHashMap();
+                            BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                             map.put("id",dirUser.getId());
                             map.put("name",dirUser.getUserName());
-                            map.put("status",getUserStatus(dirUser.getId()));
+                            map.put("status",getUserStatus(dirUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                             paramMap.put("userId",dirUser.getId());
-                            BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                            map.put("lng",bnsUserNewestLocate.getLongitude());
+                            map.put("lat",bnsUserNewestLocate.getLatitude());
                             map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                             resultList.add(map);
 
@@ -426,11 +447,11 @@ public class LocationController {
                                 List<InsUser> subUserList = userService.selectUser(userParamMap);
                                 for (InsUser subUser : subUserList){
                                     Map map = new LinkedHashMap();
+                                    BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                     map.put("id",subUser.getId());
                                     map.put("name",subUser.getUserName());
-                                    map.put("status",getUserStatus(subUser.getId()));
+                                    map.put("status",getUserStatus(subUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                                     paramMap.put("userId",subUser.getId());
-                                    BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                     map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                     resultList.add(map);
                                 }
@@ -461,6 +482,8 @@ public class LocationController {
                                             vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
                                             vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                             map.put("status",getVehicleStatus(vehicleMap));
+                                            map.put("lng",lon);
+                                            map.put("lat",lat);
                                             map.put("lonLat",lonLat);
                                         }
                                     }
@@ -486,11 +509,13 @@ public class LocationController {
                                 List<InsUser> userList = userService.selectUser(new HashMap());
                                 for (InsUser user : userList){
                                     Map map = new LinkedHashMap();
+                                    BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                     map.put("id",user.getId());
                                     map.put("name",user.getUserName());
-                                    map.put("status",getUserStatus(user.getId()));
+                                    map.put("status",map.put("status",getUserStatus(user.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude()))));
                                     paramMap.put("userId",user.getId());
-                                    BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                                    map.put("lng",bnsUserNewestLocate.getLongitude());
+                                    map.put("lat",bnsUserNewestLocate.getLatitude());
                                     map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                     resultList.add(map);
                                 }
@@ -516,6 +541,8 @@ public class LocationController {
                                             vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
                                             vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                             map.put("status",getVehicleStatus(vehicleMap));
+                                            map.put("lng",lon);
+                                            map.put("lat",lat);
                                             map.put("lonLat",lonLat);
                                         }
                                     }
@@ -531,11 +558,13 @@ public class LocationController {
                                         List<InsUser> subUserList = userService.selectDirectlyUser(subDept.getId());
                                         for (InsUser subUser : subUserList){
                                             Map map = new LinkedHashMap();
+                                            BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                             map.put("id",subUser.getId());
                                             map.put("name",subUser.getUserName());
-                                            map.put("status",getUserStatus(subUser.getId()));
+                                            map.put("status",getUserStatus(subUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                                             paramMap.put("userId",subUser.getId());
-                                            BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                                            map.put("lng",bnsUserNewestLocate.getLongitude());
+                                            map.put("lat",bnsUserNewestLocate.getLatitude());
                                             map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                             resultList.add(map);
                                         }
@@ -546,11 +575,13 @@ public class LocationController {
                                                 List<InsUser> dirUserList = userService.selectUser(userParamMap);
                                                 for (InsUser dirUser : dirUserList){
                                                     Map map = new LinkedHashMap();
+                                                    BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                                     map.put("id",dirUser.getId());
                                                     map.put("name",dirUser.getUserName());
-                                                    map.put("status",getUserStatus(dirUser.getId()));
+                                                    map.put("status",getUserStatus(dirUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                                                     paramMap.put("userId",dirUser.getId());
-                                                    BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                                                    map.put("lng",bnsUserNewestLocate.getLongitude());
+                                                    map.put("lat",bnsUserNewestLocate.getLatitude());
                                                     map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                                     resultList.add(map);
                                                 }
@@ -586,6 +617,8 @@ public class LocationController {
                                                             vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
                                                             vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                                             map.put("status",getVehicleStatus(vehicleMap));
+                                                            map.put("lng",lon);
+                                                            map.put("lat",lat);
                                                             map.put("lonLat",lonLat);
                                                         }
                                                     }
@@ -601,11 +634,13 @@ public class LocationController {
                                 List<InsUser> subUserList = userService.selectDirectlyUser(insDepartment.getId());
                                 for (InsUser subUser : subUserList){
                                     Map map = new LinkedHashMap();
+                                    BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                     map.put("id",subUser.getId());
                                     map.put("name",subUser.getUserName());
-                                    map.put("status",getUserStatus(subUser.getId()));
+                                    map.put("status",getUserStatus(subUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                                     paramMap.put("userId",subUser.getId());
-                                    BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                                    map.put("lng",bnsUserNewestLocate.getLongitude());
+                                    map.put("lat",bnsUserNewestLocate.getLatitude());
                                     map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                     resultList.add(map);
                                 }
@@ -632,6 +667,8 @@ public class LocationController {
                                             vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
                                             vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                             map.put("status",getVehicleStatus(vehicleMap));
+                                            map.put("lng",lon);
+                                            map.put("lat",lat);
                                             map.put("lonLat",lonLat);
                                         }
                                     }
@@ -650,11 +687,13 @@ public class LocationController {
                         List<InsUser> userList = userService.selectUser(userParamMap);
                         for (InsUser user : userList){
                             Map map = new LinkedHashMap();
+                            BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                             map.put("id",user.getId());
                             map.put("name",user.getUserName());
-                            map.put("status",getUserStatus(user.getId()));
+                            map.put("status",getUserStatus(user.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                             paramMap.put("userId",user.getId());
-                            BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                            map.put("lng",bnsUserNewestLocate.getLongitude());
+                            map.put("lat",bnsUserNewestLocate.getLatitude());
                             map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                             resultList.add(map);
                         }
@@ -681,6 +720,8 @@ public class LocationController {
                                     vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
                                     vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                     map.put("status",getVehicleStatus(vehicleMap));
+                                    map.put("lng",lon);
+                                    map.put("lat",lat);
                                     map.put("lonLat",lonLat);
                                 }
                             }
@@ -693,11 +734,13 @@ public class LocationController {
                         List<InsUser> userList = userService.selectUser(userParamMap);
                         for (InsUser user : userList){
                             Map map = new LinkedHashMap();
+                            BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                             map.put("id",user.getId());
                             map.put("name",user.getUserName());
-                            map.put("status",getUserStatus(user.getId()));
+                            map.put("status",getUserStatus(user.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                             paramMap.put("userId",user.getId());
-                            BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                            map.put("lng",bnsUserNewestLocate.getLongitude());
+                            map.put("lat",bnsUserNewestLocate.getLatitude());
                             map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                             resultList.add(map);
 
@@ -707,11 +750,13 @@ public class LocationController {
                             List<InsUser> subUserList = userService.selectUser(userParamMap);
                             for (InsUser subUser : subUserList){
                                 Map map = new LinkedHashMap();
+                                BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                 map.put("id",subUser.getId());
                                 map.put("name",subUser.getUserName());
-                                map.put("status",getUserStatus(subUser.getId()));
+                                map.put("status",getUserStatus(subUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                                 paramMap.put("userId",subUser.getId());
-                                BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                                map.put("lng",bnsUserNewestLocate.getLongitude());
+                                map.put("lat",bnsUserNewestLocate.getLatitude());
                                 map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                 resultList.add(map);
                             }
@@ -722,11 +767,13 @@ public class LocationController {
                                     List<InsUser> dirUserList = userService.selectUser(userParamMap);
                                     for (InsUser dirUser : dirUserList){
                                         Map map = new LinkedHashMap();
+                                        BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                         map.put("id",dirUser.getId());
                                         map.put("name",dirUser.getUserName());
-                                        map.put("status",getUserStatus(dirUser.getId()));
+                                        map.put("status",getUserStatus(dirUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
                                         paramMap.put("userId",dirUser.getId());
-                                        BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
+                                        map.put("lng",bnsUserNewestLocate.getLongitude());
+                                        map.put("lat",bnsUserNewestLocate.getLatitude());
                                         map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                         resultList.add(map);
                                     }
@@ -760,6 +807,8 @@ public class LocationController {
                                                 vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
                                                 vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
                                                 map.put("status",getVehicleStatus(vehicleMap));
+                                                map.put("lng",lon);
+                                                map.put("lat",lat);
                                                 map.put("lonLat",lonLat);
                                             }
                                         }
@@ -884,6 +933,8 @@ public class LocationController {
                                 String lat = String.valueOf(vehicleHis.getDouble("lat")+vehicleHis.getDouble("lat_xz"));
                                 String lonLat = lon+","+lat;
                                 LinkedHashMap map = new LinkedHashMap();
+                                map.put("lng",lon);
+                                map.put("lat",lat);
                                 map.put("lonlat",lonLat);
                                 map.put("mileage",vehicleHis.getDouble("dis"));
                                 map.put("direction",vehicleHis.getInteger("dir"));
@@ -928,16 +979,79 @@ public class LocationController {
 
 
 
-    private Integer getUserStatus(Integer userId){
+    private Integer getUserStatus(Integer userId,Double longitude,Double latitude){
         Integer result = 1;
+        Map paramMap = new HashMap();
 
-        return new Random().nextInt(4);
+        paramMap.put("userId",userId);
+        paramMap.put("type",1);
+        Attendance todayAttendance = attendanceService.selectAttendanceForToday(paramMap);
+        if(todayAttendance == null){
+            result = 4;
+        }else{
+            Point2D.Double point = new Point2D.Double(longitude,latitude);
+            List<BnsArea> bnsAreaList = locationService.selectArea(paramMap);
+            List<Point2D.Double> polygon = new ArrayList<Point2D.Double>();
+            if(bnsAreaList.size()>0){
+                for (BnsArea bnsArea : bnsAreaList){
+                    paramMap.put("areaId",bnsArea.getId());
+                    List<BnsAreaPoint> bnsAreaPointList = locationService.selectAreaPoint(paramMap);
+                    for (BnsAreaPoint bnsAreaPoint : bnsAreaPointList){
+                        polygon.add(new Point2D.Double(Double.parseDouble(bnsAreaPoint.getLongitude()), Double.parseDouble(bnsAreaPoint.getLatitude())));
+                    }
+                }
+            }
+
+            if(!locationUtil.contains(polygon,point)){
+                result = 2;
+            }
+        }
+
+        return result;
     }
 
     private Integer getVehicleStatus(Map vehicleMap){
         Integer result = 1;
+        Map paramMap = new HashMap();
 
-        return new Random().nextInt(4);
+        String vehicleId = vehicleMap.get("vehicleId").toString();
+        String vehicleName = vehicleMap.get("vehicleName").toString();
+
+        Double speed = Double.parseDouble(vehicleMap.get("vehicleSpeed").toString());
+        String exState = vehicleMap.get("vehicleExState").toString();
+
+        if(exState.contains("超时")){
+            result = 4;
+        }else{
+            Point2D.Double point = new Point2D.Double(Double.parseDouble(vehicleMap.get("vehicleLon").toString()),Double.parseDouble(vehicleMap.get("vehicleLat").toString()));
+            List<BnsArea> bnsAreaList = locationService.selectArea(paramMap);
+            List<Point2D.Double> polygon = new ArrayList<Point2D.Double>();
+            if(bnsAreaList.size()>0){
+                for (BnsArea bnsArea : bnsAreaList){
+                    paramMap.put("areaId",bnsArea.getId());
+                    List<BnsAreaPoint> bnsAreaPointList = locationService.selectAreaPoint(paramMap);
+                    for (BnsAreaPoint bnsAreaPoint : bnsAreaPointList){
+                        polygon.add(new Point2D.Double(Double.parseDouble(bnsAreaPoint.getLongitude()), Double.parseDouble(bnsAreaPoint.getLatitude())));
+                    }
+                }
+            }
+            if(!locationUtil.contains(polygon,point)){
+                result = 3;
+            }else if(speed > 30){
+                result = 2;
+            }
+
+        }
+
+//        vehicleMap.put("vehicleId",vehicle.getId());
+//        vehicleMap.put("vehicleName",vehicle.getVehicleName());
+//        vehicleMap.put("vehicleLon",vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz"));
+//        vehicleMap.put("vehicleLat",vehicleJson.getDouble("lat")+vehicleJson.getDouble("lat_xz"));
+//        vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
+//        vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
+
+
+        return result;
     }
 
     /**

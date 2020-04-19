@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.backGroundLocate.mapper.main.BnsAreaMapper">
+    <resultMap id="BaseResultMap" type="com.backGroundLocate.entity.BnsArea">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="area_name" jdbcType="VARCHAR" property="areaName" />
+        <result column="point_num" jdbcType="INTEGER" property="pointNum" />
+        <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,area_name,point_num,create_time
+    </sql>
+
+    <insert id="createArea" parameterType="com.backGroundLocate.entity.BnsArea" keyProperty="id" useGeneratedKeys="true">
+        insert into t_bns_area(
+                    area_name,
+                    point_num,
+                    create_time)
+        values(#{areaName,jdbcType=VARCHAR},
+               #{pointNum,jdbcType=VARCHAR},
+               #{createTime,jdbcType=BIGINT})
+    </insert>
+
+    <update id="updateArea" parameterType="com.backGroundLocate.entity.BnsArea">
+        update t_bns_area
+        <trim prefix="set" suffixOverrides=",">
+            <if test="areaName!=null and areaName!=''">area_name=#{areaName,jdbcType=VARCHAR},</if>
+            <if test="pointNum!=null">point_num=#{pointNum,jdbcType=INTEGER},</if>
+        </trim>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectArea" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from t_bns_area where 1=1
+        and del_flag = 0
+
+        <if test="areaName!=null and areaName!=''">
+            and area_name = #{areaName,jdbcType=VARCHAR}
+        </if >
+
+    </select>
+
+    <select id="selectAreaById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" /> from t_bns_area where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <update id="deleteArea" parameterType="java.lang.Integer">
+        update t_bns_area set del_flag = 1 where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

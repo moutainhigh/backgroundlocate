@@ -9,6 +9,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -113,6 +115,35 @@ public class LocationUtil {
         System.out.println(locationStr);
         JSONObject locationJson = JSONObject.parseObject(locationStr);
         return locationJson.getJSONArray("history");
+    }
+
+    /**
+     * 判断点是否在多边形内
+     * 步骤：
+     * 		①声明一个“画笔”
+     * 		②将“画笔”移动到多边形的第一个顶点
+     * 		③用“画笔”按顺序将多边形的顶点连接起来
+     * 		④用“画笔”将多边形的第一个点连起来，最终形成一个封闭的多边形
+     * 		⑤用contains()方法判断点是否在多边形区域内
+     * @param polygon	多边形
+     * @param point		检测点
+     * @return			点在多边形内返回true，否则返回false
+     */
+    public boolean contains(List<Point2D.Double> polygon, Point2D.Double point){
+
+        GeneralPath p = new GeneralPath();
+
+        Point2D.Double first = polygon.get(0);
+        p.moveTo(first.x, first.y);
+
+        for(Point2D.Double d : polygon){
+            p.lineTo(d.x, d.y);
+        }
+
+        p.lineTo(first.x, first.y);
+        p.closePath();
+
+        return p.contains(point);
     }
 
     /**

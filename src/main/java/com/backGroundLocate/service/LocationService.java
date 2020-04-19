@@ -1,8 +1,6 @@
 package com.backGroundLocate.service;
 
-import com.backGroundLocate.entity.BnsIllegal;
-import com.backGroundLocate.entity.BnsUserLocate;
-import com.backGroundLocate.entity.BnsUserNewestLocate;
+import com.backGroundLocate.entity.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,4 +24,20 @@ public interface LocationService {
     void updateUserLocationForNewest(BnsUserLocate bnsUserLocate);
 
     List<LinkedHashMap> selectUserTrackList(Map paramMap);
+
+    int createArea(BnsArea bnsArea);
+
+    List<BnsArea> selectArea(Map paramMap);
+
+    void deleteArea(int id);
+
+    int createAreaPoint(BnsAreaPoint bnsAreaPoint);
+
+    List<BnsAreaPoint> selectAreaPoint(Map paramMap);
+
+    void deleteAreaPoint(int areaId);
+
+    void updateArea(BnsArea bnsArea);
+
+    BnsArea selectAreaById(int id);
 }

@@ -57,20 +57,13 @@ public class InstitutionalManageController {
         try {
             if(!StringUtils.isEmpty(deptId)){
                 List<InsDepartment> insDepartmentList = institutionalService.selectSubDepartment(deptId);
-//                List<InsUser> directlyUserList = userService.selectDirectlyUser(deptId);
-//                for(InsUser insUser : directlyUserList){
-//                    Map map = new LinkedHashMap();
-//                    map.put("id",insUser.getDeptId());
-//                    map.put("name",insUser.getUserName());
-//                    unitList.add(map);
-//                }
                 for (InsDepartment insDepartment : insDepartmentList){
                     Map deptMap = new LinkedHashMap();
                     if(type == 1 && insDepartment.getDeptType() != 4){
                         List<InsUser> insUserList = userService.selectDirectlyUser(insDepartment.getId());
                         for(InsUser insUser : insUserList){
                             Map map = new LinkedHashMap();
-                            map.put("id",insUser.getDeptId());
+                            map.put("id",insUser.getId());
                             map.put("name",insUser.getUserName());
                             unitList.add(map);
                         }

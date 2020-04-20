@@ -152,9 +152,16 @@ public class InstitutionalManageController {
                         information.put("id",insVehicle.getId());
                         information.put("name",insVehicle.getVehicleName());
                         information.put("type",insVehicle.getTypeName());
-                        information.put("address",map.get("address"));
-                        information.put("status",map.get("status"));
-                        information.put("mileage",map.get("mileage"));
+
+                        if(map != null){
+                            information.put("address",map.get("address"));
+                            information.put("status",map.get("status"));
+                            information.put("mileage",map.get("mileage"));
+                        }else{
+                            information.put("address","");
+                            information.put("status","");
+                            information.put("mileage","");
+                        }
 
                         //待补车辆年审
                         information.put("annual","");

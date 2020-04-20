@@ -165,10 +165,17 @@ public class TestClass {
 //        vehicle.setSimNumber("13190607613");
 //        LinkedHashMap map = locationUtil.getVehicleLocationForEX(vehicle);
 
-        LinkedList<LinkedHashMap<String,Object>> list = locationUtil.getVehicleTrackForEX(1587252552000L,1587261012000L,"13200301026");
-        for (LinkedHashMap<String,Object> map :list){
-            System.out.println(map);
+//        LinkedList<LinkedHashMap<String,Object>> list = locationUtil.getVehicleTrackForEX(1587252552000L,1587261012000L,"13200301026");
+//        for (LinkedHashMap<String,Object> map :list){
+//            System.out.println(map);
+//        }
+        JSONArray jsonArray = locationUtil.getExVehicles();
+        for (int i=0;i<jsonArray.size();i++){
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            if("副经理".equals(jsonObject.getString("name"))){
+                JSONObject result = locationUtil.getExVehicleLocationForNewest(jsonObject.getString("id"),jsonObject.getString("vKey"));
+                System.out.println(result.toJSONString());
+            }
         }
-
     }
 }

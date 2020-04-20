@@ -10,13 +10,19 @@ import com.backGroundLocate.service.LocationService;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -169,6 +175,11 @@ public class LocationUtil {
         try {
             String lastRunDate = exLiveService.selectVehicleLastRunDate(vehicle.getSimNumber());
             Integer vehidleId = exLiveService.selectselectVehicleIdBySimNumber(vehicle.getSimNumber());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            String tableDate = sdf.format(new Date());
+            if(lastRunDate.contains("1900")){
+                lastRunDate = tableDate;
+            }
             String exSql = "select top 1 cast((lng+lng3) as VARCHAR) as lng," +
                     "cast((lat+lat3) as VARCHAR) as lat," +
                     "cast((lng+lng3) as VARCHAR) +','+cast((lat+lat3) as VARCHAR) AS latlon," +
@@ -180,10 +191,11 @@ public class LocationUtil {
                     "from gps_"+lastRunDate+" where 1=1 " +
                     "and recvtime<getdate() " +
                     "and VehicleID = "+vehidleId+" order by recvtime DESC";
-            System.out.println(exSql);
+
 
             JdbcTemplate hisJdbcTemplate = createHisJdbcTemplate("gserver_"+lastRunDate.substring(0,lastRunDate.length()-2));
             Map map = hisJdbcTemplate.queryForMap(exSql);
+            System.out.println(exSql);
             String lng = "";
             String lat = "";
             String latlon = "";
@@ -222,11 +234,12 @@ public class LocationUtil {
             resultMap.put("mileage",mileage);
             resultMap.put("recvtime",recvtime);
 
+        }catch (EmptyResultDataAccessException e){
+            System.out.println("未获取到位置信息："+vehicle.getVehicleName()+","+vehicle.getSimNumber());
+            return null;
         }catch (Exception e){
             e.printStackTrace();
         }
-
-
         return resultMap;
     }
 

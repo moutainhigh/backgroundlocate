@@ -175,7 +175,9 @@ public class LocationController {
                     List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                     for (InsVehicle vehicle : vehicleList){
                         LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
-                        resultList.add(map);
+                        if(map !=null){
+                            resultList.add(map);
+                        }
                     }
                 }
 
@@ -236,7 +238,9 @@ public class LocationController {
                                             List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                             for (InsVehicle vehicle : vehicleList){
                                                 LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
-                                                resultList.add(map);
+                                                if(map !=null){
+                                                    resultList.add(map);
+                                                }
                                             }
                                         }
                                     }
@@ -271,7 +275,9 @@ public class LocationController {
                                             List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                             for (InsVehicle vehicle : vehicleList){
                                                 LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
-                                                resultList.add(map);
+                                                if(map !=null){
+                                                    resultList.add(map);
+                                                }
                                             }
                                         }
                                     }
@@ -328,7 +334,9 @@ public class LocationController {
                             List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                             for (InsVehicle vehicle : vehicleList){
                                 LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
-                                resultList.add(map);
+                                if(map !=null){
+                                    resultList.add(map);
+                                }
                             }
                         }
                     }
@@ -372,7 +380,9 @@ public class LocationController {
                                 List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                 for (InsVehicle vehicle : vehicleList){
                                     LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
-                                    resultList.add(map);
+                                    if(map !=null){
+                                        resultList.add(map);
+                                    }
                                 }
                             }
                         }
@@ -408,7 +418,9 @@ public class LocationController {
                                 List<InsVehicle> vehicleList = vehicleService.selectVehicle(new HashMap());
                                 for (InsVehicle vehicle : vehicleList){
                                     LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
-                                    resultList.add(map);
+                                    if(map !=null){
+                                        resultList.add(map);
+                                    }
                                 }
                             }
 
@@ -460,7 +472,9 @@ public class LocationController {
                                                 List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                                 for (InsVehicle vehicle : vehicleList){
                                                     LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
-                                                    resultList.add(map);
+                                                    if(map !=null){
+                                                        resultList.add(map);
+                                                    }
                                                 }
                                             }
                                         }
@@ -487,7 +501,9 @@ public class LocationController {
                                 List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                 for (InsVehicle vehicle : vehicleList){
                                     LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
-                                    resultList.add(map);
+                                    if(map !=null){
+                                        resultList.add(map);
+                                    }
                                 }
                             }
                         }
@@ -517,7 +533,9 @@ public class LocationController {
                         List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                         for (InsVehicle vehicle : vehicleList){
                             LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
-                            resultList.add(map);
+                            if(map !=null){
+                                resultList.add(map);
+                            }
                         }
                     }
                 }else{
@@ -582,7 +600,9 @@ public class LocationController {
                                     List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                     for (InsVehicle vehicle : vehicleList){
                                         LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
-                                        resultList.add(map);
+                                        if(map !=null){
+                                            resultList.add(map);
+                                        }
                                     }
                                 }
                             }

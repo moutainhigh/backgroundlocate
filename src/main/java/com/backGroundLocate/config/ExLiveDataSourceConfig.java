@@ -10,6 +10,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
@@ -43,6 +44,11 @@ public class ExLiveDataSourceConfig {
     @Bean(name = "exliveTransactionManager")
     public DataSourceTransactionManager getMainTransactionManager(@Qualifier("exliveDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
+    }
+
+    @Bean(name = "exLiveJdbcTemplate")
+    public JdbcTemplate primaryJdbcTemplate(@Qualifier("exliveDataSource") DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 
     @Bean(name = "exliveSqlSessionTemplate")

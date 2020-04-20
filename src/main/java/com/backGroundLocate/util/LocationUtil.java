@@ -2,19 +2,21 @@ package com.backGroundLocate.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.backGroundLocate.entity.BnsArea;
+import com.backGroundLocate.entity.BnsAreaPoint;
+import com.backGroundLocate.entity.InsVehicle;
 import com.backGroundLocate.service.ExLiveService;
+import com.backGroundLocate.service.LocationService;
+import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -41,6 +43,17 @@ public class LocationUtil {
 
     @Autowired
     private RestTemplateUtil restTemplateUtil;
+
+    @Autowired
+    private LocationService locationService;
+
+    @Autowired
+    @Qualifier("mainJdbcTemplate")
+    private JdbcTemplate mainJdbcTemplate;
+
+    @Autowired
+    @Qualifier("exLiveJdbcTemplate")
+    private JdbcTemplate exLiveJdbcTemplate;
 
     /**
      * 获取超越平台所有车辆
@@ -147,142 +160,177 @@ public class LocationUtil {
     }
 
     /**
-     * 原生JDBC查询超越库车辆最新定位
-     * @param carInfoList
+     * JDBC查询超越库车辆最新定位
+     * @param vehicle
      * @return
-     *//*
-    private List getResultCarLocationList(List<CarInfo> carInfoList){
-        List resultList = new ArrayList();
-        Connection conn = null;
-        Statement stm = null;
-        ResultSet rs = null;
-        if(carInfoList.size()>0){
-            for (CarInfo carInfo : carInfoList){
-                Integer vehidleId = exLiveService.selectselectVehicleIdBySimNumber(carInfo.getSimNumber());
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-                String tableDate = sdf.format(new Date());
-                String exSql = "select top 1 cast((lng+lng3) as VARCHAR) +','+cast((lat+lat3) as VARCHAR) AS latlon" +
-                        " from gps_"+tableDate+" where recvtime<getdate() and VehicleID = "+vehidleId+" order by recvtime DESC";
-                System.out.println(exSql);
-                try {
-                    Class.forName(driveName);
-                    conn = DriverManager.getConnection(dbUrl+tableDate.substring(0,tableDate.length()-2), dbUserName, dbPassWord);
-                    stm = conn.createStatement();
-                    rs = stm.executeQuery(exSql);
-                    String latlon = "";
-                    while (rs.next()){
-                        latlon = rs.getString("latlon");
-                    }
-                    if(!StringUtils.isEmpty(latlon)){
-                        Map<String,Object> resultMap = new HashMap();
-                        resultMap.put("id",carInfo.getId());
-                        resultMap.put("name",carInfo.getName());
-                        resultMap.put("latlon",latlon);
-//                        resultMap.put("status",carInfo.getStatus());
-                        resultList.add(resultMap);
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }finally {
-                    try {
-                        if (rs != null) {
-                            rs.close();
-                        }
-                        if (stm != null) {
-                            stm.close();
-                        }
-                        if (conn != null) {
-                            conn.close();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+     */
+    public LinkedHashMap<String,Object> getVehicleLocationForEX(InsVehicle vehicle){
+        LinkedHashMap<String,Object> resultMap = new LinkedHashMap<>();
+        try {
+            String lastRunDate = exLiveService.selectVehicleLastRunDate(vehicle.getSimNumber());
+            Integer vehidleId = exLiveService.selectselectVehicleIdBySimNumber(vehicle.getSimNumber());
+            String exSql = "select top 1 cast((lng+lng3) as VARCHAR) as lng," +
+                    "cast((lat+lat3) as VARCHAR) as lat," +
+                    "cast((lng+lng3) as VARCHAR) +','+cast((lat+lat3) as VARCHAR) AS latlon," +
+                    "veo AS speed," +
+                    "cstate AS state," +
+                    "posinfo AS address," +
+                    "totaldistance AS mileage," +
+                    "recvtime " +
+                    "from gps_"+lastRunDate+" where 1=1 " +
+                    "and recvtime<getdate() " +
+                    "and VehicleID = "+vehidleId+" order by recvtime DESC";
+            System.out.println(exSql);
+
+            JdbcTemplate hisJdbcTemplate = createHisJdbcTemplate("gserver_"+lastRunDate.substring(0,lastRunDate.length()-2));
+            Map map = hisJdbcTemplate.queryForMap(exSql);
+            String lng = "";
+            String lat = "";
+            String latlon = "";
+            String speed = "";
+            String state = "";
+            String address = "";
+            String mileage = "";
+            String recvtime = "";
+
+            if(map != null){
+                lng = map.get("lng").toString();
+                lat = map.get("lat").toString();
+                latlon = map.get("latlon").toString();
+                speed = map.get("speed").toString();
+                state = map.get("state").toString();
+                address = map.get("address").toString();
+                mileage = map.get("mileage").toString();
+                recvtime = map.get("recvtime").toString();
             }
+            Map<String,Object> vehicleMap = new HashMap();
+            vehicleMap.put("vehicleId",vehicle.getId());
+            vehicleMap.put("vehicleName",vehicle.getVehicleName());
+            vehicleMap.put("vehicleLon",lng);
+            vehicleMap.put("vehicleLat",lat);
+            vehicleMap.put("vehicleSpeed",speed);
+            vehicleMap.put("vehicleExState",state);
+
+            resultMap.put("id",vehicle.getId());
+            resultMap.put("name",vehicle.getVehicleName());
+            resultMap.put("type",vehicle.getTypeName());
+            resultMap.put("lng",lng);
+            resultMap.put("lat",lat);
+            resultMap.put("latlon",latlon);
+            resultMap.put("status",getVehicleStatus(vehicleMap));
+            resultMap.put("address",address);
+            resultMap.put("mileage",mileage);
+            resultMap.put("recvtime",recvtime);
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        return resultList;
+
+
+        return resultMap;
     }
 
-    *//**
-     * 原生JDBC查询超越库车辆历史轨迹
+
+
+    /**
+     * JDBC查询超越库车辆历史轨迹
      * @param startTimestamp
      * @param endTimestamp
      * @param simNumber
      * @return
-     *//*
-    private List getResultCarTrackList(long startTimestamp,long endTimestamp,String simNumber){
-        List resultList = new LinkedList();
-
+     */
+    public LinkedList<LinkedHashMap<String,Object>> getVehicleTrackForEX(Long startTimestamp, Long endTimestamp, String simNumber){
+        LinkedList resultList = new LinkedList();
         Date sdate = new Date(startTimestamp);
         Date edate = new Date(endTimestamp);
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
 
-        List<String> dayList = getTimeList(sdf1.format(sdate),sdf1.format(edate));
-        List<String> monthList = getTimeList(sdf.format(sdate),sdf.format(edate));
-        Integer vehidleId = exLiveService.selectselectVehicleIdBySimNumber(simNumber);
-        for (String month :monthList){
-            Connection conn = null;
-            Statement stm = null;
-            ResultSet rs = null;
-            month = month.replace("-","");
-            String sqlStart = "select * from (";
-
-            String sqlContent = "";
-
-            for (String day :dayList){
-                day = day.replace("-","");
-                if(day.contains(month)){
-                    String tbName = "gps_"+day;
-                    sqlContent  +=  "select cast((lng+lng3) as VARCHAR) +','+cast((lat+lat3) as VARCHAR) AS latlon," +
-                            "distance as mileage," +
-                            "DATEDIFF(second, '1970-01-01 08:00:00', recvtime) as timestamp" +
-                            " from "+ tbName +" where VehicleID = "+vehidleId+" union all ";
+        try {
+            List<String> dayList = getTimeList(sdf1.format(sdate),sdf1.format(edate));
+            List<String> monthList = getTimeList(sdf.format(sdate),sdf.format(edate));
+            Integer vehidleId = exLiveService.selectselectVehicleIdBySimNumber(simNumber);
+            for (String month :monthList){
+                month = month.replace("-","");
+                String sqlStart = "select * from (";
+                String sqlContent = "";
+                for (String day :dayList){
+                    day = day.replace("-","");
+                    if(day.contains(month)){
+                        String tbName = "gps_"+day;
+                        sqlContent  +=  "select cast((lng+lng3) as VARCHAR) as lng,cast((lat+lat3) as VARCHAR) as lat, cast((lng+lng3) as VARCHAR) +','+cast((lat+lat3) as VARCHAR) AS latlon," +
+                                "distance as mileage," +
+                                "recvtime," +
+                                "direct," +
+                                "DATEDIFF(second, '1970-01-01 08:00:00', recvtime) as timestamp" +
+                                " from "+ tbName +" where VehicleID = "+vehidleId+" union all ";
+                    }
                 }
-            }
+                String sqlCondition = ") a where 1=1 " +
+                        "and a.timestamp >= "+startTimestamp/1000+" " +
+                        "and a.timestamp <= "+endTimestamp/1000+" ";
 
-            String sqlCondition = ") a where 1=1 " +
-                    "and a.timestamp >= "+startTimestamp/1000+" " +
-                    "and a.timestamp <= "+endTimestamp/1000+" ";
+                String sqlEnd = " order by a.timestamp asc";
+                String exSql = sqlStart+sqlContent.substring(0,sqlContent.length()-10)+sqlCondition+sqlEnd;
 
-            String sqlEnd = " order by a.timestamp asc";
+                JdbcTemplate hisJdbcTemplate = createHisJdbcTemplate("gserver_"+month);
+                System.out.println(exSql);
 
-            String exSql = sqlStart+sqlContent.substring(0,sqlContent.length()-10)+sqlCondition+sqlEnd;
-
-            System.out.println(exSql);
-            try {
-                Class.forName(driveName);
-                conn = DriverManager.getConnection(dbUrl+month, dbUserName, dbPassWord);
-                stm = conn.createStatement();
-                rs = stm.executeQuery(exSql);
-                while(rs.next()){
-                    Map map = new LinkedHashMap();
-                    map.put("latlon",rs.getString("latlon"));
-                    map.put("mileage",rs.getFloat("mileage"));
-                    map.put("timestamp",rs.getInt("timestamp"));
+                List<Map<String,Object>> list = hisJdbcTemplate.queryForList(exSql);
+                for(Map<String,Object> exMap : list){
+                    LinkedHashMap map = new LinkedHashMap();
+                    map.put("lng",exMap.get("lng"));
+                    map.put("lat",exMap.get("lat"));
+                    map.put("latlon",exMap.get("latlon"));
+                    map.put("mileage",exMap.get("mileage"));
+                    map.put("direction",exMap.get("direct"));
+                    map.put("recvtime",exMap.get("recvtime").toString());
+                    map.put("timestamp",exMap.get("timestamp"));
                     resultList.add(map);
                 }
-            }catch (Exception e){
-                e.printStackTrace();
-            }finally {
-                try {
-                    if (rs != null) {
-                        rs.close();
-                    }
-                    if (stm != null) {
-                        stm.close();
-                    }
-                    if (conn != null) {
-                        conn.close();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return resultList;
-    }*/
+    }
+
+
+
+    private Integer getVehicleStatus(Map vehicleMap){
+        Integer result = 1;
+        Map paramMap = new HashMap();
+
+        String vehicleId = vehicleMap.get("vehicleId").toString();
+        String vehicleName = vehicleMap.get("vehicleName").toString();
+
+        Double speed = Double.parseDouble(vehicleMap.get("vehicleSpeed").toString());
+        String exState = vehicleMap.get("vehicleExState").toString();
+
+        if(exState.contains("超时")){
+            result = 4;
+        }else{
+            Point2D.Double point = new Point2D.Double(Double.parseDouble(vehicleMap.get("vehicleLon").toString()),Double.parseDouble(vehicleMap.get("vehicleLat").toString()));
+            List<BnsArea> bnsAreaList = locationService.selectArea(paramMap);
+            List<Point2D.Double> polygon = new ArrayList<Point2D.Double>();
+            if(bnsAreaList.size()>0){
+                for (BnsArea bnsArea : bnsAreaList){
+                    paramMap.put("areaId",bnsArea.getId());
+                    List<BnsAreaPoint> bnsAreaPointList = locationService.selectAreaPoint(paramMap);
+                    for (BnsAreaPoint bnsAreaPoint : bnsAreaPointList){
+                        polygon.add(new Point2D.Double(Double.parseDouble(bnsAreaPoint.getLongitude()), Double.parseDouble(bnsAreaPoint.getLatitude())));
+                    }
+                }
+            }
+            if(!contains(polygon,point)){
+                result = 3;
+            }else if(speed > 30){
+                result = 2;
+            }
+
+        }
+        return result;
+    }
 
     private List<String> getTimeList(String startDate, String endxDate){
         SimpleDateFormat sdf ;
@@ -322,5 +370,17 @@ public class LocationUtil {
             curr.add(calendarType, 1);
         }
         return result;
+    }
+
+    private JdbcTemplate createHisJdbcTemplate(String dbName){
+        SQLServerDataSource dataSource = new SQLServerDataSource();
+        dataSource.setIntegratedSecurity(false);
+        dataSource.setDatabaseName(dbName);
+        dataSource.setServerName("47.104.179.40");
+        dataSource.setPortNumber(1433);
+        dataSource.setUser("sa");
+        dataSource.setPassword("1qaz_2wsx");
+
+        return new JdbcTemplate(dataSource);
     }
 }

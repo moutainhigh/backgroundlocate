@@ -15,4 +15,9 @@ public class ExLiveServiceImpl implements ExLiveService {
     public Integer selectselectVehicleIdBySimNumber(String simNumber) {
         return exLiveMapper.selectVehicleIdBySimNumber(simNumber);
     }
+
+    @Override
+    public String selectVehicleLastRunDate(String simNumber) {
+        return exLiveMapper.selectVehicleLastRunDate(simNumber);
+    }
 }

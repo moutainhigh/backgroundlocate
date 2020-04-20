@@ -119,8 +119,8 @@ public class LocationController {
                                                   @RequestParam(value = "type") Integer type
     ){
         System.out.println("======into selectUnitLocationForNewest======");
-        JSONObject resultJson = new JSONObject();
-        JSONObject resultData = new JSONObject();
+        JSONObject resultJson = new JSONObject(new LinkedHashMap<>());
+        JSONObject resultData = new JSONObject(new LinkedHashMap<>());
         Map userParamMap = new HashMap();
         Map vehicleParamMap = new HashMap();
         List<Map> resultList = new ArrayList<>();
@@ -172,34 +172,9 @@ public class LocationController {
                     }
 
                 }else if(type == 2){
-                    JSONArray vehicleArray = locationUtil.getExVehicles();
                     List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                     for (InsVehicle vehicle : vehicleList){
-                        Map map = new LinkedHashMap();
-                        map.put("id",vehicle.getId());
-                        map.put("name",vehicle.getVehicleName());
-
-                        for (int i=0;i<vehicleArray.size();i++){
-                            JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                            if(vehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                String lonLat = lon+","+lat;
-                                Map<String,Object> vehicleMap = new HashMap();
-                                vehicleMap.put("vehicleId",vehicle.getId());
-                                vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                vehicleMap.put("vehicleLon",vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                vehicleMap.put("vehicleLat",vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                map.put("status",getVehicleStatus(vehicleMap));
-                                map.put("lng",lon);
-                                map.put("lat",lat);
-                                map.put("latlon",lonLat);
-                            }
-
-                        }
+                        LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
                         resultList.add(map);
                     }
                 }
@@ -257,32 +232,10 @@ public class LocationController {
                                     for (InsDepartment subDept : subDepartmentList){
                                         if(subDept.getDeptType() == 4){
                                             vehicleParamMap.put("deptId",subDept.getId());
-                                            JSONArray vehicleArray = locationUtil.getExVehicles();
+
                                             List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                             for (InsVehicle vehicle : vehicleList){
-                                                Map map = new LinkedHashMap();
-                                                map.put("id",vehicle.getId());
-                                                map.put("name",vehicle.getVehicleName());
-                                                for (int i=0;i<vehicleArray.size();i++){
-                                                    JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                                                    if(vehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                                        JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                                        String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                                        String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                                        String lonLat = lon+","+lat;
-                                                        Map vehicleMap = new HashMap();
-                                                        vehicleMap.put("vehicleId",vehicle.getId());
-                                                        vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                                        vehicleMap.put("vehicleLon",lon);
-                                                        vehicleMap.put("vehicleLat",lat);
-                                                        vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                                        vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                                        map.put("status",getVehicleStatus(vehicleMap));
-                                                        map.put("lng",lon);
-                                                        map.put("lat",lat);
-                                                        map.put("latlon",lonLat);
-                                                    }
-                                                }
+                                                LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
                                                 resultList.add(map);
                                             }
                                         }
@@ -315,32 +268,9 @@ public class LocationController {
                                             }
                                         }else if(type == 2 && insDepartment.getDeptType() == 4){
                                             vehicleParamMap.put("deptId",subDept.getId());
-                                            JSONArray vehicleArray = locationUtil.getExVehicles();
                                             List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                             for (InsVehicle vehicle : vehicleList){
-                                                Map map = new LinkedHashMap();
-                                                map.put("id",vehicle.getId());
-                                                map.put("name",vehicle.getVehicleName());
-                                                for (int i=0;i<vehicleArray.size();i++){
-                                                    JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                                                    if(vehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                                        JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                                        String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                                        String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                                        String lonLat = lon+","+lat;
-                                                        Map vehicleMap = new HashMap();
-                                                        vehicleMap.put("vehicleId",vehicle.getId());
-                                                        vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                                        vehicleMap.put("vehicleLon",lon);
-                                                        vehicleMap.put("vehicleLat",lat);
-                                                        vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                                        vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                                        map.put("status",getVehicleStatus(vehicleMap));
-                                                        map.put("lng",lon);
-                                                        map.put("lat",lat);
-                                                        map.put("latlon",lonLat);
-                                                    }
-                                                }
+                                                LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
                                                 resultList.add(map);
                                             }
                                         }
@@ -395,32 +325,9 @@ public class LocationController {
                         for (InsDepartment subDept : subDepartmentList){
                             vehicleParamMap.put("deptId",subDept.getId());
                             vehicleParamMap.put("vehicleName",unitName);
-                            JSONArray vehicleArray = locationUtil.getExVehicles();
                             List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                             for (InsVehicle vehicle : vehicleList){
-                                Map map = new LinkedHashMap();
-                                map.put("id",vehicle.getId());
-                                map.put("name",vehicle.getVehicleName());
-                                for (int i=0;i<vehicleArray.size();i++){
-                                    JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                                    if(vehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                        JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                        String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                        String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                        String lonLat = lon+","+lat;
-                                        Map vehicleMap = new HashMap();
-                                        vehicleMap.put("vehicleId",vehicle.getId());
-                                        vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                        vehicleMap.put("vehicleLon",lon);
-                                        vehicleMap.put("vehicleLat",lat);
-                                        vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                        vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                        map.put("status",getVehicleStatus(vehicleMap));
-                                        map.put("lng",lon);
-                                        map.put("lat",lat);
-                                        map.put("latlon",lonLat);
-                                    }
-                                }
+                                LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
                                 resultList.add(map);
                             }
                         }
@@ -462,32 +369,9 @@ public class LocationController {
                         for (InsDepartment subDept : subDepartmentList){
                             if(subDept.getDeptType() == 4){
                                 vehicleParamMap.put("deptId",subDept.getId());
-                                JSONArray vehicleArray = locationUtil.getExVehicles();
                                 List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                 for (InsVehicle vehicle : vehicleList){
-                                    Map map = new LinkedHashMap();
-                                    map.put("id",vehicle.getId());
-                                    map.put("name",vehicle.getVehicleName());
-                                    for (int i=0;i<vehicleArray.size();i++){
-                                        JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                                        if(vehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                            JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                            String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                            String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                            String lonLat = lon+","+lat;
-                                            Map vehicleMap = new HashMap();
-                                            vehicleMap.put("vehicleId",vehicle.getId());
-                                            vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                            vehicleMap.put("vehicleLon",lon);
-                                            vehicleMap.put("vehicleLat",lat);
-                                            vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                            vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                            map.put("status",getVehicleStatus(vehicleMap));
-                                            map.put("lng",lon);
-                                            map.put("lat",lat);
-                                            map.put("latlon",lonLat);
-                                        }
-                                    }
+                                    LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
                                     resultList.add(map);
                                 }
                             }
@@ -502,7 +386,6 @@ public class LocationController {
                 if(!StringUtils.isEmpty(deptName)){
                     paramMap.put("deptName",deptName);
                     List<InsDepartment> insDepartmentList = institutionalService.selectDepartment(paramMap);
-
                     if(insDepartmentList.size()>0){
                         InsDepartment insDepartment = insDepartmentList.get(0);
                         if(insDepartment.getDeptLevel()==1){
@@ -521,39 +404,16 @@ public class LocationController {
                                     resultList.add(map);
                                 }
                             }else if(type == 2){
-                                JSONArray vehicleArray = locationUtil.getExVehicles();
+
                                 List<InsVehicle> vehicleList = vehicleService.selectVehicle(new HashMap());
                                 for (InsVehicle vehicle : vehicleList){
-                                    Map map = new LinkedHashMap();
-                                    map.put("id",vehicle.getId());
-                                    map.put("name",vehicle.getVehicleName());
-                                    for (int i=0;i<vehicleArray.size();i++){
-                                        JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                                        if(vehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                            JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                            String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                            String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                            String lonLat = lon+","+lat;
-                                            Map vehicleMap = new HashMap();
-                                            vehicleMap.put("vehicleId",vehicle.getId());
-                                            vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                            vehicleMap.put("vehicleLon",lon);
-                                            vehicleMap.put("vehicleLat",lat);
-                                            vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                            vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                            map.put("status",getVehicleStatus(vehicleMap));
-                                            map.put("lng",lon);
-                                            map.put("lat",lat);
-                                            map.put("latlon",lonLat);
-                                        }
-                                    }
+                                    LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
                                     resultList.add(map);
                                 }
                             }
 
                         }else if(insDepartment.getDeptLevel() ==2){
                             if(type == 1){
-
                                 for (InsDepartment subDept : subDepartmentList){
                                     if(insDepartment.getId() == subDept.getId()){
                                         List<InsUser> subUserList = userService.selectDirectlyUser(subDept.getId());
@@ -597,32 +457,9 @@ public class LocationController {
                                         for (InsDepartment dirDept : dirDeptList){
                                             if(dirDept.getDeptType() == 4){
                                                 vehicleParamMap.put("deptId",dirDept.getId());
-                                                JSONArray vehicleArray = locationUtil.getExVehicles();
                                                 List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                                 for (InsVehicle vehicle : vehicleList){
-                                                    Map map = new LinkedHashMap();
-                                                    map.put("id",vehicle.getId());
-                                                    map.put("name",vehicle.getVehicleName());
-                                                    for (int i=0;i<vehicleArray.size();i++){
-                                                        JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                                                        if(vehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                                            JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                                            String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                                            String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                                            String lonLat = lon+","+lat;
-                                                            Map vehicleMap = new HashMap();
-                                                            vehicleMap.put("vehicleId",vehicle.getId());
-                                                            vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                                            vehicleMap.put("vehicleLon",lon);
-                                                            vehicleMap.put("vehicleLat",lat);
-                                                            vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                                            vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                                            map.put("status",getVehicleStatus(vehicleMap));
-                                                            map.put("lng",lon);
-                                                            map.put("lat",lat);
-                                                            map.put("latlon",lonLat);
-                                                        }
-                                                    }
+                                                    LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
                                                     resultList.add(map);
                                                 }
                                             }
@@ -647,32 +484,9 @@ public class LocationController {
                                 }
                             }else if(type == 2 && insDepartment.getDeptType() == 4){
                                 vehicleParamMap.put("deptId",insDepartment.getId());
-                                JSONArray vehicleArray = locationUtil.getExVehicles();
                                 List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                 for (InsVehicle vehicle : vehicleList){
-                                    Map map = new LinkedHashMap();
-                                    map.put("id",vehicle.getId());
-                                    map.put("name",vehicle.getVehicleName());
-                                    for (int i=0;i<vehicleArray.size();i++){
-                                        JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                                        if(vehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                            JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                            String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                            String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                            String lonLat = lon+","+lat;
-                                            Map vehicleMap = new HashMap();
-                                            vehicleMap.put("vehicleId",vehicle.getId());
-                                            vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                            vehicleMap.put("vehicleLon",lon);
-                                            vehicleMap.put("vehicleLat",lat);
-                                            vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                            vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                            map.put("status",getVehicleStatus(vehicleMap));
-                                            map.put("lng",lon);
-                                            map.put("lat",lat);
-                                            map.put("latlon",lonLat);
-                                        }
-                                    }
+                                    LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
                                     resultList.add(map);
                                 }
                             }
@@ -700,32 +514,9 @@ public class LocationController {
                         }
                     }else if(type == 2){
                         vehicleParamMap.put("vehicleName",unitName);
-                        JSONArray vehicleArray = locationUtil.getExVehicles();
                         List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                         for (InsVehicle vehicle : vehicleList){
-                            Map map = new LinkedHashMap();
-                            map.put("id",vehicle.getId());
-                            map.put("name",vehicle.getVehicleName());
-                            for (int i=0;i<vehicleArray.size();i++){
-                                JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                                if(vehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                    JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                    String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                    String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                    String lonLat = lon+","+lat;
-                                    Map vehicleMap = new HashMap();
-                                    vehicleMap.put("vehicleId",vehicle.getId());
-                                    vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                    vehicleMap.put("vehicleLon",lon);
-                                    vehicleMap.put("vehicleLat",lat);
-                                    vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                    vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                    map.put("status",getVehicleStatus(vehicleMap));
-                                    map.put("lng",lon);
-                                    map.put("lat",lat);
-                                    map.put("latlon",lonLat);
-                                }
-                            }
+                            LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
                             resultList.add(map);
                         }
                     }
@@ -781,38 +572,16 @@ public class LocationController {
                                 }
                             }
                         }
+
                     }else if(type == 2){
                         for (InsDepartment subDept : subDepartmentList){
                             List<InsDepartment> dirDeptList = institutionalService.selectSubDepartment(subDept.getId());
                             for (InsDepartment dirDept : dirDeptList){
                                 if(dirDept.getDeptType() == 4){
                                     vehicleParamMap.put("deptId",dirDept.getId());
-                                    JSONArray vehicleArray = locationUtil.getExVehicles();
                                     List<InsVehicle> vehicleList = vehicleService.selectVehicle(vehicleParamMap);
                                     for (InsVehicle vehicle : vehicleList){
-                                        Map map = new LinkedHashMap();
-                                        map.put("id",vehicle.getId());
-                                        map.put("name",vehicle.getVehicleName());
-                                        for (int i=0;i<vehicleArray.size();i++){
-                                            JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                                            if(vehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                                JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                                String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                                String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                                String lonLat = lon+","+lat;
-                                                Map vehicleMap = new HashMap();
-                                                vehicleMap.put("vehicleId",vehicle.getId());
-                                                vehicleMap.put("vehicleName",vehicle.getVehicleName());
-                                                vehicleMap.put("vehicleLon",lon);
-                                                vehicleMap.put("vehicleLat",lat);
-                                                vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                                vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                                map.put("status",getVehicleStatus(vehicleMap));
-                                                map.put("lng",lon);
-                                                map.put("lat",lat);
-                                                map.put("latlon",lonLat);
-                                            }
-                                        }
+                                        LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(vehicle);
                                         resultList.add(map);
                                     }
                                 }
@@ -919,36 +688,7 @@ public class LocationController {
                     paramMap.put("endTimestamp",endTimestamp);
                     paramMap.put("unitId",unitId);
                     Integer illegalNum = locationService.selectIllegalNum(paramMap);
-                    List<LinkedHashMap> locationList = new ArrayList<>();
-                    JSONArray vehicleArray = locationUtil.getExVehicles();
-                    for (int i=0;i<vehicleArray.size();i++){
-                        JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                        if(insVehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                            JSONArray vehicleHisArray = locationUtil.getExVehicleLocationForHistory(vehicleObj.getString("id"),
-                                    vehicleObj.getString("vKey"),
-                                    startTimestamp.toString(),
-                                    endTimestamp.toString());
-                            for(int j=0;j<vehicleHisArray.size();j++){
-                                JSONObject vehicleHis = vehicleHisArray.getJSONObject(j);
-                                String lon = String.valueOf(vehicleHis.getDouble("lng")+vehicleHis.getDouble("lng_xz")+0.0065);
-                                String lat = String.valueOf(vehicleHis.getDouble("lat")+vehicleHis.getDouble("lng_xz")+0.00588);
-                                String lonLat = lon+","+lat;
-                                LinkedHashMap map = new LinkedHashMap();
-                                map.put("lng",lon);
-                                map.put("lat",lat);
-                                map.put("lonlat",lonLat);
-                                map.put("mileage",vehicleHis.getDouble("dis"));
-                                map.put("direction",vehicleHis.getInteger("dir"));
-                                String recvt = vehicleHis.getString("recvt");
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                Date date = sdf.parse(recvt);
-                                map.put("timestamp",date.getTime()/1000);
-                                locationList.add(map);
-
-                            }
-                        }
-                    }
-
+                    List<LinkedHashMap<String,Object>> locationList = locationUtil.getVehicleTrackForEX(startTimestamp,endTimestamp,insVehicle.getSimNumber());
                     if(locationList.size()>0){
                         unitLocationInfo.put("id",insVehicle.getId());
                         unitLocationInfo.put("name",insVehicle.getVehicleName());
@@ -1043,15 +783,6 @@ public class LocationController {
             }
 
         }
-
-//        vehicleMap.put("vehicleId",vehicle.getId());
-//        vehicleMap.put("vehicleName",vehicle.getVehicleName());
-//        vehicleMap.put("vehicleLon",vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-//        vehicleMap.put("vehicleLat",vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-//        vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-//        vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-
-
         return result;
     }
 

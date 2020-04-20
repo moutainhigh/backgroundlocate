@@ -148,29 +148,14 @@ public class InstitutionalManageController {
                 }else if(type == 2){
                     InsVehicle insVehicle = vehicleService.selectVehicleById(unitId);
                     if(!StringUtils.isEmpty(insVehicle)){
+                        LinkedHashMap<String,Object> map = locationUtil.getVehicleLocationForEX(insVehicle);
                         information.put("id",insVehicle.getId());
                         information.put("name",insVehicle.getVehicleName());
                         information.put("type",insVehicle.getTypeName());
-                        JSONArray vehicleArray = locationUtil.getExVehicles();
-                        for (int i=0;i<vehicleArray.size();i++){
-                            JSONObject vehicleObj = vehicleArray.getJSONObject(i);
-                            if(insVehicle.getVehicleName().equals(vehicleObj.get("name"))){
-                                JSONObject vehicleJson = locationUtil.getExVehicleLocationForNewest(vehicleObj.getString("id"),vehicleObj.getString("vKey"));
-                                String lon = String.valueOf(vehicleJson.getDouble("lng")+vehicleJson.getDouble("lng_xz")+0.0065);
-                                String lat = String.valueOf(vehicleJson.getDouble("lat")+vehicleJson.getDouble("lng_xz")+0.00588);
-                                Map vehicleMap = new HashMap();
-                                vehicleMap.put("vehicleId",insVehicle.getId());
-                                vehicleMap.put("vehicleName",insVehicle.getVehicleName());
-                                vehicleMap.put("vehicleLon",lon);
-                                vehicleMap.put("vehicleLat",lat);
-                                vehicleMap.put("vehicleSpeed",vehicleJson.getDouble("speed"));
-                                vehicleMap.put("vehicleExState",vehicleJson.getString("state"));
-                                information.put("address",vehicleJson.getString("info"));
-                                information.put("status",getVehicleStatus(vehicleMap));
-                                information.put("mileage",vehicleJson.getString("totalDis"));
+                        information.put("address",map.get("address"));
+                        information.put("status",map.get("status"));
+                        information.put("mileage",map.get("mileage"));
 
-                            }
-                        }
                         //待补车辆年审
                         information.put("annual","");
                         information.put("maintenance","");
@@ -178,8 +163,6 @@ public class InstitutionalManageController {
                         resultJson.put("resultCode",1);
                         resultJson.put("resultMessage","未查询到车辆信息");
                     }
-
-
                 }
                 information.put("category",type);
                 resultData.put("information",information);

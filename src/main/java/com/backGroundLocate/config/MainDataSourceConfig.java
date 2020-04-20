@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
@@ -48,6 +49,11 @@ public class MainDataSourceConfig {
     @Primary
     public DataSourceTransactionManager getMainTransactionManager(@Qualifier("mainDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
+    }
+
+    @Bean(name = "mainJdbcTemplate")
+    public JdbcTemplate primaryJdbcTemplate(@Qualifier("mainDataSource") DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 
     @Bean(name = "mainSqlSessionTemplate")

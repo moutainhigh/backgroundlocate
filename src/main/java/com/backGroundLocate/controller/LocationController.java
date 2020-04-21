@@ -560,11 +560,11 @@ public class LocationController {
                             List<InsUser> subUserList = userService.selectUser(userParamMap);
                             for (InsUser subUser : subUserList){
                                 Map map = new LinkedHashMap();
+                                paramMap.put("userId",subUser.getId());
                                 BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                 map.put("id",subUser.getId());
                                 map.put("name",subUser.getUserName());
                                 map.put("status",getUserStatus(subUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
-                                paramMap.put("userId",subUser.getId());
                                 map.put("lng",bnsUserNewestLocate.getLongitude());
                                 map.put("lat",bnsUserNewestLocate.getLatitude());
                                 map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
@@ -577,11 +577,11 @@ public class LocationController {
                                     List<InsUser> dirUserList = userService.selectUser(userParamMap);
                                     for (InsUser dirUser : dirUserList){
                                         Map map = new LinkedHashMap();
+                                        paramMap.put("userId",dirUser.getId());
                                         BnsUserNewestLocate bnsUserNewestLocate = locationService.selectUserLocationForNewest(paramMap);
                                         map.put("id",dirUser.getId());
                                         map.put("name",dirUser.getUserName());
                                         map.put("status",getUserStatus(dirUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
-                                        paramMap.put("userId",dirUser.getId());
                                         map.put("lng",bnsUserNewestLocate.getLongitude());
                                         map.put("lat",bnsUserNewestLocate.getLatitude());
                                         map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());

@@ -47,6 +47,11 @@ public class AttendanceController {
         }else{
             resultData.put("status",2);
         }
+        paramMap.put("type",2);
+        Attendance outAttendance = attendanceService.selectAttendanceForToday(paramMap);
+        if(outAttendance!=null){
+            resultData.put("status",3);
+        }
         resultJson.put("resultCode",0);
         resultJson.put("resultData",resultData);
         return resultJson;

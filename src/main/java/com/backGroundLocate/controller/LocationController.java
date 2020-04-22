@@ -368,6 +368,8 @@ public class LocationController {
                                     map.put("id",subUser.getId());
                                     map.put("name",subUser.getUserName());
                                     map.put("status",getUserStatus(subUser.getId(),Double.parseDouble(bnsUserNewestLocate.getLongitude()),Double.parseDouble(bnsUserNewestLocate.getLatitude())));
+                                    map.put("lng",bnsUserNewestLocate.getLongitude());
+                                    map.put("lat",bnsUserNewestLocate.getLatitude());
                                     map.put("latlon",bnsUserNewestLocate.getLonLat() == null ? "" : bnsUserNewestLocate.getLonLat());
                                     resultList.add(map);
                                 }
